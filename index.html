@@ -1750,6 +1750,9 @@
             alert(`Level Up! You are now Level ${gameState.level}!`);
             addCombatLogEntry('info', `You leveled up! Level ${gameState.level} reached!`);
             
+            // Eingabefeld zurücksetzen
+            document.getElementById('typingInput').value = '';
+            
             updateDisplay();
             saveGameState(); // Speichere nach Level-Up
         }
