@@ -551,6 +551,286 @@ function updateLevel19Boss(timestamp) {
     }
 }
 
+// Funktion zum Initialisieren des Level 20 Bosses (SCRIPTUM)
+function initLevel20Boss() {
+    console.log('Initialisiere Level 20 Boss...');
+    
+    // Setze den Boss-Status
+    gameState.level20BossActive = true;
+    gameState.bossActive = true;
+    
+    // Initialisiere den Boss
+    window.level20Boss = {
+        health: 100, // Entspricht der Anzahl der Wörter im Text
+        maxHealth: 100,
+        gold: 1000,
+        text: `In einer Welt voller Tasten und Zeichen, wo Buchstaben tanzen und Wörter sich formen, begann die Reise eines Helden. Mit flinken Fingern und scharfem Verstand kämpfte er gegen die Mächte der Ungenauigkeit und Langsamkeit. Jeder Tastendruck ein Schlag, jedes Wort ein Sieg. Die Dunkelheit der Fehler versuchte ihn zu umhüllen, doch sein Wille war stärker. Durch Level um Level, Gegner um Gegner, stieg er auf, immer höher, immer schneller. Nun steht er vor der letzten Prüfung, dem ultimativen Test seiner Fähigkeiten. Kann er den Text bezwingen, bevor die Zeit abläuft? Kann er die Worte meistern, bevor sie ihn verschlingen? Das Schicksal der digitalen Welt liegt in seinen Händen, in jedem Buchstaben, den er tippt, in jedem Wort, das er vollendet. Die Zeit läuft, die Herausforderung wartet. Tippe, Held, tippe für dein Leben!`,
+        typedText: '',
+        currentPosition: 0,
+        element: null,
+        textElement: null,
+        startTime: Date.now(),
+        speed: 0.5, // Pixel pro Frame
+        position: 0 // Aktuelle Y-Position des Textes
+    };
+    
+    // Erstelle das Boss-Element
+    const gameContainer = document.getElementById('gameContainer');
+    const bossElement = document.createElement('div');
+    bossElement.id = 'level20Boss';
+    bossElement.className = 'boss';
+    bossElement.innerHTML = `
+        <div class="boss-name">SCRIPTUM</div>
+        <div class="boss-health-bar">
+            <div class="boss-health-fill" style="width: 100%"></div>
+        </div>
+    `;
+    
+    // Positioniere den Boss
+    bossElement.style.position = 'absolute';
+    bossElement.style.top = '20px';
+    bossElement.style.left = '50%';
+    bossElement.style.transform = 'translateX(-50%)';
+    bossElement.style.width = '200px';
+    bossElement.style.height = '80px';
+    bossElement.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+    bossElement.style.color = 'white';
+    bossElement.style.fontWeight = 'bold';
+    bossElement.style.textAlign = 'center';
+    bossElement.style.padding = '10px';
+    bossElement.style.borderRadius = '10px';
+    bossElement.style.boxShadow = '0 0 20px #000';
+    bossElement.style.zIndex = '100';
+    
+    // Füge den Boss zum Spielcontainer hinzu
+    gameContainer.appendChild(bossElement);
+    
+    // Erstelle das Text-Element
+    const textElement = document.createElement('div');
+    textElement.id = 'level20BossText';
+    textElement.className = 'boss-text';
+    
+    // Positioniere den Text
+    textElement.style.position = 'absolute';
+    textElement.style.top = '120px';
+    textElement.style.left = '50%';
+    textElement.style.transform = 'translateX(-50%)';
+    textElement.style.width = '80%';
+    textElement.style.maxWidth = '800px';
+    textElement.style.padding = '20px';
+    textElement.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+    textElement.style.color = 'white';
+    textElement.style.fontFamily = 'monospace';
+    textElement.style.fontSize = '18px';
+    textElement.style.lineHeight = '1.5';
+    textElement.style.borderRadius = '10px';
+    textElement.style.boxShadow = '0 0 20px #000';
+    textElement.style.zIndex = '99';
+    textElement.style.textAlign = 'left';
+    
+    // Füge den Text zum Spielcontainer hinzu
+    gameContainer.appendChild(textElement);
+    
+    // Speichere die Elemente
+    level20Boss.element = bossElement;
+    level20Boss.textElement = textElement;
+    
+    // Aktualisiere den Text mit Hervorhebung
+    updateLevel20BossText();
+    
+    // Füge einen Eintrag zum Kampflog hinzu
+    addCombatLogEntry('boss', 'SCRIPTUM erscheint! "BEWEISE DEINE SCHREIBKÜNSTE!"');
+    addCombatLogEntry('info', 'Tippe den Text, bevor er dich erreicht! Bei Fehlern musst du nur ab der Fehlerposition weiterschreiben.');
+    
+    // Aktualisiere die Gesundheitsanzeige
+    updateLevel20BossHealth();
+    
+    console.log('Level 20 Boss erfolgreich initialisiert!');
+}
+
+// Funktion zum Aktualisieren des Textes des Level 20 Bosses
+function updateLevel20BossText() {
+    if (!gameState.level20BossActive || !level20Boss.textElement) {
+        return;
+    }
+    
+    const text = level20Boss.text;
+    const typedText = level20Boss.typedText;
+    const currentPosition = level20Boss.currentPosition;
+    
+    // Erstelle HTML für die Hervorhebung
+    let html = '';
+    
+    // Bereits getippter Text (grün)
+    html += `<span style="color: #00ff00;">${text.substring(0, currentPosition)}</span>`;
+    
+    // Aktueller Buchstabe (gelb hinterlegt)
+    if (currentPosition < text.length) {
+        html += `<span style="background-color: #ffff00; color: #000000;">${text.charAt(currentPosition)}</span>`;
+    }
+    
+    // Noch zu tippender Text (weiß)
+    html += `<span style="color: #ffffff;">${text.substring(currentPosition + 1)}</span>`;
+    
+    // Aktualisiere das Text-Element
+    level20Boss.textElement.innerHTML = html;
+}
+
+// Funktion zum Aktualisieren der Gesundheitsanzeige des Level 20 Bosses
+function updateLevel20BossHealth() {
+    // Stelle sicher, dass der Boss aktiv ist
+    if (!gameState.level20BossActive) {
+        return;
+    }
+    
+    // Stelle sicher, dass das Boss-Element existiert
+    if (!level20Boss.element) {
+        console.error('Boss-Element nicht gefunden!');
+        return;
+    }
+    
+    // Finde die Gesundheitsanzeige
+    const healthFill = level20Boss.element.querySelector('.boss-health-fill');
+    if (!healthFill) {
+        console.error('Gesundheitsanzeige nicht gefunden!');
+        return;
+    }
+    
+    // Berechne den Prozentsatz der verbleibenden Gesundheit
+    const healthPercent = (level20Boss.health / level20Boss.maxHealth) * 100;
+    
+    // Aktualisiere die Breite der Gesundheitsanzeige
+    healthFill.style.width = healthPercent + '%';
+    
+    // Ändere die Farbe der Gesundheitsanzeige basierend auf dem Gesundheitszustand
+    if (healthPercent > 66) {
+        healthFill.style.backgroundColor = '#00ff00'; // Grün
+    } else if (healthPercent > 33) {
+        healthFill.style.backgroundColor = '#ffff00'; // Gelb
+    } else {
+        healthFill.style.backgroundColor = '#ff0000'; // Rot
+    }
+    
+    // Aktualisiere den Text der Boss-Anzeige
+    const bossName = level20Boss.element.querySelector('.boss-name');
+    if (bossName) {
+        bossName.textContent = `SCRIPTUM (${level20Boss.health}/${level20Boss.maxHealth})`;
+    }
+}
+
+// Funktion zum Besiegen des Level 20 Bosses
+function defeatLevel20Boss() {
+    console.log('Level 20 Boss besiegt!');
+    
+    // Stelle sicher, dass der Boss aktiv ist
+    if (!gameState.level20BossActive) {
+        console.error('Level 20 Boss ist nicht aktiv!');
+        return;
+    }
+    
+    // Deaktiviere den Boss
+    gameState.level20BossActive = false;
+    gameState.bossActive = false;
+    
+    // Entferne das Boss-Element
+    if (level20Boss.element && level20Boss.element.parentNode) {
+        level20Boss.element.parentNode.removeChild(level20Boss.element);
+    }
+    
+    // Entferne das Text-Element
+    if (level20Boss.textElement && level20Boss.textElement.parentNode) {
+        level20Boss.textElement.parentNode.removeChild(level20Boss.textElement);
+    }
+    
+    // Füge Gold hinzu
+    gameState.gold += level20Boss.gold;
+    
+    // Füge einen Eintrag zum Kampflog hinzu
+    addCombatLogEntry('victory', `Du hast SCRIPTUM besiegt! +${level20Boss.gold} Gold!`);
+    
+    // Aktualisiere die Anzeige
+    updateDisplay();
+    
+    // Speichere den Spielstand
+    saveGameState();
+    
+    // Prüfe, ob der Spieler das Level abgeschlossen hat
+    if (gameState.level === 20) {
+        // Erhöhe das Level
+        levelUp();
+    }
+}
+
+// Funktion zum Aktualisieren der Level 20 Boss Mechanik im Game Loop
+function updateLevel20Boss() {
+    // Wenn der Boss nicht aktiv ist, beende die Funktion
+    if (!gameState.level20BossActive) {
+        return;
+    }
+    
+    // Hole die Dimensionen des Spielcontainers
+    const gameContainer = document.getElementById('gameContainer');
+    const containerHeight = gameContainer.offsetHeight;
+    
+    // Bewege den Text nach unten
+    level20Boss.position += level20Boss.speed;
+    
+    // Aktualisiere die Position des Text-Elements
+    if (level20Boss.textElement) {
+        level20Boss.textElement.style.top = (120 + level20Boss.position) + 'px';
+    }
+    
+    // Prüfe, ob der Text den Spieler erreicht hat
+    const textElementHeight = level20Boss.textElement ? level20Boss.textElement.offsetHeight : 0;
+    const textBottom = 120 + level20Boss.position + textElementHeight;
+    
+    if (textBottom >= containerHeight - 100) {
+        // Game Over
+        addCombatLogEntry('damage', 'Der Text hat dich erreicht! Game Over!');
+        gameOver();
+        return;
+    }
+    
+    // Aktualisiere die Gesundheitsanzeige
+    updateLevel20BossHealth();
+}
+
+// Funktion zum Verarbeiten der Eingabe für den Level 20 Boss
+function processLevel20BossInput(typed) {
+    if (!gameState.level20BossActive) {
+        return false;
+    }
+    
+    const text = level20Boss.text;
+    const currentPosition = level20Boss.currentPosition;
+    
+    // Prüfe, ob die Eingabe korrekt ist
+    if (typed === text.charAt(currentPosition)) {
+        // Korrekte Eingabe
+        level20Boss.typedText += typed;
+        level20Boss.currentPosition++;
+        
+        // Aktualisiere den Text
+        updateLevel20BossText();
+        
+        // Prüfe, ob der gesamte Text getippt wurde
+        if (level20Boss.currentPosition >= text.length) {
+            // Boss besiegt
+            defeatLevel20Boss();
+        } else {
+            // Reduziere die Boss-Gesundheit
+            level20Boss.health = level20Boss.maxHealth - Math.floor((level20Boss.currentPosition / text.length) * level20Boss.maxHealth);
+            updateLevel20BossHealth();
+        }
+        
+        return true;
+    } else {
+        // Falsche Eingabe
+        addCombatLogEntry('damage', 'Falscher Buchstabe! Versuche es erneut.');
+        return true;
+    }
+}
+
 // Exportiere die Funktionen
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = {
@@ -559,13 +839,28 @@ if (typeof module !== 'undefined' && module.exports) {
         removeLevel15BossWord,
         updateLevel15BossHealth,
         defeatLevel15Boss,
-        initLevel19Boss,
-        spawnLevel19BossWord,
-        removeLevel19BossWord,
-        updateLevel19BossHealth,
-        defeatLevel19Boss,
         updateLevel15Boss,
-        updateLevel19Boss,
-        updateLevel15BossWords
+        updateLevel15BossWords,
+        initLevel20Boss,
+        updateLevel20BossText,
+        updateLevel20BossHealth,
+        defeatLevel20Boss,
+        updateLevel20Boss,
+        processLevel20BossInput
     };
+} else {
+    // Exportiere die Funktionen für den Browser
+    window.initLevel15Boss = initLevel15Boss;
+    window.spawnLevel15BossWord = spawnLevel15BossWord;
+    window.removeLevel15BossWord = removeLevel15BossWord;
+    window.updateLevel15BossHealth = updateLevel15BossHealth;
+    window.defeatLevel15Boss = defeatLevel15Boss;
+    window.updateLevel15Boss = updateLevel15Boss;
+    window.updateLevel15BossWords = updateLevel15BossWords;
+    window.initLevel20Boss = initLevel20Boss;
+    window.updateLevel20BossText = updateLevel20BossText;
+    window.updateLevel20BossHealth = updateLevel20BossHealth;
+    window.defeatLevel20Boss = defeatLevel20Boss;
+    window.updateLevel20Boss = updateLevel20Boss;
+    window.processLevel20BossInput = processLevel20BossInput;
 } 

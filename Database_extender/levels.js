@@ -1,130 +1,186 @@
 // Database_extender/levels.js
-// Erweiterung der Levels 11-19 für RoughType
+// Erweiterte Level-Definitionen für Level 11-20
 
-// Erweiterte Gegnertypen für Level 11-19
+// Erweiterte Gegnertypen für Level 11-20
 const extendedEnemyTypes = {
-    11: [
-        { name: 'Necromancer', health: 22, goldReward: 6, icon: '🧙‍♂️' },
-        { name: 'Banshee', health: 22, goldReward: 6, icon: '👻' },
-        { name: 'Wraith', health: 22, goldReward: 6, icon: '👤' },
-        { name: 'Specter', health: 22, goldReward: 6, icon: '👻' },
-        { name: 'Revenant', health: 22, goldReward: 6, icon: '💀' }
-    ],
-    12: [
-        { name: 'Golem', health: 24, goldReward: 6, icon: '🗿' },
-        { name: 'Titan', health: 24, goldReward: 6, icon: '🏛️' },
-        { name: 'Colossus', health: 24, goldReward: 6, icon: '🗽' },
-        { name: 'Juggernaut', health: 24, goldReward: 6, icon: '🛡️' },
-        { name: 'Sentinel', health: 24, goldReward: 6, icon: '🤖' }
-    ],
-    13: [
-        { name: 'Sorcerer', health: 26, goldReward: 7, icon: '🧙' },
-        { name: 'Warlock', health: 26, goldReward: 7, icon: '🧙‍♂️' },
-        { name: 'Enchanter', health: 26, goldReward: 7, icon: '✨' },
-        { name: 'Conjurer', health: 26, goldReward: 7, icon: '🔮' },
-        { name: 'Illusionist', health: 26, goldReward: 7, icon: '🎭' }
-    ],
-    14: [
-        { name: 'Assassin', health: 28, goldReward: 7, icon: '🗡️' },
-        { name: 'Rogue', health: 28, goldReward: 7, icon: '👤' },
-        { name: 'Ninja', health: 28, goldReward: 7, icon: '🥷' },
-        { name: 'Thief', health: 28, goldReward: 7, icon: '💰' },
-        { name: 'Shadow', health: 28, goldReward: 7, icon: '🌑' }
-    ],
-    15: [
-        { name: 'Paladin', health: 30, goldReward: 8, icon: '🛡️' },
-        { name: 'Crusader', health: 30, goldReward: 8, icon: '⚔️' },
-        { name: 'Templar', health: 30, goldReward: 8, icon: '✝️' },
-        { name: 'Guardian', health: 30, goldReward: 8, icon: '🛡️' },
-        { name: 'Defender', health: 30, goldReward: 8, icon: '🏰' }
-    ],
-    16: [
-        { name: 'Berserker', health: 32, goldReward: 8, icon: '⚔️' },
-        { name: 'Barbarian', health: 32, goldReward: 8, icon: '🪓' },
-        { name: 'Marauder', health: 32, goldReward: 8, icon: '💢' },
-        { name: 'Gladiator', health: 32, goldReward: 8, icon: '🏆' },
-        { name: 'Warlord', health: 32, goldReward: 8, icon: '👑' }
-    ],
-    17: [
-        { name: 'Archangel', health: 34, goldReward: 9, icon: '👼' },
-        { name: 'Seraphim', health: 34, goldReward: 9, icon: '🔆' },
-        { name: 'Cherubim', health: 34, goldReward: 9, icon: '✨' },
-        { name: 'Dominion', health: 34, goldReward: 9, icon: '👑' },
-        { name: 'Virtue', health: 34, goldReward: 9, icon: '🌟' }
-    ],
-    18: [
-        { name: 'Archdemon', health: 36, goldReward: 9, icon: '👿' },
-        { name: 'Fiend', health: 36, goldReward: 9, icon: '🔥' },
-        { name: 'Hellion', health: 36, goldReward: 9, icon: '🔥' },
-        { name: 'Abyssal', health: 36, goldReward: 9, icon: '🌑' },
-        { name: 'Infernal', health: 36, goldReward: 9, icon: '🔥' }
-    ],
-    19: [
-        { name: 'Demigod', health: 38, goldReward: 10, icon: '🌠' },
-        { name: 'Ascendant', health: 38, goldReward: 10, icon: '⬆️' },
-        { name: 'Celestial', health: 38, goldReward: 10, icon: '🌌' },
-        { name: 'Transcendent', health: 38, goldReward: 10, icon: '✨' },
-        { name: 'Ethereal', health: 38, goldReward: 10, icon: '🌈' }
-    ]
+    // Level 11: Schnelle Gegner
+    11: {
+        name: 'SWIFT',
+        health: 1,
+        speed: 2.5,
+        gold: 15,
+        color: '#8a2be2'
+    },
+    // Level 12: Starke Gegner
+    12: {
+        name: 'BRUTE',
+        health: 3,
+        speed: 1.2,
+        gold: 20,
+        color: '#32cd32'
+    },
+    // Level 13: Ausgewogene Gegner
+    13: {
+        name: 'BALANCED',
+        health: 2,
+        speed: 1.8,
+        gold: 25,
+        color: '#d2691e'
+    },
+    // Level 14: Schnelle, schwache Gegner
+    14: {
+        name: 'DASHER',
+        health: 1,
+        speed: 3.0,
+        gold: 30,
+        color: '#4169e1'
+    },
+    // Level 15: Normale Gegner vor dem Boss
+    15: {
+        name: 'TIMEKEEPER',
+        health: 2,
+        speed: 2.0,
+        gold: 35,
+        color: '#da70d6'
+    },
+    // Level 16: Starke, langsame Gegner
+    16: {
+        name: 'TANK',
+        health: 4,
+        speed: 1.0,
+        gold: 40,
+        color: '#ff4500'
+    },
+    // Level 17: Schnelle, mittelstarke Gegner
+    17: {
+        name: 'HUNTER',
+        health: 2,
+        speed: 2.5,
+        gold: 45,
+        color: '#ffff00'
+    },
+    // Level 18: Sehr starke Gegner
+    18: {
+        name: 'ELITE',
+        health: 5,
+        speed: 1.5,
+        gold: 50,
+        color: '#5f9ea0'
+    },
+    // Level 19: Ausgewogene, herausfordernde Gegner
+    19: {
+        name: 'CHALLENGER',
+        health: 3,
+        speed: 2.2,
+        gold: 55,
+        color: '#696969'
+    },
+    // Level 20: Normale Gegner vor dem Boss
+    20: {
+        name: 'SCRIBE',
+        health: 2,
+        speed: 2.0,
+        gold: 60,
+        color: '#000000'
+    }
 };
 
-// Erweiterte Boss-Definitionen
+// Erweiterte Bosse für Level 11-20
 const extendedBosses = {
-    30: {
+    // Level 11 Boss: ECHO
+    11: {
+        name: 'ECHO',
+        health: 12,
+        gold: 100,
+        special: 'repeat' // Wiederholt Worte
+    },
+    // Level 12 Boss: GOLIATH
+    12: {
+        name: 'GOLIATH',
+        health: 15,
+        gold: 120,
+        special: 'armor' // Reduziert Schaden
+    },
+    // Level 13 Boss: HYDRA
+    13: {
+        name: 'HYDRA',
+        health: 18,
+        gold: 140,
+        special: 'multiply' // Spawnt zusätzliche Gegner
+    },
+    // Level 14 Boss: PHANTOM
+    14: {
+        name: 'PHANTOM',
+        health: 20,
+        gold: 160,
+        special: 'invisible' // Worte werden zeitweise unsichtbar
+    },
+    // Level 15 Boss: CHRONOS (Spezieller Boss)
+    15: {
+        name: 'CHRONOS',
+        health: 10,
+        gold: 500,
+        special: 'timeshift' // Spezialfähigkeit: Zeitverschiebung
+    },
+    // Level 16 Boss: TITAN
+    16: {
+        name: 'TITAN',
+        health: 25,
+        gold: 200,
+        special: 'shockwave' // Erzeugt Schockwellen
+    },
+    // Level 17 Boss: PHOENIX
+    17: {
         name: 'PHOENIX',
-        health: 40,
-        goldReward: 60,
-        special: 'resurrect',
-        resurrectHealth: 10
+        health: 28,
+        gold: 220,
+        special: 'rebirth' // Kann wiederauferstehen
     },
-    40: {
-        name: 'KRAKEN',
-        health: 50,
-        goldReward: 80,
-        special: 'tentacles',
-        splitWords: ['TENTA', 'CLE', 'CRUSH', 'GRAB', 'SQUEEZE']
+    // Level 18 Boss: ORACLE
+    18: {
+        name: 'ORACLE',
+        health: 30,
+        gold: 240,
+        special: 'predict' // Sagt Worte voraus
     },
-    50: {
-        name: 'CHIMERA',
-        health: 60,
-        goldReward: 100,
-        special: 'multihead',
-        heads: ['LION', 'GOAT', 'SNAKE']
+    // Level 19 Boss: GUARDIAN
+    19: {
+        name: 'GUARDIAN',
+        health: 32,
+        gold: 260,
+        special: 'shield' // Schützt sich mit einem Schild
+    },
+    // Level 20 Boss: SCRIPTUM (Spezieller Boss)
+    20: {
+        name: 'SCRIPTUM',
+        health: 100,
+        gold: 1000,
+        special: 'text' // Spezialfähigkeit: Langer Text
     }
 };
 
 // Spezieller Boss für Level 15
 const level15Boss = {
     name: 'CHRONOS',
-    health: 15, // 15 Worte zum Besiegen
-    goldReward: 150,
-    maxProjectiles: 3, // Drei Worte gleichzeitig
+    health: 10, // 10 Worte zum Besiegen
+    goldReward: 500,
+    maxProjectiles: 5, // Fünf Worte gleichzeitig
     wordPool: [
-        'TIME', 'CLOCK', 'HOUR', 'MINUTE', 'SECOND', 
-        'PAST', 'FUTURE', 'PRESENT', 'WARP', 'FLOW',
-        'SPACE', 'CONTINUUM', 'RIFT', 'VORTEX', 'PORTAL',
-        'DIMENSION', 'REALITY', 'PARADOX', 'ETERNAL', 'INFINITY'
+        'ZEIT', 'PORTAL', 'CHRONOS', 'STUNDE', 'MINUTE', 'SEKUNDE', 'UHRWERK', 'PENDEL', 'SANDUHR', 'EWIGKEIT', 'MOMENT', 'PRESENT', 'PAST', 'FUTURE', 'RIFT'
     ],
     special: 'timeshift', // Spezialfähigkeit: Zeitverschiebung
     timeshiftInterval: 15000, // Alle 15 Sekunden (verlängert)
     speedMultiplier: 1.2 // Weiter reduzierter Geschwindigkeitsmultiplikator
 };
 
-// Spezieller Boss für Level 19
-const level19Boss = {
-    name: 'NEMESIS',
-    health: 20, // 20 Worte zum Besiegen
-    goldReward: 200,
-    maxProjectiles: 4, // Vier Worte gleichzeitig
-    wordPool: [
-        'VENGEANCE', 'RETRIBUTION', 'JUSTICE', 'BALANCE', 'KARMA', 
-        'FATE', 'DESTINY', 'DOOM', 'JUDGMENT', 'RECKONING',
-        'PUNISHMENT', 'SENTENCE', 'VERDICT', 'TRIAL', 'EXECUTION',
-        'WRATH', 'FURY', 'ANGER', 'HATRED', 'MALICE'
-    ],
-    special: 'mirror', // Spezialfähigkeit: Spiegelt Worte
-    mirrorChance: 0.3, // 30% Chance, ein Wort zu spiegeln
-    damageReflect: 0.2 // 20% des Schadens wird reflektiert
+// Spezieller Boss für Level 20
+const level20Boss = {
+    name: 'SCRIPTUM',
+    health: 100, // 100 Zeichen zum Besiegen
+    goldReward: 1000,
+    text: `In einer Welt voller Tasten und Zeichen, wo Buchstaben tanzen und Wörter sich formen, begann die Reise eines Helden. Mit flinken Fingern und scharfem Verstand kämpfte er gegen die Mächte der Ungenauigkeit und Langsamkeit. Jeder Tastendruck ein Schlag, jedes Wort ein Sieg. Die Dunkelheit der Fehler versuchte ihn zu umhüllen, doch sein Wille war stärker. Durch Level um Level, Gegner um Gegner, stieg er auf, immer höher, immer schneller. Nun steht er vor der letzten Prüfung, dem ultimativen Test seiner Fähigkeiten. Kann er den Text bezwingen, bevor die Zeit abläuft? Kann er die Worte meistern, bevor sie ihn verschlingen? Das Schicksal der digitalen Welt liegt in seinen Händen, in jedem Buchstaben, den er tippt, in jedem Wort, das er vollendet. Die Zeit läuft, die Herausforderung wartet. Tippe, Held, tippe für dein Leben!`,
+    special: 'text', // Spezialfähigkeit: Langer Text
+    speed: 0.5 // Geschwindigkeit des Textes (Pixel pro Frame)
 };
 
 // Exportiere die Daten
@@ -133,6 +189,12 @@ if (typeof module !== 'undefined' && module.exports) {
         extendedEnemyTypes,
         extendedBosses,
         level15Boss,
-        level19Boss
+        level20Boss
     };
+} else {
+    // Exportiere die Daten für den Browser
+    window.extendedEnemyTypes = extendedEnemyTypes;
+    window.extendedBosses = extendedBosses;
+    window.level15Boss = level15Boss;
+    window.level20Boss = level20Boss;
 } 

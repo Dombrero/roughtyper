@@ -3,7 +3,7 @@
 
 // Funktion zum Laden der erweiterten Level-Daten
 function loadExtendedLevels() {
-    console.log('Lade erweiterte Level-Daten (11-19)...');
+    console.log('Lade erweiterte Level-Daten (11-20)...');
     
     // Erweiterte Gegnertypen zu den bestehenden hinzufügen
     Object.keys(extendedEnemyTypes).forEach(level => {
@@ -17,7 +17,7 @@ function loadExtendedLevels() {
     
     // Füge die speziellen Bosse zum gameState hinzu
     gameState.level15BossActive = false;
-    gameState.level19BossActive = false;
+    gameState.level20BossActive = false;
     
     console.log('Erweiterte Level-Daten erfolgreich geladen!');
 }
@@ -198,9 +198,9 @@ function extendGameLoop() {
             updateLevel15Boss();
         }
         
-        // Aktualisiere den Level 19 Boss, wenn er aktiv ist
-        if (gameState.level19BossActive) {
-            updateLevel19Boss(timestamp);
+        // Aktualisiere den Level 20 Boss, wenn er aktiv ist
+        if (gameState.level20BossActive) {
+            updateLevel20Boss();
         }
     };
     
@@ -219,11 +219,11 @@ function extendInitGame() {
         // Rufe die ursprüngliche initGame-Funktion auf
         originalInitGame();
         
-        // Prüfe, ob Level 15 oder 19 erreicht ist
+        // Prüfe, ob Level 15 oder 20 erreicht ist
         if (gameState.level === 15) {
             initLevel15Boss();
-        } else if (gameState.level === 19) {
-            initLevel19Boss();
+        } else if (gameState.level === 20) {
+            initLevel20Boss();
         }
     };
     
@@ -256,6 +256,27 @@ function extendInputHandling() {
             console.log('Menu-Befehl erkannt');
             // Rufe den ursprünglichen Handler auf, um zum Menü zurückzukehren
             originalInputHandler.call(this, e);
+            return;
+        }
+        
+        // Prüfe auf Level 20 Boss
+        if (gameState.level20BossActive && window.level20Boss) {
+            console.log('Level 20 Boss aktiv, prüfe Eingabe:', typed);
+            
+            // Verarbeite die Eingabe für den Level 20 Boss
+            // Hier verarbeiten wir jeden einzelnen Buchstaben
+            if (typed.length === 1) {
+                const handled = processLevel20BossInput(typed);
+                if (handled) {
+                    // Leere das Eingabefeld
+                    e.target.value = '';
+                    return; // Beende die Funktion, um doppelte Verarbeitung zu vermeiden
+                }
+            }
+            
+            // Wenn wir hier ankommen, wurde die Eingabe nicht verarbeitet
+            // Rufe den ursprünglichen Handler nicht auf, um doppelte Verarbeitung zu vermeiden
+            e.target.value = '';
             return;
         }
         
@@ -349,56 +370,6 @@ function extendInputHandling() {
             return;
         }
         
-        // Prüfe auf Level 19 Boss
-        if (gameState.level19BossActive) {
-            // Stelle sicher, dass level19Boss.activeWords existiert und ein Array ist
-            if (!level19Boss.activeWords || !Array.isArray(level19Boss.activeWords)) {
-                console.error('level19Boss.activeWords ist nicht definiert oder kein Array!');
-                level19Boss.activeWords = [];
-            }
-            
-            // Prüfe, ob ein Wort des Level 19 Bosses getroffen wurde
-            let targetWordIndex = -1;
-            
-            // Durchlaufe alle aktiven Wörter und prüfe auf exakte Übereinstimmung
-            for (let i = 0; i < level19Boss.activeWords.length; i++) {
-                const word = level19Boss.activeWords[i];
-                if (word && word.word && word.word.toLowerCase() === typed.toLowerCase()) {
-                    targetWordIndex = i;
-                    break;
-                }
-            }
-            
-            if (targetWordIndex !== -1) {
-                // Wort getroffen
-                const targetWord = level19Boss.activeWords[targetWordIndex];
-                
-                // Gespiegelte Worte geben mehr Punkte
-                if (targetWord.isMirrored) {
-                    addCombatLogEntry('hit', `Du hast das gespiegelte Wort "${targetWord.word}" getroffen! +2 Punkte!`);
-                    gameState.score += 2;
-                } else {
-                    addCombatLogEntry('hit', `Du hast "${targetWord.word}" getroffen!`);
-                }
-                
-                // Entferne das Wort
-                removeLevel19BossWord(targetWordIndex);
-                
-                // Reduziere die Boss-Gesundheit
-                level19Boss.health--;
-                updateLevel19BossHealth();
-                
-                // Prüfe, ob der Boss besiegt ist
-                if (level19Boss.health <= 0) {
-                    defeatLevel19Boss();
-                }
-                
-                // Leere das Eingabefeld
-                e.target.value = '';
-                return; // Beende die Funktion, um doppelte Verarbeitung zu vermeiden
-            }
-        }
-        
         // Wenn keine spezielle Verarbeitung stattgefunden hat, rufe den ursprünglichen Handler auf
         originalInputHandler.call(this, e);
     };
@@ -455,11 +426,11 @@ function extendLevelUp() {
         // Rufe die ursprüngliche levelUp-Funktion auf
         originalLevelUp();
         
-        // Prüfe, ob Level 15 oder 19 erreicht ist
+        // Prüfe, ob Level 15 oder 20 erreicht ist
         if (gameState.level === 15) {
             initLevel15Boss();
-        } else if (gameState.level === 19) {
-            initLevel19Boss();
+        } else if (gameState.level === 20) {
+            initLevel20Boss();
         }
     };
     
@@ -482,10 +453,10 @@ function extendGameMechanics() {
             initLevel15Boss();
         }
         
-        // Prüfe, ob der Spieler Level 19 erreicht hat
-        if (gameState.level === 19 && gameState.monstersKilled >= 10 && !gameState.level19BossActive && !gameState.bossActive) {
-            console.log('Level 19 Boss wird aktiviert...');
-            initLevel19Boss();
+        // Prüfe, ob der Spieler Level 20 erreicht hat
+        if (gameState.level === 20 && gameState.monstersKilled >= 10 && !gameState.level20BossActive && !gameState.bossActive) {
+            console.log('Level 20 Boss wird aktiviert...');
+            initLevel20Boss();
         }
     };
     
@@ -521,7 +492,7 @@ function loadDatabaseExtender() {
     
     // Füge eine Nachricht zum Combat Log hinzu
     if (typeof addCombatLogEntry === 'function') {
-        addCombatLogEntry('info', 'Erweiterte Level 11-19 wurden geladen!');
+        addCombatLogEntry('info', 'Erweiterte Level 11-20 wurden geladen!');
     }
 }
 
@@ -560,10 +531,10 @@ window.removeLevel15BossWord = removeLevel15BossWord;
 window.updateLevel15BossHealth = updateLevel15BossHealth;
 window.defeatLevel15Boss = defeatLevel15Boss;
 
-// Exportiere die Level 19 Boss-Funktionen
-window.initLevel19Boss = initLevel19Boss;
-window.updateLevel19Boss = updateLevel19Boss;
-window.spawnLevel19BossWord = spawnLevel19BossWord;
-window.removeLevel19BossWord = removeLevel19BossWord;
-window.updateLevel19BossHealth = updateLevel19BossHealth;
-window.defeatLevel19Boss = defeatLevel19Boss; 
+// Exportiere die Level 20 Boss-Funktionen
+window.initLevel20Boss = initLevel20Boss;
+window.updateLevel20Boss = updateLevel20Boss;
+window.updateLevel20BossText = updateLevel20BossText;
+window.updateLevel20BossHealth = updateLevel20BossHealth;
+window.defeatLevel20Boss = defeatLevel20Boss;
+window.processLevel20BossInput = processLevel20BossInput; 
