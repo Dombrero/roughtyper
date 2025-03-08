@@ -2913,7 +2913,7 @@ function updatePracticeScore() {
                     <div class="level-selection">
                         ${levelOptions}
                     </div>
-                    <div class="menu-hint">Type the level you want to select, or "menu" to go back</div>
+                    <div class="menu-hint">Type "level X" to select a level, or "menu" to go back</div>
                 </div>
             `;
             
@@ -2932,85 +2932,75 @@ function updatePracticeScore() {
                 }, 1000);
             }, 5000);
             
-            // Leere das Eingabefeld
-            const inputField = document.getElementById('gameInput');
-            inputField.value = '';
-            
-            // Entferne vorherige Event-Listener (falls vorhanden)
-            inputField.removeEventListener('input', handleLevelSelection);
-            
-            // Füge neuen Event-Listener hinzu
-            inputField.addEventListener('input', handleLevelSelection);
-            
-            // Fokussiere das Eingabefeld
-            inputField.focus();
-        }
-
-        // Funktion zum Verarbeiten der Level-Auswahl
-        function handleLevelSelection(event) {
-            const typed = event.target.value.trim().toLowerCase();
-            
-            // Wenn "menu" eingegeben wurde, zurück zum Hauptmenü
-            if (typed === 'menu') {
-                event.target.value = '';
-                document.getElementById('gameInput').removeEventListener('input', handleLevelSelection);
-                returnToMenu();
-                return;
-            }
-            
-            // Erstelle eine Liste der verfügbaren Level-Optionen
-            const maxSelectableLevel = Math.min(gameState.maxLevel, 10);
-            const levelOptions = [];
-            for (let i = 1; i <= maxSelectableLevel; i++) {
-                levelOptions.push(`level ${i}`);
-            }
-            
-            // Markiere die korrekt getippten Buchstaben in den Level-Optionen
+            // Füge Klick-Events zu den Level-Optionen hinzu
             const levelElements = document.querySelectorAll('.level-option');
-            
-            // Zähle, wie viele Optionen mit der Eingabe übereinstimmen
-            let matchCount = 0;
-            
             levelElements.forEach(option => {
-                const text = option.textContent.toLowerCase();
-                let html = '';
-                
-                // Prüfe, ob die Option mit der Eingabe beginnt
-                if (text.startsWith(typed)) {
-                    matchCount++;
-                    for(let i = 0; i < text.length; i++) {
-                        if (i < typed.length) {
-                            html += `<span class="correct">${text[i]}</span>`;
-                        } else {
-                            html += text[i];
-                        }
-                    }
-                } else {
-                    html = text; // Keine Übereinstimmung, zeige normalen Text
-                }
-                
-                option.innerHTML = html;
+                option.addEventListener('click', function() {
+                    const level = parseInt(this.getAttribute('data-level'));
+                    startGameAtLevel(level);
+                });
             });
             
-            // Wenn genau eine Option mit der Eingabe übereinstimmt und die Eingabe vollständig ist
-            const exactMatch = levelOptions.find(option => option === typed);
-            if (exactMatch) {
-                const selectedLevel = parseInt(exactMatch.replace('level ', ''));
+            // Leere und fokussiere das Eingabefeld
+            const inputField = document.getElementById('gameInput');
+            inputField.value = '';
+            inputField.focus();
+            
+            // Entferne alle vorherigen Event-Listener
+            const newInputField = inputField.cloneNode(true);
+            inputField.parentNode.replaceChild(newInputField, inputField);
+            
+            // Füge einen neuen Event-Listener hinzu
+            newInputField.addEventListener('input', function(event) {
+                const typed = event.target.value.trim().toLowerCase();
                 
-                // Entferne den Event-Listener
-                const inputField = document.getElementById('gameInput');
-                inputField.removeEventListener('input', handleLevelSelection);
+                // Wenn "menu" eingegeben wurde, zurück zum Hauptmenü
+                if (typed === 'menu') {
+                    event.target.value = '';
+                    returnToMenu();
+                    return;
+                }
                 
-                // Leere das Eingabefeld
-                inputField.value = '';
+                // Erstelle eine Liste der verfügbaren Level-Optionen
+                const levelOptions = [];
+                for (let i = 1; i <= maxSelectableLevel; i++) {
+                    levelOptions.push(`level ${i}`);
+                }
                 
-                // Starte das Spiel mit dem ausgewählten Level
-                startGameAtLevel(selectedLevel);
-            }
+                // Markiere die korrekt getippten Buchstaben in den Level-Optionen
+                const levelElements = document.querySelectorAll('.level-option');
+                levelElements.forEach(option => {
+                    const text = option.textContent.toLowerCase();
+                    let html = '';
+                    
+                    if (text.startsWith(typed)) {
+                        for(let i = 0; i < text.length; i++) {
+                            if (i < typed.length) {
+                                html += `<span class="correct">${text[i]}</span>`;
+                            } else {
+                                html += text[i];
+                            }
+                        }
+                    } else {
+                        html = text;
+                    }
+                    
+                    option.innerHTML = html;
+                });
+                
+                // Prüfe auf exakte Übereinstimmung
+                const exactMatch = levelOptions.find(option => option === typed);
+                if (exactMatch) {
+                    const selectedLevel = parseInt(exactMatch.replace('level ', ''));
+                    event.target.value = '';
+                    startGameAtLevel(selectedLevel);
+                }
+            });
         }
 
         // Funktion zum Starten des Spiels mit einem ausgewählten Level
         function startGameAtLevel(level) {
+            // Lade den Spielstand
             loadGameState();
             
             // Setze das Level und die entsprechenden Werte
