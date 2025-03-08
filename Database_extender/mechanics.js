@@ -9,6 +9,15 @@ function initLevel15Boss() {
     level15Boss.lastSpawnTime = 0;
     level15Boss.lastTimeshiftTime = 0;
 
+    // Entferne alle vorhandenen Gegner
+    for (let i = gameState.enemies.length - 1; i >= 0; i--) {
+        if (gameState.enemies[i].element) {
+            gameState.enemies[i].element.remove();
+        }
+    }
+    gameState.enemies = []; // Leere das Array
+    gameState.bossActive = true; // Setze den Boss-Status, um normale Gegner zu verhindern
+
     // Hole den Container
     const gameScene = document.getElementById('gameScene');
     const gameContainer = document.getElementById('gameContainer');
@@ -184,6 +193,7 @@ function updateLevel15BossHealth() {
 // Funktion zum Besiegen des Level 15 Bosses
 function defeatLevel15Boss() {
     gameState.level15BossActive = false;
+    gameState.bossActive = false; // Setze den Boss-Status zurück, um normale Gegner wieder zu erlauben
 
     // Entferne das Boss-Element
     if (level15Boss.element) {

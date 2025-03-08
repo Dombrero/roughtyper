@@ -195,10 +195,18 @@ function extendGameLoop() {
         
         // Füge die Logik für die speziellen Bosse hinzu
         if (gameState.level15BossActive) {
+            // Verhindere das Spawnen normaler Gegner während des Level 15 Bosskampfes
+            gameState.spawnTimer = 0; // Setze den Spawn-Timer zurück
+            
+            // Aktualisiere den Level 15 Boss
             updateLevel15Boss(timestamp);
         }
         
         if (gameState.level19BossActive) {
+            // Verhindere das Spawnen normaler Gegner während des Level 19 Bosskampfes
+            gameState.spawnTimer = 0; // Setze den Spawn-Timer zurück
+            
+            // Aktualisiere den Level 19 Boss
             updateLevel19Boss(timestamp);
         }
     };
@@ -311,6 +319,11 @@ function extendInputHandling() {
                 // Rufe den ursprünglichen Handler nicht auf, um doppelte Verarbeitung zu vermeiden
                 return;
             }
+            
+            // Wenn keine Übereinstimmung gefunden wurde, leere das Eingabefeld
+            // Dies verhindert, dass normale Gegner während des Bosskampfes getroffen werden
+            e.target.value = '';
+            return;
         }
         
         // Prüfe auf Level 19 Boss
@@ -348,6 +361,11 @@ function extendInputHandling() {
                 e.target.value = '';
                 return; // Beende die Funktion, um doppelte Verarbeitung zu vermeiden
             }
+            
+            // Wenn keine Übereinstimmung gefunden wurde, leere das Eingabefeld
+            // Dies verhindert, dass normale Gegner während des Bosskampfes getroffen werden
+            e.target.value = '';
+            return;
         }
         
         // Wenn keine spezielle Verarbeitung stattgefunden hat, rufe den ursprünglichen Handler auf
