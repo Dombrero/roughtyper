@@ -56,18 +56,35 @@ function spawnLevel15BossWord() {
 
     // Erstelle das Wort-Element
     const gameScene = document.getElementById('gameScene');
+    const gameContainer = document.getElementById('gameContainer');
     const wordElement = document.createElement('div');
     wordElement.className = 'enemy-word level15boss-word';
     wordElement.textContent = word;
-
+    
+    // Füge das Element zum DOM hinzu, um seine Größe zu messen
+    wordElement.style.position = 'absolute';
+    wordElement.style.visibility = 'hidden'; // Verstecke es zunächst
+    gameScene.appendChild(wordElement);
+    
+    // Messe die Größe des Wortelements
+    const wordRect = wordElement.getBoundingClientRect();
+    const wordWidth = wordRect.width;
+    
     // Positioniere das Wort beim Boss
     const bossRect = level15Boss.element.getBoundingClientRect();
-    const startX = bossRect.left + bossRect.width / 2;
+    const bossCenter = bossRect.left + bossRect.width / 2;
     
-    wordElement.style.position = 'absolute';
-    wordElement.style.left = `${startX}px`;
+    // Stelle sicher, dass das Wort vollständig im Spielfeld ist
+    const minX = wordWidth / 2; // Mindestabstand vom linken Rand
+    const maxX = gameContainer.offsetWidth - wordWidth / 2; // Maximalabstand vom linken Rand
+    
+    // Begrenze die X-Position, damit das Wort vollständig sichtbar ist
+    const startX = Math.max(minX, Math.min(maxX, bossCenter));
+    
+    // Mache das Wort sichtbar und positioniere es
+    wordElement.style.visibility = 'visible';
+    wordElement.style.left = `${startX - wordWidth / 2}px`; // Zentriere das Wort
     wordElement.style.top = `${bossRect.bottom + 10}px`;
-    gameScene.appendChild(wordElement);
 
     // Berechne die Richtung zum Spieler
     const playerElement = document.getElementById('player');
@@ -78,10 +95,11 @@ function spawnLevel15BossWord() {
     // Berechne den Winkel zum Spieler
     const deltaX = playerX - startX;
     const deltaY = playerY - (bossRect.bottom + 10);
+    const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
     const angle = Math.atan2(deltaY, deltaX);
     
-    // Berechne die Geschwindigkeitskomponenten
-    const baseSpeed = 0.5 + Math.random() * 0.3; // Reduzierte Basisgeschwindigkeit
+    // Berechne die Geschwindigkeitskomponenten (noch langsamer)
+    const baseSpeed = 0.3 + Math.random() * 0.2; // Stark reduzierte Basisgeschwindigkeit
     const speedX = Math.cos(angle) * baseSpeed;
     const speedY = Math.sin(angle) * baseSpeed;
 
@@ -89,10 +107,11 @@ function spawnLevel15BossWord() {
     level15Boss.activeWords.push({
         word: word,
         element: wordElement,
-        position: { x: startX, y: bossRect.bottom + 10 },
+        position: { x: startX - wordWidth / 2, y: bossRect.bottom + 10 },
         velocity: { x: speedX, y: speedY }, // Geschwindigkeitsvektor
         speed: baseSpeed, // Basisgeschwindigkeit für Timeshift
-        timeShifted: false
+        timeShifted: false,
+        width: wordWidth // Speichere die Breite des Wortes
     });
 
     // Versuche, ein weiteres Wort zu spawnen, wenn noch Platz ist
@@ -366,7 +385,15 @@ function updateLevel15Boss(timestamp) {
         }
         
         // Prüfe, ob das Wort den Spieler erreicht hat
-        if (word.position.y > gameState.playerPosition.y - 40) {
+        const playerElement = document.getElementById('player');
+        const playerRect = playerElement.getBoundingClientRect();
+        
+        // Verbesserte Kollisionserkennung mit dem Spieler
+        if (word.position.y + 20 > playerRect.top && // Wort ist unterhalb der Oberkante des Spielers
+            word.position.y < playerRect.bottom && // Wort ist oberhalb der Unterkante des Spielers
+            word.position.x + word.width > playerRect.left && // Rechte Kante des Wortes ist rechts von der linken Kante des Spielers
+            word.position.x < playerRect.right) { // Linke Kante des Wortes ist links von der rechten Kante des Spielers
+            
             // Spieler nimmt Schaden
             gameState.playerHealth -= 20;
             addCombatLogEntry('damage', `Du wurdest von "${word.word}" getroffen! -20 HP`);
@@ -382,14 +409,19 @@ function updateLevel15Boss(timestamp) {
             
             // Aktualisiere die Anzeige
             updateDisplay();
+            continue; // Überspringe den Rest der Schleife für dieses Wort
         }
         
         // Prüfe, ob das Wort außerhalb des Bildschirms ist
         const gameContainer = document.getElementById('gameContainer');
-        if (word.position.x < 0 || 
-            word.position.x > gameContainer.offsetWidth || 
-            word.position.y < 0 || 
-            word.position.y > gameContainer.offsetHeight) {
+        const containerRect = gameContainer.getBoundingClientRect();
+        
+        // Verbesserte Erkennung für Wörter außerhalb des Spielfelds
+        if (word.position.x + word.width < containerRect.left || // Wort ist links vom Spielfeld
+            word.position.x > containerRect.right || // Wort ist rechts vom Spielfeld
+            word.position.y + 30 < containerRect.top || // Wort ist oberhalb des Spielfelds
+            word.position.y > containerRect.bottom) { // Wort ist unterhalb des Spielfelds
+            
             // Entferne das Wort
             removeLevel15BossWord(i);
         }

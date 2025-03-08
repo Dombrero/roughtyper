@@ -106,8 +106,8 @@ const level15Boss = {
         'DIMENSION', 'REALITY', 'PARADOX', 'ETERNAL', 'INFINITY'
     ],
     special: 'timeshift', // Spezialfähigkeit: Zeitverschiebung
-    timeshiftInterval: 10000, // Alle 10 Sekunden
-    speedMultiplier: 1.3 // Reduzierter Geschwindigkeitsmultiplikator
+    timeshiftInterval: 15000, // Alle 15 Sekunden (verlängert)
+    speedMultiplier: 1.2 // Weiter reduzierter Geschwindigkeitsmultiplikator
 };
 
 // Spezieller Boss für Level 19
