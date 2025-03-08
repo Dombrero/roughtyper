@@ -100,6 +100,7 @@
             border-top: 2px solid var(--debug-border);
             padding: 10px;
             border-radius: 10px 10px 0 0;
+            display: none; /* Standardmäßig ausgeblendet */
         }
 
         #debugHeader {
@@ -1079,6 +1080,7 @@
             bossActive: false,
             materials: [], // Neues Array für Materialien
             level10BossActive: false, // Neuer Status für Level 10 Boss
+            debugMode: false, // Debug-Modus standardmäßig deaktiviert
         };
 
         // Liste möglicher Gegner nach Level mit Icons
@@ -2287,6 +2289,13 @@
         e.target.value = typed;
     }
     
+            // Prüfe auf Debug-Befehl
+            if (typed === '/debug') {
+                toggleDebugMode();
+                e.target.value = '';
+                return;
+            }
+            
             debugLog(`Input event fired. Value: "${typed}"`);
             debugLog(`Current screen: ${gameState.currentScreen}`);
             
@@ -2962,6 +2971,20 @@
                 // Aktualisiere das Inventar
                 showInventory();
             }
+
+        // Funktion zum Umschalten des Debug-Modus
+        function toggleDebugMode() {
+            gameState.debugMode = !gameState.debugMode;
+            const debugContainer = document.getElementById('debugContainer');
+            
+            if (gameState.debugMode) {
+                debugContainer.style.display = 'block';
+                debugLog('Debug-Modus aktiviert');
+            } else {
+                debugContainer.style.display = 'none';
+                debugLog('Debug-Modus deaktiviert');
+            }
+        }
     </script>
 </body>
 </html> 
