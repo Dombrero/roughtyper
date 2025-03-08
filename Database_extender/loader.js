@@ -244,7 +244,15 @@ function extendInputHandling() {
         // Füge die Logik für die speziellen Bosse hinzu
         const typed = validateInput(e.target.value);
         
+        // Wenn der Spieler nichts eingegeben hat, beende die Funktion
+        if (!typed || typed.length === 0) {
+            return;
+        }
+        
         if (gameState.level15BossActive) {
+            console.log('Level 15 Boss aktiv, prüfe Eingabe:', typed);
+            console.log('Aktive Wörter:', level15Boss.activeWords.map(w => w.word));
+            
             // Prüfe, ob ein Wort des Level 15 Bosses getroffen wurde
             const targetWordIndex = level15Boss.activeWords.findIndex(
                 word => word.word.toLowerCase() === typed.toLowerCase()
@@ -253,6 +261,7 @@ function extendInputHandling() {
             if (targetWordIndex !== -1) {
                 // Wort getroffen
                 const targetWord = level15Boss.activeWords[targetWordIndex];
+                console.log('Wort getroffen:', targetWord.word);
                 addCombatLogEntry('hit', `Du hast "${targetWord.word}" getroffen!`);
                 
                 // Entferne das Wort
@@ -269,6 +278,32 @@ function extendInputHandling() {
                 
                 // Leere das Eingabefeld
                 e.target.value = '';
+                return; // Beende die Funktion, um doppelte Verarbeitung zu vermeiden
+            }
+            
+            // Prüfe auch, ob das Wort mit einem der aktiven Wörter beginnt (für Teilübereinstimmungen)
+            for (let i = 0; i < level15Boss.activeWords.length; i++) {
+                const word = level15Boss.activeWords[i];
+                if (word.word.toLowerCase().startsWith(typed.toLowerCase()) && typed.length > 0) {
+                    console.log('Teilübereinstimmung gefunden:', typed, 'für Wort:', word.word);
+                    // Markiere das Wort visuell, um Feedback zu geben
+                    if (word.element) {
+                        // Erstelle HTML für die Markierung der korrekten Buchstaben
+                        let html = '';
+                        for (let j = 0; j < word.word.length; j++) {
+                            if (j < typed.length) {
+                                html += `<span style="color: #00ff00;">${word.word[j]}</span>`;
+                            } else {
+                                html += word.word[j];
+                            }
+                        }
+                        word.element.innerHTML = html;
+                    }
+                    return; // Beende die Funktion, um weitere Verarbeitung zu vermeiden
+                } else if (word.element) {
+                    // Setze das Wort zurück, wenn es nicht mehr übereinstimmt
+                    word.element.textContent = word.word;
+                }
             }
         }
         

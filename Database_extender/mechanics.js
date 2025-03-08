@@ -69,6 +69,7 @@ function spawnLevel15BossWord() {
     const wordElement = document.createElement('div');
     wordElement.className = 'enemy-word level15boss-word';
     wordElement.textContent = word;
+    wordElement.setAttribute('data-word', word); // Speichere das Wort als Attribut
     
     // Füge das Element zum DOM hinzu, um seine Größe zu messen
     wordElement.style.position = 'absolute';
@@ -127,7 +128,7 @@ function spawnLevel15BossWord() {
 
     // Füge das Wort zur Liste der aktiven Worte hinzu
     level15Boss.activeWords.push({
-        word: word,
+        word: word, // Speichere das Wort
         element: wordElement,
         position: { x: startX - wordWidth / 2, y: bossBottom + 10 },
         velocity: { x: speedX, y: speedY }, // Geschwindigkeitsvektor
