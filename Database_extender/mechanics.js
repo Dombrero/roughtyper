@@ -9,14 +9,20 @@ function initLevel15Boss() {
     level15Boss.lastSpawnTime = 0;
     level15Boss.lastTimeshiftTime = 0;
 
-    // Erstelle das Boss-Element
+    // Hole den Container
     const gameScene = document.getElementById('gameScene');
+    const gameContainer = document.getElementById('gameContainer');
+    const containerRect = gameContainer.getBoundingClientRect();
+    
+    // Erstelle das Boss-Element
     const bossElement = document.createElement('div');
     bossElement.className = 'enemy-entity level15boss';
     bossElement.innerHTML = `
         <div class="boss-icon">⏳</div>
         <div class="boss-name">CHRONOS</div>
     `;
+    
+    // Positioniere den Boss in der Mitte des oberen Bereichs
     bossElement.style.position = 'absolute';
     bossElement.style.top = '50px';
     bossElement.style.left = '50%';
@@ -54,9 +60,12 @@ function spawnLevel15BossWord() {
     const randomIndex = Math.floor(Math.random() * level15Boss.wordPool.length);
     const word = level15Boss.wordPool[randomIndex];
 
-    // Erstelle das Wort-Element
+    // Hole die Container-Elemente
     const gameScene = document.getElementById('gameScene');
     const gameContainer = document.getElementById('gameContainer');
+    const containerRect = gameContainer.getBoundingClientRect();
+    
+    // Erstelle das Wort-Element
     const wordElement = document.createElement('div');
     wordElement.className = 'enemy-word level15boss-word';
     wordElement.textContent = word;
@@ -70,31 +79,44 @@ function spawnLevel15BossWord() {
     const wordRect = wordElement.getBoundingClientRect();
     const wordWidth = wordRect.width;
     
-    // Positioniere das Wort beim Boss
-    const bossRect = level15Boss.element.getBoundingClientRect();
-    const bossCenter = bossRect.left + bossRect.width / 2;
+    // Hole die Position des Bosses relativ zum Container
+    const bossElement = level15Boss.element;
+    const bossRect = bossElement.getBoundingClientRect();
+    
+    // Berechne die Position des Bosses relativ zum Container
+    const containerLeft = containerRect.left;
+    const containerTop = containerRect.top;
+    const bossLeft = bossRect.left - containerLeft;
+    const bossCenter = bossLeft + bossRect.width / 2;
+    const bossBottom = bossRect.bottom - containerTop;
+    
+    // Berechne die Grenzen des Containers
+    const containerWidth = containerRect.width;
     
     // Stelle sicher, dass das Wort vollständig im Spielfeld ist
+    // Verwende relative Positionen zum Container
     const minX = wordWidth / 2; // Mindestabstand vom linken Rand
-    const maxX = gameContainer.offsetWidth - wordWidth / 2; // Maximalabstand vom linken Rand
+    const maxX = containerWidth - wordWidth / 2; // Maximalabstand vom linken Rand
     
     // Begrenze die X-Position, damit das Wort vollständig sichtbar ist
+    // Zentriere das Wort unter dem Boss, aber halte es im Container
     const startX = Math.max(minX, Math.min(maxX, bossCenter));
     
-    // Mache das Wort sichtbar und positioniere es
+    // Mache das Wort sichtbar und positioniere es relativ zum Container
     wordElement.style.visibility = 'visible';
     wordElement.style.left = `${startX - wordWidth / 2}px`; // Zentriere das Wort
-    wordElement.style.top = `${bossRect.bottom + 10}px`;
+    wordElement.style.top = `${bossBottom + 10}px`;
 
     // Berechne die Richtung zum Spieler
     const playerElement = document.getElementById('player');
     const playerRect = playerElement.getBoundingClientRect();
-    const playerX = playerRect.left + playerRect.width / 2;
-    const playerY = playerRect.top;
+    const playerLeft = playerRect.left - containerLeft;
+    const playerTop = playerRect.top - containerTop;
+    const playerCenter = playerLeft + playerRect.width / 2;
     
-    // Berechne den Winkel zum Spieler
-    const deltaX = playerX - startX;
-    const deltaY = playerY - (bossRect.bottom + 10);
+    // Berechne den Winkel zum Spieler mit relativen Koordinaten
+    const deltaX = playerCenter - startX;
+    const deltaY = playerTop - (bossBottom + 10);
     const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
     const angle = Math.atan2(deltaY, deltaX);
     
@@ -107,7 +129,7 @@ function spawnLevel15BossWord() {
     level15Boss.activeWords.push({
         word: word,
         element: wordElement,
-        position: { x: startX - wordWidth / 2, y: bossRect.bottom + 10 },
+        position: { x: startX - wordWidth / 2, y: bossBottom + 10 },
         velocity: { x: speedX, y: speedY }, // Geschwindigkeitsvektor
         speed: baseSpeed, // Basisgeschwindigkeit für Timeshift
         timeShifted: false,
@@ -384,15 +406,25 @@ function updateLevel15Boss(timestamp) {
             word.element.style.top = `${word.position.y}px`;
         }
         
-        // Prüfe, ob das Wort den Spieler erreicht hat
+        // Hole die Container- und Spieler-Elemente
+        const gameContainer = document.getElementById('gameContainer');
+        const containerRect = gameContainer.getBoundingClientRect();
         const playerElement = document.getElementById('player');
         const playerRect = playerElement.getBoundingClientRect();
         
-        // Verbesserte Kollisionserkennung mit dem Spieler
-        if (word.position.y + 20 > playerRect.top && // Wort ist unterhalb der Oberkante des Spielers
-            word.position.y < playerRect.bottom && // Wort ist oberhalb der Unterkante des Spielers
-            word.position.x + word.width > playerRect.left && // Rechte Kante des Wortes ist rechts von der linken Kante des Spielers
-            word.position.x < playerRect.right) { // Linke Kante des Wortes ist links von der rechten Kante des Spielers
+        // Berechne die Position des Spielers relativ zum Container
+        const containerLeft = containerRect.left;
+        const containerTop = containerRect.top;
+        const playerLeft = playerRect.left - containerLeft;
+        const playerRight = playerRect.right - containerLeft;
+        const playerTop = playerRect.top - containerTop;
+        const playerBottom = playerRect.bottom - containerTop;
+        
+        // Verbesserte Kollisionserkennung mit dem Spieler (mit relativen Koordinaten)
+        if (word.position.y + 20 > playerTop && // Wort ist unterhalb der Oberkante des Spielers
+            word.position.y < playerBottom && // Wort ist oberhalb der Unterkante des Spielers
+            word.position.x + word.width > playerLeft && // Rechte Kante des Wortes ist rechts von der linken Kante des Spielers
+            word.position.x < playerRight) { // Linke Kante des Wortes ist links von der rechten Kante des Spielers
             
             // Spieler nimmt Schaden
             gameState.playerHealth -= 20;
@@ -412,15 +444,14 @@ function updateLevel15Boss(timestamp) {
             continue; // Überspringe den Rest der Schleife für dieses Wort
         }
         
-        // Prüfe, ob das Wort außerhalb des Bildschirms ist
-        const gameContainer = document.getElementById('gameContainer');
-        const containerRect = gameContainer.getBoundingClientRect();
+        // Prüfe, ob das Wort außerhalb des Bildschirms ist (mit relativen Koordinaten)
+        const containerWidth = containerRect.width;
+        const containerHeight = containerRect.height;
         
-        // Verbesserte Erkennung für Wörter außerhalb des Spielfelds
-        if (word.position.x + word.width < containerRect.left || // Wort ist links vom Spielfeld
-            word.position.x > containerRect.right || // Wort ist rechts vom Spielfeld
-            word.position.y + 30 < containerRect.top || // Wort ist oberhalb des Spielfelds
-            word.position.y > containerRect.bottom) { // Wort ist unterhalb des Spielfelds
+        if (word.position.x + word.width < 0 || // Wort ist links vom Spielfeld
+            word.position.x > containerWidth || // Wort ist rechts vom Spielfeld
+            word.position.y + 30 < 0 || // Wort ist oberhalb des Spielfelds
+            word.position.y > containerHeight) { // Wort ist unterhalb des Spielfelds
             
             // Entferne das Wort
             removeLevel15BossWord(i);
