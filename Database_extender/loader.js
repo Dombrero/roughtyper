@@ -260,16 +260,8 @@ function extendInputHandling() {
         }
         
         // Prüfe auf Level 15 Boss
-        if (gameState.level15BossActive) {
+        if (gameState.level15BossActive && window.level15Boss) {
             console.log('Level 15 Boss aktiv, prüfe Eingabe:', typed);
-            
-            // Stelle sicher, dass level15Boss.activeWords existiert und ein Array ist
-            if (!level15Boss.activeWords || !Array.isArray(level15Boss.activeWords)) {
-                console.error('level15Boss.activeWords ist nicht definiert oder kein Array!');
-                level15Boss.activeWords = [];
-            }
-            
-            console.log('Aktive Wörter:', level15Boss.activeWords.map(w => w.word));
             
             // Prüfe, ob ein Wort des Level 15 Bosses getroffen wurde
             let targetWordIndex = -1;
@@ -307,12 +299,10 @@ function extendInputHandling() {
             }
             
             // Prüfe auch, ob das Wort mit einem der aktiven Wörter beginnt (für Teilübereinstimmungen)
-            let matchFound = false;
             for (let i = 0; i < level15Boss.activeWords.length; i++) {
                 const word = level15Boss.activeWords[i];
                 if (word && word.word && word.word.toLowerCase().startsWith(typed.toLowerCase()) && typed.length > 0) {
                     console.log('Teilübereinstimmung gefunden:', typed, 'für Wort:', word.word);
-                    matchFound = true;
                     
                     // Markiere das Wort visuell, um Feedback zu geben
                     if (word.element) {
@@ -327,16 +317,36 @@ function extendInputHandling() {
                         }
                         word.element.innerHTML = html;
                     }
+                    
+                    // Wenn die Eingabe vollständig ist, aber der Fall nicht übereinstimmt
+                    if (typed.length === word.word.length && typed.toLowerCase() === word.word.toLowerCase()) {
+                        console.log('Vollständige Übereinstimmung mit unterschiedlicher Groß-/Kleinschreibung:', typed, 'für Wort:', word.word);
+                        
+                        // Entferne das Wort
+                        removeLevel15BossWord(i);
+                        
+                        // Reduziere die Boss-Gesundheit
+                        level15Boss.health--;
+                        updateLevel15BossHealth();
+                        
+                        // Prüfe, ob der Boss besiegt ist
+                        if (level15Boss.health <= 0) {
+                            defeatLevel15Boss();
+                        }
+                        
+                        // Leere das Eingabefeld
+                        e.target.value = '';
+                        return; // Beende die Funktion, um doppelte Verarbeitung zu vermeiden
+                    }
                 } else if (word && word.element) {
                     // Setze das Wort zurück, wenn es nicht mehr übereinstimmt
                     word.element.textContent = word.word;
                 }
             }
             
-            if (matchFound) {
-                // Rufe den ursprünglichen Handler nicht auf, um doppelte Verarbeitung zu vermeiden
-                return;
-            }
+            // Wenn wir hier ankommen, wurde kein Wort vollständig getroffen
+            // Rufe den ursprünglichen Handler nicht auf, um doppelte Verarbeitung zu vermeiden
+            return;
         }
         
         // Prüfe auf Level 19 Boss
@@ -401,7 +411,7 @@ function extendInputHandling() {
             console.log('Enter-Taste gedrückt mit Eingabe:', typed);
             
             // Prüfe auf Level 15 Boss
-            if (gameState.level15BossActive && level15Boss.activeWords && level15Boss.activeWords.length > 0) {
+            if (gameState.level15BossActive && level15Boss && level15Boss.activeWords && level15Boss.activeWords.length > 0) {
                 // Prüfe, ob ein Wort des Level 15 Bosses getroffen wurde
                 for (let i = 0; i < level15Boss.activeWords.length; i++) {
                     const word = level15Boss.activeWords[i];
