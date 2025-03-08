@@ -1477,7 +1477,7 @@
             gameState.spawnTimer = 0;
             gameState.lastUpdate = 0;
             gameState.currentScreen = 'game';
-            gameState.monstersKilled = 0;
+            gameState.monstersKilled = 0; // Setze getötete Monster zurück
             gameState.bossActive = false;
             gameState.level10BossActive = false; // Neuer Status für Level 10 Boss
 
@@ -1493,11 +1493,11 @@
             if (gameState.level === 10) {
                 initLevel10Boss();
             } else {
-            spawnEnemy();
+                spawnEnemy();
             }
             
             updateDisplay();
-
+            
             // Entferne alten Hinweis falls vorhanden
             const oldHint = document.querySelector('.menu-hint');
             if (oldHint) {
@@ -1525,7 +1525,8 @@
             // Combat Log initialisieren
             const combatLog = document.getElementById('combatLog');
             if (combatLog) {
-                addCombatLogEntry('info', `Welcome back! You start at Level ${gameState.level}!`);
+                // Füge eine Nachricht hinzu, dass die Etage zurückgesetzt wurde
+                addCombatLogEntry('info', `Du betrittst Etage ${gameState.level}. Dein Fortschritt wurde zurückgesetzt.`);
                 addCombatLogEntry('info', 'Type "menu" to return to the main menu.');
                 
                 // Spezielle Nachricht für Level 10 Boss
