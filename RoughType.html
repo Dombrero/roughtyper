@@ -710,38 +710,51 @@
         /* Level-Auswahl Styling */
         .level-selection {
             display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
+            flex-direction: column;
+            align-items: stretch;
             gap: 10px;
             margin: 20px 0;
+            max-width: 600px;
+            margin: 0 auto;
         }
         
         .level-option {
-            background-color: #4CAF50;
-            color: white;
-            padding: 15px 25px;
+            background-color: transparent;
+            border: 1px solid #4CAF50;
+            color: var(--text-color);
+            padding: 10px;
             border-radius: 5px;
-            cursor: pointer;
             transition: all 0.3s;
             font-size: 18px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            text-align: center;
         }
         
         .level-option:hover {
-            background-color: #45a049;
+            background-color: rgba(76, 175, 80, 0.1);
             transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
         }
         
         .level-option[data-level="10"] {
+            border: 2px solid #ff9800;
+            font-weight: bold;
+            position: relative;
+        }
+        
+        .level-option[data-level="10"]::after {
+            content: "BOSS";
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
             background-color: #ff9800;
             color: white;
-            font-weight: bold;
-            border: 2px solid #e65100;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 12px;
         }
         
         .level-option[data-level="10"]:hover {
-            background-color: #f57c00;
+            background-color: rgba(255, 152, 0, 0.1);
         }
 
         /* Tutorial-Bereich im Hauptmenü */
@@ -2883,7 +2896,7 @@ function updatePracticeScore() {
             
             let levelOptions = '';
             for (let i = 1; i <= maxSelectableLevel; i++) {
-                levelOptions += `<div class="level-option" data-level="${i}">Level ${i}</div>`;
+                levelOptions += `<div class="menu-option level-option" data-level="${i}">level ${i}</div>`;
             }
             
             gameScene.innerHTML = `
@@ -2893,7 +2906,7 @@ function updatePracticeScore() {
                     <div class="level-selection">
                         ${levelOptions}
                     </div>
-                    <div class="menu-hint">Type the level number to select, or "menu" to go back</div>
+                    <div class="menu-hint">Type the level you want to select, or "menu" to go back</div>
                 </div>
             `;
             
@@ -2928,17 +2941,37 @@ function updatePracticeScore() {
                 return;
             }
             
-            // Prüfe, ob eine Zahl eingegeben wurde
-            if (/^[1-9]|10$/.test(typed)) {
-                const selectedLevel = parseInt(typed);
-                const maxSelectableLevel = Math.min(gameState.maxLevel, 10);
-                
-                // Prüfe, ob das ausgewählte Level gültig ist
-                if (selectedLevel >= 1 && selectedLevel <= maxSelectableLevel) {
-                    event.target.value = '';
-                    document.getElementById('gameInput').removeEventListener('input', handleLevelSelection);
-                    startGameAtLevel(selectedLevel);
+            // Erstelle eine Liste der verfügbaren Level-Optionen
+            const maxSelectableLevel = Math.min(gameState.maxLevel, 10);
+            const levelOptions = [];
+            for (let i = 1; i <= maxSelectableLevel; i++) {
+                levelOptions.push(`level ${i}`);
+            }
+            
+            // Markiere die korrekt getippten Buchstaben in den Level-Optionen
+            const levelElements = document.querySelectorAll('.level-option');
+            levelElements.forEach(option => {
+                const text = option.textContent.toLowerCase();
+                let html = '';
+                for(let i = 0; i < text.length; i++) {
+                    if(text.startsWith(typed) && i < typed.length) {
+                        html += `<span class="correct">${text[i]}</span>`;
+                    } else {
+                        html += text[i];
+                    }
                 }
+                option.innerHTML = html;
+            });
+            
+            // Finde die passende Level-Option
+            const matchingOption = levelOptions.find(option => option.startsWith(typed));
+            
+            // Wenn eine vollständige Option eingegeben wurde
+            if (matchingOption && typed === matchingOption) {
+                const selectedLevel = parseInt(matchingOption.replace('level ', ''));
+                event.target.value = '';
+                document.getElementById('gameInput').removeEventListener('input', handleLevelSelection);
+                startGameAtLevel(selectedLevel);
             }
         }
 
