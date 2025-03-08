@@ -238,24 +238,23 @@ function extendInputHandling() {
     
     // Überschreibe die Eingabeverarbeitung
     document.getElementById('typingInput').oninput = function(e) {
-        // Rufe den ursprünglichen Handler auf
-        originalInputHandler.call(this, e);
-        
-        // Füge die Logik für die speziellen Bosse hinzu
         const typed = validateInput(e.target.value);
         
         // Wenn der Spieler nichts eingegeben hat, beende die Funktion
         if (!typed || typed.length === 0) {
+            // Rufe den ursprünglichen Handler auf und beende
+            originalInputHandler.call(this, e);
             return;
         }
         
-        if (gameState.level15BossActive) {
+        // Prüfe zuerst auf Level 15 Boss
+        if (gameState.level15BossActive && level15Boss.activeWords && level15Boss.activeWords.length > 0) {
             console.log('Level 15 Boss aktiv, prüfe Eingabe:', typed);
             console.log('Aktive Wörter:', level15Boss.activeWords.map(w => w.word));
             
             // Prüfe, ob ein Wort des Level 15 Bosses getroffen wurde
             const targetWordIndex = level15Boss.activeWords.findIndex(
-                word => word.word.toLowerCase() === typed.toLowerCase()
+                word => word.word && word.word.toLowerCase() === typed.toLowerCase()
             );
             
             if (targetWordIndex !== -1) {
@@ -282,10 +281,13 @@ function extendInputHandling() {
             }
             
             // Prüfe auch, ob das Wort mit einem der aktiven Wörter beginnt (für Teilübereinstimmungen)
+            let matchFound = false;
             for (let i = 0; i < level15Boss.activeWords.length; i++) {
                 const word = level15Boss.activeWords[i];
-                if (word.word.toLowerCase().startsWith(typed.toLowerCase()) && typed.length > 0) {
+                if (word.word && word.word.toLowerCase().startsWith(typed.toLowerCase()) && typed.length > 0) {
                     console.log('Teilübereinstimmung gefunden:', typed, 'für Wort:', word.word);
+                    matchFound = true;
+                    
                     // Markiere das Wort visuell, um Feedback zu geben
                     if (word.element) {
                         // Erstelle HTML für die Markierung der korrekten Buchstaben
@@ -299,18 +301,23 @@ function extendInputHandling() {
                         }
                         word.element.innerHTML = html;
                     }
-                    return; // Beende die Funktion, um weitere Verarbeitung zu vermeiden
                 } else if (word.element) {
                     // Setze das Wort zurück, wenn es nicht mehr übereinstimmt
                     word.element.textContent = word.word;
                 }
             }
+            
+            if (matchFound) {
+                // Rufe den ursprünglichen Handler nicht auf, um doppelte Verarbeitung zu vermeiden
+                return;
+            }
         }
         
-        if (gameState.level19BossActive) {
+        // Prüfe auf Level 19 Boss
+        if (gameState.level19BossActive && level19Boss.activeWords && level19Boss.activeWords.length > 0) {
             // Prüfe, ob ein Wort des Level 19 Bosses getroffen wurde
             const targetWordIndex = level19Boss.activeWords.findIndex(
-                word => word.word.toLowerCase() === typed.toLowerCase()
+                word => word.word && word.word.toLowerCase() === typed.toLowerCase()
             );
             
             if (targetWordIndex !== -1) {
@@ -339,8 +346,12 @@ function extendInputHandling() {
                 
                 // Leere das Eingabefeld
                 e.target.value = '';
+                return; // Beende die Funktion, um doppelte Verarbeitung zu vermeiden
             }
         }
+        
+        // Wenn keine spezielle Verarbeitung stattgefunden hat, rufe den ursprünglichen Handler auf
+        originalInputHandler.call(this, e);
     };
     
     console.log('Eingabeverarbeitung erfolgreich erweitert!');

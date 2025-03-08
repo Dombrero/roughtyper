@@ -59,6 +59,8 @@ function spawnLevel15BossWord() {
     // Wähle ein zufälliges Wort aus dem Wortpool
     const randomIndex = Math.floor(Math.random() * level15Boss.wordPool.length);
     const word = level15Boss.wordPool[randomIndex];
+    
+    console.log('Spawne neues Wort für Level 15 Boss:', word);
 
     // Hole die Container-Elemente
     const gameScene = document.getElementById('gameScene');
@@ -126,8 +128,8 @@ function spawnLevel15BossWord() {
     const speedX = Math.cos(angle) * baseSpeed;
     const speedY = Math.sin(angle) * baseSpeed;
 
-    // Füge das Wort zur Liste der aktiven Worte hinzu
-    level15Boss.activeWords.push({
+    // Erstelle das Wortobjekt
+    const wordObj = {
         word: word, // Speichere das Wort
         element: wordElement,
         position: { x: startX - wordWidth / 2, y: bossBottom + 10 },
@@ -135,7 +137,13 @@ function spawnLevel15BossWord() {
         speed: baseSpeed, // Basisgeschwindigkeit für Timeshift
         timeShifted: false,
         width: wordWidth // Speichere die Breite des Wortes
-    });
+    };
+    
+    // Füge das Wort zur Liste der aktiven Worte hinzu
+    level15Boss.activeWords.push(wordObj);
+    
+    console.log('Wort zur Liste hinzugefügt:', wordObj);
+    console.log('Aktive Wörter:', level15Boss.activeWords.map(w => w.word));
 
     // Versuche, ein weiteres Wort zu spawnen, wenn noch Platz ist
     if (level15Boss.activeWords.length < level15Boss.maxProjectiles) {
@@ -145,11 +153,20 @@ function spawnLevel15BossWord() {
 
 // Funktion zum Entfernen eines Wortes des Level 15 Bosses
 function removeLevel15BossWord(index) {
+    if (index < 0 || index >= level15Boss.activeWords.length) {
+        console.error('Ungültiger Index beim Entfernen eines Level 15 Boss-Wortes:', index);
+        return;
+    }
+    
     const word = level15Boss.activeWords[index];
+    console.log('Entferne Wort:', word.word, 'an Index:', index);
+    
     if (word.element) {
         word.element.remove();
     }
+    
     level15Boss.activeWords.splice(index, 1);
+    console.log('Aktive Wörter nach Entfernen:', level15Boss.activeWords.map(w => w.word));
 }
 
 // Funktion zum Aktualisieren der Health Bar des Level 15 Bosses
