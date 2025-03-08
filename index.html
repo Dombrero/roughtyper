@@ -2509,10 +2509,76 @@ function saveGameState() {
 // Funktion zum Laden des Spielstands
 function loadGameState() {
     try {
-        // Lösche vorhandenen Spielstand
-        localStorage.removeItem('roughTypeGameState');
+        // Prüfe, ob ein Reset-Flag gesetzt ist
+        const resetDone = localStorage.getItem('roughTypeResetDone');
         
-        // Setze Spielstand auf Standardwerte zurück
+        if (!resetDone) {
+            // Einmaliger Reset: Lösche vorhandenen Spielstand
+            localStorage.removeItem('roughTypeGameState');
+            
+            // Setze Spielstand auf Standardwerte zurück
+            gameState.gold = 100;
+            gameState.level = 1;
+            gameState.maxLevel = 1;
+            gameState.defense = 0;
+            gameState.inventory = [];
+            gameState.playerHealth = 1000;
+            gameState.monstersKilled = 0;
+            gameState.score = 0;
+            gameState.materials = [];
+            
+            // Setze das Reset-Flag, damit der Reset nicht wieder durchgeführt wird
+            localStorage.setItem('roughTypeResetDone', 'true');
+            
+            debugLog('Neues Spiel gestartet (einmaliger Reset)');
+        } else {
+            // Normales Laden des Spielstands
+            const savedData = localStorage.getItem('roughTypeGameState');
+            if (savedData) {
+                const data = JSON.parse(savedData);
+                gameState.gold = data.gold || 100;
+                gameState.level = data.level || 1;
+                gameState.maxLevel = data.maxLevel || 1;
+                gameState.defense = data.defense || 0;
+                gameState.inventory = data.inventory || [];
+                gameState.playerHealth = data.playerHealth || 1000;
+                gameState.monstersKilled = data.monstersKilled || 0;
+                gameState.score = data.score || 0;
+                gameState.materials = data.materials || [];
+                
+                // Stelle ausgerüstete Items wieder her
+                gameState.inventory.forEach(item => {
+                    if (item.type === 'equipment' && item.equipped) {
+                        if (item.name === 'shield') {
+                            gameState.defense = Math.max(gameState.defense, 5);
+                        }
+                    }
+                });
+                
+                debugLog('Spielstand erfolgreich geladen');
+            } else {
+                // Kein Spielstand vorhanden, starte neues Spiel
+                gameState.gold = 100;
+                gameState.level = 1;
+                gameState.maxLevel = 1;
+                gameState.defense = 0;
+                gameState.inventory = [];
+                gameState.playerHealth = 1000;
+                gameState.monstersKilled = 0;
+                gameState.score = 0;
+                gameState.materials = [];
+                
+                debugLog('Neues Spiel gestartet (kein Spielstand vorhanden)');
+            }
+        }
+        
+        // Aktualisiere die Anzeige
+        updateDisplay();
+    } catch (error) {
+        debugLog('Fehler beim Laden des Spielstands: ' + error.message);
+        alert('Fehler beim Laden des Spielstands!');
+        
+        // Setze auf Standardwerte zurück bei Fehler
         gameState.gold = 100;
         gameState.level = 1;
         gameState.maxLevel = 1;
@@ -2523,13 +2589,7 @@ function loadGameState() {
         gameState.score = 0;
         gameState.materials = [];
         
-        debugLog('Neues Spiel gestartet');
-        
-        // Aktualisiere die Anzeige
         updateDisplay();
-    } catch (error) {
-        debugLog('Fehler beim Zurücksetzen des Spielstands: ' + error.message);
-        alert('Fehler beim Zurücksetzen des Spielstands!');
     }
 }
 
@@ -2540,7 +2600,6 @@ function resetGameState() {
     gameState.score = 0;
     gameState.enemies = [];
     gameState.inventory = [];
-    gameState.gold = 100;
     gameState.defense = 0;
     gameState.level = 1;
     gameState.maxLevel = 1;
