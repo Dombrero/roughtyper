@@ -3,17 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RoughType - Roguelike Typing Game</title>
-    
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-    
-    <!-- Auth Module -->
-    <script src="auth.js"></script>
-    <link rel="stylesheet" href="auth.css">
-    
+    <title>RoughType</title>
     <style>
         :root {
             --bg-color: #ffffff;
@@ -2493,33 +2483,63 @@ function addMaterial(material) {
 
 // Funktion zum Speichern des Spielstands
 function saveGameState() {
-    localStorage.setItem('roughTypeGameState', JSON.stringify(gameState));
-    
-    // If user is logged in, also save to Firebase
-    if (window.RoughTypeAuth && window.RoughTypeAuth.isLoggedIn()) {
-        window.RoughTypeAuth.saveGame(gameState);
+    const saveData = {
+        gold: gameState.gold,
+        level: gameState.level,
+        maxLevel: gameState.maxLevel,
+        defense: gameState.defense,
+        inventory: gameState.inventory.map(item => ({
+            ...item,
+            element: null // DOM-Elemente nicht speichern
+        })),
+        playerHealth: gameState.playerHealth,
+        monstersKilled: gameState.monstersKilled,
+        score: gameState.score,
+        materials: gameState.materials
+    };
+    try {
+        localStorage.setItem('roughTypeGameState', JSON.stringify(saveData));
+        debugLog('Spielstand erfolgreich gespeichert');
+    } catch (error) {
+        debugLog('Fehler beim Speichern des Spielstands: ' + error.message);
+        alert('Fehler beim Speichern des Spielstands!');
     }
 }
 
 // Funktion zum Laden des Spielstands
 function loadGameState() {
     try {
-        const savedState = localStorage.getItem('roughTypeGameState');
-        if (savedState) {
-            const parsedState = JSON.parse(savedState);
+        const savedData = localStorage.getItem('roughTypeGameState');
+        if (savedData) {
+            const data = JSON.parse(savedData);
+            gameState.gold = data.gold || 100;
+            gameState.level = data.level || 1;
+            gameState.maxLevel = data.maxLevel || 1;
+            gameState.defense = data.defense || 0;
+            gameState.inventory = data.inventory || [];
+            gameState.playerHealth = data.playerHealth || 1000;
+            gameState.monstersKilled = data.monstersKilled || 0;
+            gameState.score = data.score || 0;
+            gameState.materials = data.materials || [];
             
-            // Merge saved state with current state
-            Object.assign(gameState, parsedState);
+            // Stelle ausgerüstete Items wieder her
+            gameState.inventory.forEach(item => {
+                if (item.type === 'equipment' && item.equipped) {
+                    if (item.name === 'shield') {
+                        gameState.defense = Math.max(gameState.defense, 5);
+                    }
+                }
+            });
             
-            // Update display
+            // Aktualisiere die Sidebar nach dem Laden
             updateDisplay();
             
-            addToCombatLog('Lokaler Spielstand geladen!');
             debugLog('Spielstand erfolgreich geladen');
         }
     } catch (error) {
         debugLog('Fehler beim Laden des Spielstands: ' + error.message);
-        alert('Fehler beim Laden des Spielstands!');
+        alert('Fehler beim Laden des Spielstands! Starte neues Spiel...');
+        resetGameState();
     }
 }
 
@@ -2756,35 +2776,6 @@ function updatePracticeScore() {
             
             requestAnimationFrame(animateProjectile);
         }
-
-        function loadGame() {
-            const savedState = localStorage.getItem('roughTypeGameState');
-            if (savedState) {
-                const parsedState = JSON.parse(savedState);
-                
-                // Merge saved state with current state
-                Object.assign(gameState, parsedState);
-                
-                // Update display
-                updateDisplay();
-                
-                addToCombatLog('Spiel geladen!');
-            }
-        }
-
-        // Listen for user game data loaded from Firebase
-        document.addEventListener('userGameDataLoaded', (event) => {
-            if (event.detail && event.detail.gameState) {
-                // Merge Firebase state with current state
-                Object.assign(gameState, event.detail.gameState);
-                
-                // Update display
-                updateDisplay();
-                
-                addToCombatLog('Online-Spielstand geladen!');
-                debugLog('Online-Spielstand erfolgreich geladen');
-            }
-        });
     </script>
 </body>
 </html> 

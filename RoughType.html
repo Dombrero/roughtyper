@@ -1404,25 +1404,25 @@
                 // Normale Gegner-Logik
                 for (let i = gameState.enemies.length - 1; i >= 0; i--) {
                     const enemy = gameState.enemies[i];
-                    enemy.update(deltaTime);
-                    
-                    // Prüfen ob Gegner den Spieler erreicht hat
-                    if (enemy.y > gameState.playerPosition.y - 40) {
-                        gameState.playerHealth -= 10;
+                enemy.update(deltaTime);
+                
+                // Prüfen ob Gegner den Spieler erreicht hat
+                if (enemy.y > gameState.playerPosition.y - 40) {
+                    gameState.playerHealth -= 10;
                         removeEnemy(i);
-                        if (gameState.playerHealth <= 0) {
-                            gameOver();
-                            return;
-                        }
-                        updateDisplay();
+                    if (gameState.playerHealth <= 0) {
+                        gameOver();
+                        return;
                     }
+                    updateDisplay();
+                }
                 }
 
-                // Neue Gegner spawnen
-                gameState.spawnTimer += deltaTime;
+            // Neue Gegner spawnen
+            gameState.spawnTimer += deltaTime;
                 if (gameState.spawnTimer > 3000 && gameState.enemies.length < 10) { // Maximal 10 Gegner gleichzeitig
-                    spawnEnemy();
-                    gameState.spawnTimer = 0;
+                spawnEnemy();
+                gameState.spawnTimer = 0;
                 }
             }
 
@@ -1465,7 +1465,7 @@
             if (gameState.level === 10) {
                 initLevel10Boss();
             } else {
-                spawnEnemy();
+            spawnEnemy();
             }
             
             updateDisplay();
@@ -1691,7 +1691,7 @@
                     const boss = bosses[bossLevel];
                     gameState.bossActive = true;
                     const enemy = new Enemy(boss.name, boss.health, boss.goldReward, '👑', boss.special);
-                    const element = enemy.createDOMElement();
+            const element = enemy.createDOMElement();
                     document.getElementById('gameScene').appendChild(element);
                     enemy.element = element;
                     gameState.enemies.push(enemy);
@@ -2351,34 +2351,34 @@ function validateInput(input) {
                     }
                 } else {
                     // Normale Gegner-Logik
-                    const targetEnemyIndex = gameState.enemies.findIndex(
-                        enemy => enemy.word.startsWith(typed)
-                    );
+                const targetEnemyIndex = gameState.enemies.findIndex(
+                    enemy => enemy.word.startsWith(typed)
+                );
 
-                    if (targetEnemyIndex !== -1) {
-                        const targetEnemy = gameState.enemies[targetEnemyIndex];
-                        debugLog(`Found target enemy: ${targetEnemy.word}`);
-                        
-                        // Aktualisiere die Wortanzeige mit farbiger Markierung
-                        const wordElement = targetEnemy.element.querySelector('.enemy-word');
-                        let wordDisplay = '';
-                        for(let i = 0; i < targetEnemy.word.length; i++) {
-                            if(i < typed.length) {
-                                wordDisplay += `<span class="correct">${targetEnemy.word[i]}</span>`;
-                            } else {
-                                wordDisplay += targetEnemy.word[i];
-                            }
+                if (targetEnemyIndex !== -1) {
+                    const targetEnemy = gameState.enemies[targetEnemyIndex];
+                    debugLog(`Found target enemy: ${targetEnemy.word}`);
+                    
+                    // Aktualisiere die Wortanzeige mit farbiger Markierung
+                    const wordElement = targetEnemy.element.querySelector('.enemy-word');
+                    let wordDisplay = '';
+                    for(let i = 0; i < targetEnemy.word.length; i++) {
+                        if(i < typed.length) {
+                            wordDisplay += `<span class="correct">${targetEnemy.word[i]}</span>`;
+                        } else {
+                            wordDisplay += targetEnemy.word[i];
                         }
-                        wordElement.innerHTML = wordDisplay;
+                    }
+                    wordElement.innerHTML = wordDisplay;
 
-                        // Wenn das Wort komplett ist
-                        if (typed === targetEnemy.word) {
-                            debugLog('Enemy defeated!');
-                            gameState.score += targetEnemy.word.length;
-                            if (targetEnemy.goldReward > 0) {
-                                gameState.gold += targetEnemy.goldReward;
-                                debugLog(`Earned ${targetEnemy.goldReward} gold!`);
-                            }
+                    // Wenn das Wort komplett ist
+                    if (typed === targetEnemy.word) {
+                        debugLog('Enemy defeated!');
+                        gameState.score += targetEnemy.word.length;
+                        if (targetEnemy.goldReward > 0) {
+                            gameState.gold += targetEnemy.goldReward;
+                            debugLog(`Earned ${targetEnemy.goldReward} gold!`);
+                        }
                     
                             // Füge Materialien-Drop hinzu
                             const droppedItem = targetEnemy.dropLoot();
@@ -2395,21 +2395,21 @@ function validateInput(input) {
                                 gameState.bossActive = false;
                             }
                             
-                            removeEnemy(targetEnemyIndex);
-                            e.target.value = '';
-                        } else {
+                        removeEnemy(targetEnemyIndex);
+                        e.target.value = '';
+                    } else {
                             // Schussanimation für jeden korrekten Buchstaben
                             createProjectile(targetEnemy);
                             
                             // Wenn der Gegner durch den Schaden stirbt
                             const isDead = targetEnemy.health <= 1;
-                            if (isDead) {
-                                debugLog('Enemy killed by damage!');
-                                gameState.score += targetEnemy.word.length;
-                                if (targetEnemy.goldReward > 0) {
-                                    gameState.gold += targetEnemy.goldReward;
-                                    debugLog(`Earned ${targetEnemy.goldReward} gold!`);
-                                }
+                        if (isDead) {
+                            debugLog('Enemy killed by damage!');
+                            gameState.score += targetEnemy.word.length;
+                            if (targetEnemy.goldReward > 0) {
+                                gameState.gold += targetEnemy.goldReward;
+                                debugLog(`Earned ${targetEnemy.goldReward} gold!`);
+                            }
                         
                                 // Füge Materialien-Drop hinzu
                                 const droppedItem = targetEnemy.dropLoot();
@@ -2428,31 +2428,31 @@ function validateInput(input) {
                                 
                                 // Kurze Verzögerung vor dem Entfernen des Gegners für bessere visuelle Wirkung
                                 setTimeout(() => {
-                                    removeEnemy(targetEnemyIndex);
-                                    e.target.value = '';
+                            removeEnemy(targetEnemyIndex);
+                            e.target.value = '';
                                 }, 300);
-                            }
                         }
-                        updateDisplay();
-                    } else if (typed.length > 0) {
-                        debugLog('No matching enemy or command found, resetting input');
+                    }
+                    updateDisplay();
+                } else if (typed.length > 0) {
+                    debugLog('No matching enemy or command found, resetting input');
                         // Falsche Eingabe - Schaden direkt mit Verteidigung reduzieren
                         const baseDamage = 10; // Basis-Schaden bei Tippfehler
                         const damage = Math.max(1, baseDamage - gameState.defense); // Verteidigung reduziert den Schaden direkt, mindestens 1 Schaden
-                        gameState.playerHealth -= damage;
-                        debugLog(`Taking ${damage} damage (Reduced by defense: ${gameState.defense})`);
-                        e.target.value = '';
-                        
-                        // Setze alle Wortanzeigen zurück
-                        gameState.enemies.forEach(enemy => {
-                            const wordElement = enemy.element.querySelector('.enemy-word');
-                            wordElement.textContent = enemy.word;
-                        });
-                        
-                        if (gameState.playerHealth <= 0) {
-                            gameOver();
-                        }
-                        updateDisplay();
+                    gameState.playerHealth -= damage;
+                    debugLog(`Taking ${damage} damage (Reduced by defense: ${gameState.defense})`);
+                    e.target.value = '';
+                    
+                    // Setze alle Wortanzeigen zurück
+                    gameState.enemies.forEach(enemy => {
+                        const wordElement = enemy.element.querySelector('.enemy-word');
+                        wordElement.textContent = enemy.word;
+                    });
+                    
+                    if (gameState.playerHealth <= 0) {
+                        gameOver();
+                    }
+                    updateDisplay();
                     }
                 }
             }
