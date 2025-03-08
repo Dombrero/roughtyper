@@ -2953,21 +2953,28 @@ function updatePracticeScore() {
             levelElements.forEach(option => {
                 const text = option.textContent.toLowerCase();
                 let html = '';
-                for(let i = 0; i < text.length; i++) {
-                    if(text.startsWith(typed) && i < typed.length) {
-                        html += `<span class="correct">${text[i]}</span>`;
-                    } else {
-                        html += text[i];
+                
+                // Prüfe, ob die Option mit der Eingabe beginnt
+                if (text.startsWith(typed)) {
+                    for(let i = 0; i < text.length; i++) {
+                        if (i < typed.length) {
+                            html += `<span class="correct">${text[i]}</span>`;
+                        } else {
+                            html += text[i];
+                        }
                     }
+                } else {
+                    html = text; // Keine Übereinstimmung, zeige normalen Text
                 }
+                
                 option.innerHTML = html;
             });
             
             // Finde die passende Level-Option
-            const matchingOption = levelOptions.find(option => option.startsWith(typed));
+            const matchingOption = levelOptions.find(option => option === typed);
             
             // Wenn eine vollständige Option eingegeben wurde
-            if (matchingOption && typed === matchingOption) {
+            if (matchingOption) {
                 const selectedLevel = parseInt(matchingOption.replace('level ', ''));
                 event.target.value = '';
                 document.getElementById('gameInput').removeEventListener('input', handleLevelSelection);
