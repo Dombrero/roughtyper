@@ -6,12 +6,13 @@
 // Gehe zu https://console.firebase.google.com/ und erstelle ein neues Projekt
 // Aktiviere dann die Google-Authentifizierung und kopiere die Konfiguration hierher
 const firebaseConfig = {
-  apiKey: "DEIN_API_KEY_HIER_EINFÜGEN",           // Ersetze mit deinem Firebase API-Key
-  authDomain: "dein-projekt.firebaseapp.com",     // Ersetze mit deiner Firebase Domain
-  projectId: "dein-projekt",                      // Ersetze mit deiner Projekt-ID
-  storageBucket: "dein-projekt.appspot.com",
-  messagingSenderId: "deine-sender-id",
-  appId: "deine-app-id"
+  apiKey: "AIzaSyDkPIUVYsrayXI0FQKjd_BIDdC6je9Yxhc",
+  authDomain: "roughtyper-28419.firebaseapp.com",
+  projectId: "roughtyper-28419",
+  storageBucket: "roughtyper-28419.firebasestorage.app",
+  messagingSenderId: "254905635890",
+  appId: "1:254905635890:web:c300838fac7da37125d82b",
+  measurementId: "G-X8QMG8XGT4"
 };
 
 /*
