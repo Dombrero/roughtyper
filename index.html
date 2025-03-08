@@ -1105,6 +1105,7 @@
             bossActive: false,
             materials: [], // Neues Array für Materialien
             level10BossActive: false, // Neuer Status für Level 10 Boss
+            selectedLevel: null // Neue Variable für Level-Auswahl
         };
 
         // Liste möglicher Gegner nach Level mit Icons
@@ -1505,58 +1506,28 @@
             gameState.bossActive = false;
             gameState.level10BossActive = false; // Neuer Status für Level 10 Boss
 
+            // Verwende das ausgewählte Level, falls vorhanden
+            if (gameState.selectedLevel) {
+                gameState.level = gameState.selectedLevel;
+                gameState.score = (gameState.level - 1) * 100; // Gib Punkte für vorherige Level
+                gameState.gold = Math.max(gameState.gold, 100 + (gameState.level - 1) * 50); // Mehr Gold für höhere Level, aber nicht weniger als aktuell
+            }
+
             const gameScene = document.getElementById('gameScene');
             gameScene.innerHTML = `<div class="player" id="player"></div>`;
 
             if (gameState.gameLoop) {
                 cancelAnimationFrame(gameState.gameLoop);
             }
-            gameState.gameLoop = requestAnimationFrame(gameLoop);
 
-            // Wenn Level 10 erreicht ist, starte den Level 10 Boss
-            if (gameState.level === 10) {
-                initLevel10Boss();
-            } else {
-                spawnEnemy();
-            }
+            // Zeige einen Hinweis an, dass das Spiel auf Level X gestartet wurde
+            addCombatLog(`Starting game at Level ${gameState.level}!`);
             
+            // Aktualisiere die Anzeige
             updateDisplay();
-
-            // Entferne alten Hinweis falls vorhanden
-            const oldHint = document.querySelector('.menu-hint');
-            if (oldHint) {
-                oldHint.remove();
-            }
-
-            // Füge verbesserten Menü-Hinweis hinzu
-            const hint = document.createElement('div');
-            hint.className = 'menu-hint-improved';
-            hint.innerHTML = '⌨️ Type <strong>"menu"</strong> to return to the main menu';
             
-            // Hinweis nach 5 Sekunden ausblenden
-            setTimeout(() => {
-                hint.style.opacity = '0';
-                hint.style.transition = 'opacity 1s ease-out';
-                
-                // Nach dem Ausblenden entfernen
-                setTimeout(() => {
-                    hint.remove();
-                }, 1000);
-            }, 5000);
-            
-            document.body.appendChild(hint);
-
-            // Combat Log initialisieren
-            const combatLog = document.getElementById('combatLog');
-            if (combatLog) {
-                addCombatLogEntry('info', `Welcome back! You start at Level ${gameState.level}!`);
-                addCombatLogEntry('info', 'Type "menu" to return to the main menu.');
-                
-                // Spezielle Nachricht für Level 10 Boss
-                if (gameState.level === 10) {
-                    addCombatLogEntry('info', 'BOSS BATTLE! Defeat TYPEREX by typing all the words it throws at you!');
-                }
-            }
+            // Starte das Spiel
+            gameLoop();
         }
 
         // Level 10 Boss initialisieren
@@ -2562,7 +2533,8 @@ function saveGameState() {
         playerHealth: gameState.playerHealth,
         monstersKilled: gameState.monstersKilled,
         score: gameState.score,
-        materials: gameState.materials
+        materials: gameState.materials,
+        selectedLevel: gameState.selectedLevel // Speichere die Level-Auswahl
     };
     try {
         localStorage.setItem('roughTypeGameState', JSON.stringify(saveData));
@@ -2593,6 +2565,7 @@ function loadGameState() {
             gameState.monstersKilled = 0;
             gameState.score = 0;
             gameState.materials = [];
+            gameState.selectedLevel = null; // Keine Level-Auswahl
             
             // Setze das Reset-Flag, damit der Reset nicht wieder durchgeführt wird
             localStorage.setItem('roughTypeResetDone', 'true');
@@ -2612,6 +2585,7 @@ function loadGameState() {
                 gameState.monstersKilled = data.monstersKilled || 0;
                 gameState.score = data.score || 0;
                 gameState.materials = data.materials || [];
+                gameState.selectedLevel = data.selectedLevel || null; // Lade die Level-Auswahl
                 
                 // Stelle ausgerüstete Items wieder her
                 gameState.inventory.forEach(item => {
@@ -2634,6 +2608,7 @@ function loadGameState() {
                 gameState.monstersKilled = 0;
                 gameState.score = 0;
                 gameState.materials = [];
+                gameState.selectedLevel = null; // Keine Level-Auswahl
                 
                 debugLog('Neues Spiel gestartet (kein Spielstand vorhanden)');
             }
@@ -2655,6 +2630,7 @@ function loadGameState() {
         gameState.monstersKilled = 0;
         gameState.score = 0;
         gameState.materials = [];
+        gameState.selectedLevel = null; // Keine Level-Auswahl
         
         updateDisplay();
     }
@@ -2906,7 +2882,8 @@ function updatePracticeScore() {
             for (let i = 1; i <= maxSelectableLevel; i++) {
                 const specialClass = i === 10 ? 'boss-level' : '';
                 const bossLabel = i === 10 ? '<span class="boss-label">BOSS</span>' : '';
-                levelButtonsHTML += `<button class="level-button ${specialClass}" data-level="${i}">Level ${i} ${bossLabel}</button>`;
+                const activeClass = gameState.selectedLevel === i ? 'active-level' : '';
+                levelButtonsHTML += `<button class="level-button ${specialClass} ${activeClass}" data-level="${i}">Level ${i} ${bossLabel}</button>`;
             }
             
             // Erstelle das HTML für das Menü
@@ -2917,6 +2894,11 @@ function updatePracticeScore() {
                     
                     <div class="level-buttons-grid">
                         ${levelButtonsHTML}
+                    </div>
+                    
+                    <div class="level-select-info">
+                        <p>After selecting a level, you will return to the main menu.</p>
+                        <p>Your selection will be applied when you choose "enter dungeon".</p>
                     </div>
                     
                     <button class="back-button" id="backToMenuButton">Back to Menu</button>
@@ -2962,6 +2944,11 @@ function updatePracticeScore() {
                     font-weight: bold;
                 }
                 
+                .level-button.active-level {
+                    border: 3px solid #2196F3;
+                    box-shadow: 0 0 10px #2196F3;
+                }
+                
                 .boss-label {
                     position: absolute;
                     top: -10px;
@@ -2971,6 +2958,19 @@ function updatePracticeScore() {
                     font-size: 12px;
                     padding: 3px 6px;
                     border-radius: 10px;
+                }
+                
+                .level-select-info {
+                    margin: 20px 0;
+                    padding: 15px;
+                    background-color: rgba(33, 150, 243, 0.1);
+                    border-radius: 5px;
+                    border-left: 4px solid #2196F3;
+                }
+                
+                .level-select-info p {
+                    margin: 5px 0;
+                    color: var(--text-color);
                 }
                 
                 .back-button {
@@ -2996,7 +2996,22 @@ function updatePracticeScore() {
             levelButtons.forEach(button => {
                 button.addEventListener('click', function() {
                     const level = parseInt(this.getAttribute('data-level'));
-                    startGameAtLevel(level);
+                    
+                    // Speichere die Level-Auswahl im gameState
+                    gameState.selectedLevel = level;
+                    
+                    // Markiere den ausgewählten Button
+                    levelButtons.forEach(btn => btn.classList.remove('active-level'));
+                    this.classList.add('active-level');
+                    
+                    // Zeige eine Bestätigungsnachricht an
+                    alert(`Level ${level} selected! You will start at this level when entering the dungeon.`);
+                    
+                    // Speichere den Spielstand
+                    saveGameState();
+                    
+                    // Zurück zum Hauptmenü
+                    returnToMenu();
                 });
             });
             
@@ -3004,12 +3019,6 @@ function updatePracticeScore() {
             document.getElementById('backToMenuButton').addEventListener('click', function() {
                 returnToMenu();
             });
-            
-            // Leere das Eingabefeld, um Probleme zu vermeiden
-            const inputField = document.getElementById('gameInput');
-            if (inputField) {
-                inputField.value = '';
-            }
         }
 
         // Funktion zum Starten des Spiels mit einem ausgewählten Level
