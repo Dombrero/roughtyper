@@ -60,21 +60,38 @@ function spawnLevel15BossWord() {
     wordElement.className = 'enemy-word level15boss-word';
     wordElement.textContent = word;
 
-    // Positioniere das Wort zufällig oben
+    // Positioniere das Wort beim Boss
     const bossRect = level15Boss.element.getBoundingClientRect();
-    const startX = bossRect.left + bossRect.width / 2 - 50 + Math.random() * 100;
+    const startX = bossRect.left + bossRect.width / 2;
     
     wordElement.style.position = 'absolute';
     wordElement.style.left = `${startX}px`;
     wordElement.style.top = `${bossRect.bottom + 10}px`;
     gameScene.appendChild(wordElement);
 
+    // Berechne die Richtung zum Spieler
+    const playerElement = document.getElementById('player');
+    const playerRect = playerElement.getBoundingClientRect();
+    const playerX = playerRect.left + playerRect.width / 2;
+    const playerY = playerRect.top;
+    
+    // Berechne den Winkel zum Spieler
+    const deltaX = playerX - startX;
+    const deltaY = playerY - (bossRect.bottom + 10);
+    const angle = Math.atan2(deltaY, deltaX);
+    
+    // Berechne die Geschwindigkeitskomponenten
+    const baseSpeed = 0.5 + Math.random() * 0.3; // Reduzierte Basisgeschwindigkeit
+    const speedX = Math.cos(angle) * baseSpeed;
+    const speedY = Math.sin(angle) * baseSpeed;
+
     // Füge das Wort zur Liste der aktiven Worte hinzu
     level15Boss.activeWords.push({
         word: word,
         element: wordElement,
         position: { x: startX, y: bossRect.bottom + 10 },
-        speed: 1 + Math.random() * 0.5, // Zufällige Geschwindigkeit
+        velocity: { x: speedX, y: speedY }, // Geschwindigkeitsvektor
+        speed: baseSpeed, // Basisgeschwindigkeit für Timeshift
         timeShifted: false
     });
 
@@ -319,7 +336,9 @@ function updateLevel15Boss(timestamp) {
         
         level15Boss.activeWords.forEach(word => {
             if (!word.timeShifted) {
-                word.speed *= level15Boss.speedMultiplier;
+                // Erhöhe die Geschwindigkeit
+                word.velocity.x *= level15Boss.speedMultiplier;
+                word.velocity.y *= level15Boss.speedMultiplier;
                 word.timeShifted = true;
                 
                 // Visueller Effekt für Timeshift
@@ -336,9 +355,13 @@ function updateLevel15Boss(timestamp) {
     // Bewege die Worte
     for (let i = level15Boss.activeWords.length - 1; i >= 0; i--) {
         const word = level15Boss.activeWords[i];
-        word.position.y += word.speed;
+        
+        // Aktualisiere die Position basierend auf der Geschwindigkeit
+        word.position.x += word.velocity.x;
+        word.position.y += word.velocity.y;
         
         if (word.element) {
+            word.element.style.left = `${word.position.x}px`;
             word.element.style.top = `${word.position.y}px`;
         }
         
@@ -359,6 +382,16 @@ function updateLevel15Boss(timestamp) {
             
             // Aktualisiere die Anzeige
             updateDisplay();
+        }
+        
+        // Prüfe, ob das Wort außerhalb des Bildschirms ist
+        const gameContainer = document.getElementById('gameContainer');
+        if (word.position.x < 0 || 
+            word.position.x > gameContainer.offsetWidth || 
+            word.position.y < 0 || 
+            word.position.y > gameContainer.offsetHeight) {
+            // Entferne das Wort
+            removeLevel15BossWord(i);
         }
     }
 }

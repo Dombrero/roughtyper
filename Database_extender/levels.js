@@ -107,7 +107,7 @@ const level15Boss = {
     ],
     special: 'timeshift', // Spezialfähigkeit: Zeitverschiebung
     timeshiftInterval: 10000, // Alle 10 Sekunden
-    speedMultiplier: 1.5 // Erhöht die Geschwindigkeit der Worte
+    speedMultiplier: 1.3 // Reduzierter Geschwindigkeitsmultiplikator
 };
 
 // Spezieller Boss für Level 19
