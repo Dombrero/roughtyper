@@ -1965,7 +1965,7 @@
                                                 ${!item.equipped ? `<span class="item-action">use ${item.name}</span>` : ''}
                                                 <span class="item-effect">+5 Defense</span>
                                             </div>`;
-                            } else {
+                        } else {
                                             itemDisplay = `<div class="menu-option">${item.name}${status}</div>`;
                                         }
                                         
@@ -1984,10 +1984,11 @@
                             ).join('')
                         }
                     </div>
-                    ${gameState.materials.length > 0 ? 
-                        '<div class="sell-all-button">SELL ALL MATERIALS</div>' : 
-                        ''
-                    }
+                    <!-- Zeige den Button immer an, unabhängig davon, ob Materialien vorhanden sind -->
+                    <div class="menu-option sell-all-button">sell all materials</div>
+                    <div class="inventory-instructions">
+                        <p>Type "sell all materials" to sell all materials for gold</p>
+                    </div>
                 </div>
             </div>
             <div class="menu-option">menu</div>
@@ -2000,10 +2001,8 @@
         sellAllButton.addEventListener('click', () => {
             sellAllMaterials();
         });
-        // Füge einen Debug-Log hinzu, um zu überprüfen, ob der Button gefunden wurde
         debugLog('Sell All Materials Button gefunden und Event-Listener hinzugefügt');
     } else {
-        // Füge einen Debug-Log hinzu, wenn der Button nicht gefunden wurde
         debugLog('Sell All Materials Button nicht gefunden!');
     }
     
@@ -2016,14 +2015,15 @@ function handleInventoryInput(input) {
     // Definiere die möglichen Befehle
     const commands = {
         'sell all materials': () => {
+            debugLog('Befehl "sell all materials" erkannt');
             sellAllMaterials();
             return true;
         },
         'drink small': () => {
             if (gameState.playerHealth >= 1000) {
                 alert('You already have full health!');
-                        return false;
-                    }
+                return false;
+            }
             const smallPotion = gameState.inventory.findIndex(item => 
                 item.name === 'small' && item.type === 'potion'
             );
@@ -2100,7 +2100,7 @@ function handleInventoryInput(input) {
                     return true;
                 }
     };
-
+    
     // Finde den passenden Befehl
     const matchingCommand = Object.keys(commands).find(cmd => cmd.startsWith(input));
     
@@ -2121,20 +2121,22 @@ function handleInventoryInput(input) {
                 actionElement.textContent = actionText;
             }
         } 
-        // Prüfe auf die "menu" Option
-        else if (option.textContent.toLowerCase() === 'menu' && 'menu'.startsWith(input)) {
-            option.innerHTML = `<span class="correct">${input}</span>${'menu'.slice(input.length)}`;
+        // Prüfe auf die "menu" Option oder "sell all materials" Option
+        else if ((option.textContent.toLowerCase() === 'menu' && 'menu'.startsWith(input)) ||
+                 (option.textContent.toLowerCase() === 'sell all materials' && 'sell all materials'.startsWith(input))) {
+            const text = option.textContent.toLowerCase();
+            option.innerHTML = `<span class="correct">${input}</span>${text.slice(input.length)}`;
         }
     });
-
+    
     // Wenn ein vollständiger Befehl eingegeben wurde, führe ihn aus
     if (matchingCommand && input === matchingCommand) {
         debugLog(`Führe Befehl aus: ${matchingCommand}`);
         return commands[matchingCommand]();
-            }
+    }
 
-            return false;
-        }
+    return false;
+}
 
 // Shop anzeigen aktualisieren
 function showShop() {
@@ -2875,6 +2877,8 @@ function updatePracticeScore() {
 
         // Funktion zum Verkaufen aller Materialien
         function sellAllMaterials() {
+            debugLog('sellAllMaterials-Funktion aufgerufen');
+            
             if (gameState.materials.length === 0) {
                 alert('You have no materials to sell!');
                 return;
