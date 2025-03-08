@@ -255,7 +255,15 @@ function extendInputHandling() {
             return;
         }
         
-        // Prüfe zuerst auf Level 15 Boss
+        // Prüfe zuerst auf den "menu"-Befehl
+        if (typed === 'menu') {
+            console.log('Menu-Befehl erkannt');
+            // Rufe den ursprünglichen Handler auf, um zum Menü zurückzukehren
+            originalInputHandler.call(this, e);
+            return;
+        }
+        
+        // Prüfe auf Level 15 Boss
         if (gameState.level15BossActive && level15Boss.activeWords && level15Boss.activeWords.length > 0) {
             console.log('Level 15 Boss aktiv, prüfe Eingabe:', typed);
             console.log('Aktive Wörter:', level15Boss.activeWords.map(w => w.word));
@@ -320,9 +328,9 @@ function extendInputHandling() {
                 return;
             }
             
-            // Wenn keine Übereinstimmung gefunden wurde, leere das Eingabefeld
-            // Dies verhindert, dass normale Gegner während des Bosskampfes getroffen werden
-            e.target.value = '';
+            // Wenn keine Übereinstimmung gefunden wurde, rufe den ursprünglichen Handler auf
+            // Dies ermöglicht die Verarbeitung anderer Befehle wie "menu"
+            originalInputHandler.call(this, e);
             return;
         }
         
@@ -362,9 +370,9 @@ function extendInputHandling() {
                 return; // Beende die Funktion, um doppelte Verarbeitung zu vermeiden
             }
             
-            // Wenn keine Übereinstimmung gefunden wurde, leere das Eingabefeld
-            // Dies verhindert, dass normale Gegner während des Bosskampfes getroffen werden
-            e.target.value = '';
+            // Wenn keine Übereinstimmung gefunden wurde, rufe den ursprünglichen Handler auf
+            // Dies ermöglicht die Verarbeitung anderer Befehle wie "menu"
+            originalInputHandler.call(this, e);
             return;
         }
         

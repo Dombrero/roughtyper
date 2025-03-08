@@ -118,6 +118,16 @@ function spawnLevel15BossWord() {
     wordElement.style.visibility = 'visible';
     wordElement.style.left = `${startX - wordWidth / 2}px`; // Zentriere das Wort
     wordElement.style.top = `${bossBottom + 10}px`;
+    
+    // Füge eine CSS-Klasse hinzu, um sicherzustellen, dass das Wort hervorgehoben wird
+    wordElement.style.zIndex = '1000'; // Stelle sicher, dass das Wort über anderen Elementen liegt
+    wordElement.style.color = '#9400d3'; // Lila Farbe
+    wordElement.style.fontWeight = 'bold';
+    wordElement.style.textShadow = '0 0 5px #9400d3';
+    wordElement.style.fontSize = '20px';
+    wordElement.style.padding = '5px 10px';
+    wordElement.style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
+    wordElement.style.borderRadius = '5px';
 
     // Berechne die Richtung zum Spieler
     const playerElement = document.getElementById('player');
