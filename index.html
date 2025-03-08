@@ -801,54 +801,22 @@
             100% { opacity: 0; }
         }
 
-        /* Level-Auswahl Styling */
-        .level-selection {
-            display: flex;
-            flex-direction: column;
-            align-items: stretch;
-            gap: 10px;
-            margin: 20px 0;
-            max-width: 600px;
-            margin: 0 auto;
-        }
-        
-        .level-option {
-            background-color: transparent;
-            border: 1px solid #4CAF50;
-            color: var(--text-color);
-            padding: 10px;
-            border-radius: 5px;
-            transition: all 0.3s;
-            font-size: 18px;
-            text-align: center;
-        }
-        
-        .level-option:hover {
-            background-color: rgba(76, 175, 80, 0.1);
-            transform: translateY(-2px);
-        }
-        
-        .level-option[data-level="10"] {
-            border: 2px solid #ff9800;
-            font-weight: bold;
-            position: relative;
-        }
-        
-        .level-option[data-level="10"]::after {
-            content: "BOSS";
-            position: absolute;
-            right: 10px;
-            top: 50%;
-            transform: translateY(-50%);
-            background-color: #ff9800;
+        /* Sell All Materials Button */
+        .sell-all-button {
+            background-color: #4CAF50;
             color: white;
-            padding: 2px 6px;
-            border-radius: 3px;
-            font-size: 12px;
+            padding: 8px 12px;
+            border-radius: 4px;
+            margin-top: 10px;
+            cursor: pointer;
+            text-align: center;
+            font-weight: bold;
+            transition: all 0.3s;
         }
-        
-        .level-option[data-level="10"]:hover {
-            background-color: rgba(255, 152, 0, 0.1);
+
+        .sell-all-button:hover {
+            background-color: #45a049;
+            transform: scale(1.05);
         }
     </style>
 </head>
@@ -900,7 +868,6 @@
         
         <div class="menu-container" id="mainMenu">
             <div class="menu-option">enter dungeon</div>
-            <div class="menu-option">select level</div>
             <div class="menu-option">practice mode</div>
             <div class="menu-option">inventory</div>
             <div class="menu-option">shop</div>
@@ -915,7 +882,6 @@
                     <p>Type the name of an option to select it:</p>
                     <ul>
                         <li><strong>enter dungeon</strong> - Start the game</li>
-                        <li><strong>select level</strong> - Choose a level to start from</li>
                         <li><strong>practice mode</strong> - Practice typing without time pressure</li>
                         <li><strong>inventory</strong> - Manage your items</li>
                         <li><strong>shop</strong> - Buy potions and equipment</li>
@@ -1105,7 +1071,6 @@
             bossActive: false,
             materials: [], // Neues Array für Materialien
             level10BossActive: false, // Neuer Status für Level 10 Boss
-            selectedLevel: null // Neue Variable für Level-Auswahl
         };
 
         // Liste möglicher Gegner nach Level mit Icons
@@ -1506,28 +1471,58 @@
             gameState.bossActive = false;
             gameState.level10BossActive = false; // Neuer Status für Level 10 Boss
 
-            // Verwende das ausgewählte Level, falls vorhanden
-            if (gameState.selectedLevel) {
-                gameState.level = gameState.selectedLevel;
-                gameState.score = (gameState.level - 1) * 100; // Gib Punkte für vorherige Level
-                gameState.gold = Math.max(gameState.gold, 100 + (gameState.level - 1) * 50); // Mehr Gold für höhere Level, aber nicht weniger als aktuell
-            }
-
             const gameScene = document.getElementById('gameScene');
             gameScene.innerHTML = `<div class="player" id="player"></div>`;
 
             if (gameState.gameLoop) {
                 cancelAnimationFrame(gameState.gameLoop);
             }
+            gameState.gameLoop = requestAnimationFrame(gameLoop);
 
-            // Zeige einen Hinweis an, dass das Spiel auf Level X gestartet wurde
-            addCombatLog(`Starting game at Level ${gameState.level}!`);
+            // Wenn Level 10 erreicht ist, starte den Level 10 Boss
+            if (gameState.level === 10) {
+                initLevel10Boss();
+            } else {
+                spawnEnemy();
+            }
             
-            // Aktualisiere die Anzeige
             updateDisplay();
+
+            // Entferne alten Hinweis falls vorhanden
+            const oldHint = document.querySelector('.menu-hint');
+            if (oldHint) {
+                oldHint.remove();
+            }
+
+            // Füge verbesserten Menü-Hinweis hinzu
+            const hint = document.createElement('div');
+            hint.className = 'menu-hint-improved';
+            hint.innerHTML = '⌨️ Type <strong>"menu"</strong> to return to the main menu';
             
-            // Starte das Spiel
-            gameLoop();
+            // Hinweis nach 5 Sekunden ausblenden
+            setTimeout(() => {
+                hint.style.opacity = '0';
+                hint.style.transition = 'opacity 1s ease-out';
+                
+                // Nach dem Ausblenden entfernen
+                setTimeout(() => {
+                    hint.remove();
+                }, 1000);
+            }, 5000);
+            
+            document.body.appendChild(hint);
+
+            // Combat Log initialisieren
+            const combatLog = document.getElementById('combatLog');
+            if (combatLog) {
+                addCombatLogEntry('info', `Welcome back! You start at Level ${gameState.level}!`);
+                addCombatLogEntry('info', 'Type "menu" to return to the main menu.');
+                
+                // Spezielle Nachricht für Level 10 Boss
+                if (gameState.level === 10) {
+                    addCombatLogEntry('info', 'BOSS BATTLE! Defeat TYPEREX by typing all the words it throws at you!');
+                }
+            }
         }
 
         // Level 10 Boss initialisieren
@@ -1839,7 +1834,7 @@
         function handleMenuInput(typed) {
             debugLog(`handleMenuInput called with: "${typed}"`);
             typed = typed.toLowerCase();
-            const menuOptions = ['enter dungeon', 'select level', 'practice mode', 'inventory', 'shop', 'menu', 'new game'];
+            const menuOptions = ['enter dungeon', 'practice mode', 'inventory', 'shop', 'menu', 'new game'];
             
             debugLog(`Current menu options: ${menuOptions.join(', ')}`);
             
@@ -1858,20 +1853,13 @@
                 // Prüfe, ob es sich um eine Hauptmenüoption handelt
                 if (menuOptions.includes(text)) {
                     let html = '';
-                    
-                    // Prüfe, ob die Option mit der Eingabe beginnt
-                    if (text.startsWith(typed)) {
-                        for(let i = 0; i < text.length; i++) {
-                            if (i < typed.length) {
-                                html += `<span class="correct">${text[i]}</span>`;
-                            } else {
-                                html += text[i];
-                            }
+                    for(let i = 0; i < text.length; i++) {
+                        if(text.startsWith(typed) && i < typed.length) {
+                            html += `<span class="correct">${text[i]}</span>`;
+                        } else {
+                            html += text[i];
                         }
-                    } else {
-                        html = text; // Keine Übereinstimmung, zeige normalen Text
                     }
-                    
                     debugLog(`Setting innerHTML for "${text}" to: ${html}`);
                     option.innerHTML = html;
                 }
@@ -1886,14 +1874,6 @@
                         mainMenu.classList.add('hidden');
                         gameContainer.style.display = 'block';
                         initGame();
-                        refreshVirtualKeyboard();
-                        break;
-                        
-                    case 'select level':
-                        gameState.currentScreen = 'selectLevel';
-                        mainMenu.classList.add('hidden');
-                        gameContainer.style.display = 'block';
-                        initSelectLevel();
                         refreshVirtualKeyboard();
                         break;
                         
@@ -1996,11 +1976,23 @@
                             ).join('')
                         }
                     </div>
+                    ${gameState.materials.length > 0 ? 
+                        '<div class="sell-all-button">sell all materials</div>' : 
+                        ''
+                    }
                 </div>
             </div>
             <div class="menu-option">menu</div>
         </div>
     `;
+    
+    // Event-Listener für den Sell All Materials Button hinzufügen
+    const sellAllButton = document.querySelector('.sell-all-button');
+    if (sellAllButton) {
+        sellAllButton.addEventListener('click', () => {
+            sellAllMaterials();
+        });
+    }
     
     updateDisplay();
 }
@@ -2010,6 +2002,10 @@ function handleInventoryInput(input) {
     
     // Definiere die möglichen Befehle
     const commands = {
+        'sell all materials': () => {
+            sellAllMaterials();
+            return true;
+        },
         'drink small': () => {
             if (gameState.playerHealth >= 1000) {
                 alert('You already have full health!');
@@ -2533,8 +2529,7 @@ function saveGameState() {
         playerHealth: gameState.playerHealth,
         monstersKilled: gameState.monstersKilled,
         score: gameState.score,
-        materials: gameState.materials,
-        selectedLevel: gameState.selectedLevel // Speichere die Level-Auswahl
+        materials: gameState.materials
     };
     try {
         localStorage.setItem('roughTypeGameState', JSON.stringify(saveData));
@@ -2565,7 +2560,6 @@ function loadGameState() {
             gameState.monstersKilled = 0;
             gameState.score = 0;
             gameState.materials = [];
-            gameState.selectedLevel = null; // Keine Level-Auswahl
             
             // Setze das Reset-Flag, damit der Reset nicht wieder durchgeführt wird
             localStorage.setItem('roughTypeResetDone', 'true');
@@ -2585,7 +2579,6 @@ function loadGameState() {
                 gameState.monstersKilled = data.monstersKilled || 0;
                 gameState.score = data.score || 0;
                 gameState.materials = data.materials || [];
-                gameState.selectedLevel = data.selectedLevel || null; // Lade die Level-Auswahl
                 
                 // Stelle ausgerüstete Items wieder her
                 gameState.inventory.forEach(item => {
@@ -2608,7 +2601,6 @@ function loadGameState() {
                 gameState.monstersKilled = 0;
                 gameState.score = 0;
                 gameState.materials = [];
-                gameState.selectedLevel = null; // Keine Level-Auswahl
                 
                 debugLog('Neues Spiel gestartet (kein Spielstand vorhanden)');
             }
@@ -2630,7 +2622,6 @@ function loadGameState() {
         gameState.monstersKilled = 0;
         gameState.score = 0;
         gameState.materials = [];
-        gameState.selectedLevel = null; // Keine Level-Auswahl
         
         updateDisplay();
     }
@@ -2869,195 +2860,35 @@ function updatePracticeScore() {
             requestAnimationFrame(animateProjectile);
         }
 
-        // Level-Auswahl initialisieren
-        function initSelectLevel() {
-            const gameScene = document.getElementById('gameScene');
-            
-            // Bestimme das maximale Level, das der Spieler auswählen kann
-            // (kann nur bis zum höchsten erreichten Level oder maximal 10 auswählen)
-            const maxSelectableLevel = Math.min(gameState.maxLevel, 10);
-            
-            // Erstelle das HTML für die Level-Auswahl
-            let levelButtonsHTML = '';
-            for (let i = 1; i <= maxSelectableLevel; i++) {
-                const specialClass = i === 10 ? 'boss-level' : '';
-                const bossLabel = i === 10 ? '<span class="boss-label">BOSS</span>' : '';
-                const activeClass = gameState.selectedLevel === i ? 'active-level' : '';
-                levelButtonsHTML += `<button class="level-button ${specialClass} ${activeClass}" data-level="${i}">Level ${i} ${bossLabel}</button>`;
+        // Funktion zum Verkaufen aller Materialien
+        function sellAllMaterials() {
+            if (gameState.materials.length === 0) {
+                alert('You have no materials to sell!');
+                return;
             }
             
-            // Erstelle das HTML für das Menü
-            gameScene.innerHTML = `
-                <div class="level-select-container">
-                    <h2>Select Starting Level</h2>
-                    <p>Choose a level to start from (up to your highest reached level):</p>
-                    
-                    <div class="level-buttons-grid">
-                        ${levelButtonsHTML}
-                    </div>
-                    
-                    <div class="level-select-info">
-                        <p>After selecting a level, you will return to the main menu.</p>
-                        <p>Your selection will be applied when you choose "enter dungeon".</p>
-                    </div>
-                    
-                    <button class="back-button" id="backToMenuButton">Back to Menu</button>
-                </div>
-            `;
+            let totalGold = 0;
+            let soldItems = 0;
             
-            // Füge CSS für das neue Menü hinzu
-            const style = document.createElement('style');
-            style.textContent = `
-                .level-select-container {
-                    max-width: 800px;
-                    margin: 0 auto;
-                    padding: 20px;
-                    text-align: center;
-                }
-                
-                .level-buttons-grid {
-                    display: grid;
-                    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-                    gap: 15px;
-                    margin: 30px 0;
-                }
-                
-                .level-button {
-                    background-color: #4CAF50;
-                    color: white;
-                    border: none;
-                    padding: 15px 10px;
-                    font-size: 18px;
-                    border-radius: 5px;
-                    cursor: pointer;
-                    transition: all 0.3s;
-                    position: relative;
-                }
-                
-                .level-button:hover {
-                    transform: translateY(-3px);
-                    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-                }
-                
-                .level-button.boss-level {
-                    background-color: #ff9800;
-                    font-weight: bold;
-                }
-                
-                .level-button.active-level {
-                    border: 3px solid #2196F3;
-                    box-shadow: 0 0 10px #2196F3;
-                }
-                
-                .boss-label {
-                    position: absolute;
-                    top: -10px;
-                    right: -10px;
-                    background-color: #f44336;
-                    color: white;
-                    font-size: 12px;
-                    padding: 3px 6px;
-                    border-radius: 10px;
-                }
-                
-                .level-select-info {
-                    margin: 20px 0;
-                    padding: 15px;
-                    background-color: rgba(33, 150, 243, 0.1);
-                    border-radius: 5px;
-                    border-left: 4px solid #2196F3;
-                }
-                
-                .level-select-info p {
-                    margin: 5px 0;
-                    color: var(--text-color);
-                }
-                
-                .back-button {
-                    background-color: #607d8b;
-                    color: white;
-                    border: none;
-                    padding: 12px 25px;
-                    font-size: 16px;
-                    border-radius: 5px;
-                    cursor: pointer;
-                    margin-top: 20px;
-                    transition: all 0.3s;
-                }
-                
-                .back-button:hover {
-                    background-color: #455a64;
-                }
-            `;
-            document.head.appendChild(style);
-            
-            // Event-Listener für Level-Buttons
-            const levelButtons = document.querySelectorAll('.level-button');
-            levelButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    const level = parseInt(this.getAttribute('data-level'));
-                    
-                    // Speichere die Level-Auswahl im gameState
-                    gameState.selectedLevel = level;
-                    
-                    // Markiere den ausgewählten Button
-                    levelButtons.forEach(btn => btn.classList.remove('active-level'));
-                    this.classList.add('active-level');
-                    
-                    // Zeige eine Bestätigungsnachricht an
-                    alert(`Level ${level} selected! You will start at this level when entering the dungeon.`);
-                    
-                    // Speichere den Spielstand
-                    saveGameState();
-                    
-                    // Zurück zum Hauptmenü
-                    returnToMenu();
-                });
+            // Berechne den Wert aller Materialien (5 Gold pro Material)
+            gameState.materials.forEach(material => {
+                totalGold += material.amount * 5;
+                soldItems += material.amount;
             });
             
-            // Event-Listener für den Zurück-Button
-            document.getElementById('backToMenuButton').addEventListener('click', function() {
-                returnToMenu();
-            });
-        }
-
-        // Funktion zum Starten des Spiels mit einem ausgewählten Level
-        function startGameAtLevel(level) {
-            // Lade den Spielstand
-            loadGameState();
-            
-            // Setze das Level und die entsprechenden Werte
-            gameState.level = level;
-            gameState.monstersKilled = 0;
-            gameState.score = (level - 1) * 100; // Gib Punkte für vorherige Level
-            gameState.gold = 100 + (level - 1) * 50; // Mehr Gold für höhere Level
-            
-            // Starte das Spiel
-            gameState.currentScreen = 'game';
-            gameState.enemies = [];
-            gameState.spawnTimer = 0;
-            gameState.lastUpdate = 0;
-            gameState.bossActive = false;
-            gameState.level10BossActive = false;
-            
-            const gameScene = document.getElementById('gameScene');
-            gameScene.innerHTML = `<div class="player" id="player"></div>`;
-            
-            if (gameState.gameLoop) {
-                cancelAnimationFrame(gameState.gameLoop);
-            }
-            
-            // Zeige einen Hinweis an, dass das Spiel auf Level X gestartet wurde
-            addCombatLog(`Starting game at Level ${level}!`);
+            // Füge Gold hinzu und leere das Materials-Array
+            gameState.gold += totalGold;
+            gameState.materials = [];
             
             // Aktualisiere die Anzeige
             updateDisplay();
             
-            // Starte das Spiel
-            gameLoop();
+            // Zeige eine Erfolgsmeldung an
+            addCombatLogEntry('success', `Sold ${soldItems} materials for ${totalGold} gold!`);
+            alert(`Sold ${soldItems} materials for ${totalGold} gold!`);
             
-            // Speichere den Spielstand
-            saveGameState();
+            // Aktualisiere das Inventar
+            showInventory();
         }
     </script>
 </body>
