@@ -1887,13 +1887,20 @@
                 // Prüfe, ob es sich um eine Hauptmenüoption handelt
                 if (menuOptions.includes(text)) {
                     let html = '';
-                    for(let i = 0; i < text.length; i++) {
-                        if(text.startsWith(typed) && i < typed.length) {
-                            html += `<span class="correct">${text[i]}</span>`;
-                        } else {
-                            html += text[i];
+                    
+                    // Prüfe, ob die Option mit der Eingabe beginnt
+                    if (text.startsWith(typed)) {
+                        for(let i = 0; i < text.length; i++) {
+                            if (i < typed.length) {
+                                html += `<span class="correct">${text[i]}</span>`;
+                            } else {
+                                html += text[i];
+                            }
                         }
+                    } else {
+                        html = text; // Keine Übereinstimmung, zeige normalen Text
                     }
+                    
                     debugLog(`Setting innerHTML for "${text}" to: ${html}`);
                     option.innerHTML = html;
                 }
@@ -2925,8 +2932,18 @@ function updatePracticeScore() {
                 }, 1000);
             }, 5000);
             
-            // Event-Listener für die Eingabe
-            document.getElementById('gameInput').addEventListener('input', handleLevelSelection);
+            // Leere das Eingabefeld
+            const inputField = document.getElementById('gameInput');
+            inputField.value = '';
+            
+            // Entferne vorherige Event-Listener (falls vorhanden)
+            inputField.removeEventListener('input', handleLevelSelection);
+            
+            // Füge neuen Event-Listener hinzu
+            inputField.addEventListener('input', handleLevelSelection);
+            
+            // Fokussiere das Eingabefeld
+            inputField.focus();
         }
 
         // Funktion zum Verarbeiten der Level-Auswahl
@@ -2950,12 +2967,17 @@ function updatePracticeScore() {
             
             // Markiere die korrekt getippten Buchstaben in den Level-Optionen
             const levelElements = document.querySelectorAll('.level-option');
+            
+            // Zähle, wie viele Optionen mit der Eingabe übereinstimmen
+            let matchCount = 0;
+            
             levelElements.forEach(option => {
                 const text = option.textContent.toLowerCase();
                 let html = '';
                 
                 // Prüfe, ob die Option mit der Eingabe beginnt
                 if (text.startsWith(typed)) {
+                    matchCount++;
                     for(let i = 0; i < text.length; i++) {
                         if (i < typed.length) {
                             html += `<span class="correct">${text[i]}</span>`;
@@ -2970,14 +2992,19 @@ function updatePracticeScore() {
                 option.innerHTML = html;
             });
             
-            // Finde die passende Level-Option
-            const matchingOption = levelOptions.find(option => option === typed);
-            
-            // Wenn eine vollständige Option eingegeben wurde
-            if (matchingOption) {
-                const selectedLevel = parseInt(matchingOption.replace('level ', ''));
-                event.target.value = '';
-                document.getElementById('gameInput').removeEventListener('input', handleLevelSelection);
+            // Wenn genau eine Option mit der Eingabe übereinstimmt und die Eingabe vollständig ist
+            const exactMatch = levelOptions.find(option => option === typed);
+            if (exactMatch) {
+                const selectedLevel = parseInt(exactMatch.replace('level ', ''));
+                
+                // Entferne den Event-Listener
+                const inputField = document.getElementById('gameInput');
+                inputField.removeEventListener('input', handleLevelSelection);
+                
+                // Leere das Eingabefeld
+                inputField.value = '';
+                
+                // Starte das Spiel mit dem ausgewählten Level
                 startGameAtLevel(selectedLevel);
             }
         }
