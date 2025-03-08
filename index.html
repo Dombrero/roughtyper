@@ -801,22 +801,30 @@
             100% { opacity: 0; }
         }
 
-        /* Sell All Materials Button */
+        /* Sell All Materials Button - verbesserte Darstellung */
         .sell-all-button {
             background-color: #4CAF50;
             color: white;
-            padding: 8px 12px;
+            padding: 12px 16px;
             border-radius: 4px;
-            margin-top: 10px;
+            margin-top: 15px;
+            margin-bottom: 10px;
             cursor: pointer;
             text-align: center;
             font-weight: bold;
+            font-size: 16px;
             transition: all 0.3s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            display: block;
+            width: 90%;
+            margin-left: auto;
+            margin-right: auto;
         }
 
         .sell-all-button:hover {
             background-color: #45a049;
             transform: scale(1.05);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
         }
     </style>
 </head>
@@ -1977,7 +1985,7 @@
                         }
                     </div>
                     ${gameState.materials.length > 0 ? 
-                        '<div class="sell-all-button">sell all materials</div>' : 
+                        '<div class="sell-all-button">SELL ALL MATERIALS</div>' : 
                         ''
                     }
                 </div>
@@ -1992,6 +2000,11 @@
         sellAllButton.addEventListener('click', () => {
             sellAllMaterials();
         });
+        // Füge einen Debug-Log hinzu, um zu überprüfen, ob der Button gefunden wurde
+        debugLog('Sell All Materials Button gefunden und Event-Listener hinzugefügt');
+    } else {
+        // Füge einen Debug-Log hinzu, wenn der Button nicht gefunden wurde
+        debugLog('Sell All Materials Button nicht gefunden!');
     }
     
     updateDisplay();
