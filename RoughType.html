@@ -1984,198 +1984,197 @@
                             ).join('')
                         }
                     </div>
-                    <!-- Zeige den Button immer an, unabhängig davon, ob Materialien vorhanden sind -->
-                    <div class="menu-option sell-all-button">sell all materials</div>
-                    <div class="inventory-instructions">
-                        <p>Type "sell all materials" to sell all materials for gold</p>
-                    </div>
                 </div>
             </div>
+            
+            <!-- Sell All Materials Button direkt unter dem Inventory-Grid, aber vor dem Menu-Button -->
+            <div class="menu-option sell-all-button">sell all materials</div>
+            
             <div class="menu-option">menu</div>
         </div>
-    `;
-    
-    // Event-Listener für den Sell All Materials Button hinzufügen
-    const sellAllButton = document.querySelector('.sell-all-button');
-    if (sellAllButton) {
-        sellAllButton.addEventListener('click', () => {
-            sellAllMaterials();
-        });
-        debugLog('Sell All Materials Button gefunden und Event-Listener hinzugefügt');
-    } else {
-        debugLog('Sell All Materials Button nicht gefunden!');
-    }
-    
-    updateDisplay();
-}
+        `;
 
-function handleInventoryInput(input) {
-    debugLog(`Processing inventory input: "${input}"`);
-    
-    // Definiere die möglichen Befehle
-    const commands = {
-        'sell all materials': () => {
-            debugLog('Befehl "sell all materials" erkannt');
-            sellAllMaterials();
-            return true;
-        },
-        'drink small': () => {
-            if (gameState.playerHealth >= 1000) {
-                alert('You already have full health!');
-                return false;
-            }
-            const smallPotion = gameState.inventory.findIndex(item => 
-                item.name === 'small' && item.type === 'potion'
-            );
-            if (smallPotion !== -1) {
-                gameState.playerHealth = Math.min(1000, gameState.playerHealth + 30);
-                gameState.inventory.splice(smallPotion, 1);
-                updateDisplay();
-                addCombatLogEntry('info', 'You drank a small potion and healed 30 HP!');
-                alert('30 HP healed!');
-                showInventory();
+        // Event-Listener für den Sell All Materials Button hinzufügen
+        const sellAllButton = document.querySelector('.sell-all-button');
+        if (sellAllButton) {
+            sellAllButton.addEventListener('click', () => {
+                sellAllMaterials();
+            });
+            debugLog('Sell All Materials Button gefunden und Event-Listener hinzugefügt');
+        } else {
+            debugLog('Sell All Materials Button nicht gefunden!');
+        }
+
+        updateDisplay();
+    }
+
+    function handleInventoryInput(input) {
+        debugLog(`Processing inventory input: "${input}"`);
+        
+        // Definiere die möglichen Befehle
+        const commands = {
+            'sell all materials': () => {
+                debugLog('Befehl "sell all materials" erkannt');
+                sellAllMaterials();
                 return true;
-            }
-            alert('No small health potion in inventory!');
-            return false;
-        },
-        'drink medium': () => {
-            if (gameState.playerHealth >= 1000) {
-                alert('You already have full health!');
-                return false;
-            }
-            const mediumPotion = gameState.inventory.findIndex(item => 
-                item.name === 'medium' && item.type === 'potion'
-            );
-            if (mediumPotion !== -1) {
-                gameState.playerHealth = Math.min(1000, gameState.playerHealth + 60);
-                gameState.inventory.splice(mediumPotion, 1);
-                updateDisplay();
-                addCombatLogEntry('info', 'You drank a medium potion and healed 60 HP!');
-                alert('60 HP healed!');
-                showInventory();
-                return true;
-            }
-            alert('No medium health potion in inventory!');
-            return false;
-        },
-        'drink large': () => {
-            if (gameState.playerHealth >= 1000) {
-                alert('You already have full health!');
-                return false;
-            }
-            const largePotion = gameState.inventory.findIndex(item => 
-                item.name === 'large' && item.type === 'potion'
-            );
-            if (largePotion !== -1) {
-                gameState.playerHealth = Math.min(1000, gameState.playerHealth + 100);
-                gameState.inventory.splice(largePotion, 1);
-                updateDisplay();
-                addCombatLogEntry('info', 'You drank a large potion and healed 100 HP!');
-                alert('100 HP healed!');
-                showInventory();
-                return true;
-            }
-            alert('No large health potion in inventory!');
-            return false;
-        },
-        'use shield': () => {
-                    const shield = gameState.inventory.find(item => 
-                item.name === 'shield' && item.type === 'equipment' && !item.equipped
-                    );
-                    if (shield) {
-                        shield.equipped = true;
-                gameState.defense += 5; // Direkt Defense erhöhen
-                        updateDisplay();
-                addCombatLogEntry('info', 'You equipped a shield and increased your defense by 5!');
-                alert('Shield equipped! Defense increased by 5');
-                showInventory(); // Aktualisiere die Anzeige
-                        return true;
-                    }
-            alert('No shield available to equip!');
-                return false;
-        },
-        'menu': () => {
-                    returnToMenu();
+            },
+            'drink small': () => {
+                if (gameState.playerHealth >= 1000) {
+                    alert('You already have full health!');
+                    return false;
+                }
+                const smallPotion = gameState.inventory.findIndex(item => 
+                    item.name === 'small' && item.type === 'potion'
+                );
+                if (smallPotion !== -1) {
+                    gameState.playerHealth = Math.min(1000, gameState.playerHealth + 30);
+                    gameState.inventory.splice(smallPotion, 1);
+                    updateDisplay();
+                    addCombatLogEntry('info', 'You drank a small potion and healed 30 HP!');
+                    alert('30 HP healed!');
+                    showInventory();
                     return true;
                 }
-    };
-    
-    // Finde den passenden Befehl
-    const matchingCommand = Object.keys(commands).find(cmd => cmd.startsWith(input));
-    
-    // Markiere die passenden Befehle
-    const menuOptions = document.querySelectorAll('.menu-option');
-    menuOptions.forEach(option => {
-        // Suche nach der item-action Klasse für Befehle
-        const actionElement = option.querySelector('.item-action');
-        if (actionElement) {
-            const actionText = actionElement.textContent.toLowerCase();
-            
-            // Wenn der Befehl mit der Eingabe beginnt
-            if (actionText.startsWith(input)) {
-                // Hervorhebe den eingegebenen Teil
-                actionElement.innerHTML = `<span class="correct">${input}</span>${actionText.slice(input.length)}`;
-            } else {
-                // Setze den Text zurück, wenn er nicht mehr passt
-                actionElement.textContent = actionText;
+                alert('No small health potion in inventory!');
+                return false;
+            },
+            'drink medium': () => {
+                if (gameState.playerHealth >= 1000) {
+                    alert('You already have full health!');
+                    return false;
+                }
+                const mediumPotion = gameState.inventory.findIndex(item => 
+                    item.name === 'medium' && item.type === 'potion'
+                );
+                if (mediumPotion !== -1) {
+                    gameState.playerHealth = Math.min(1000, gameState.playerHealth + 60);
+                    gameState.inventory.splice(mediumPotion, 1);
+                    updateDisplay();
+                    addCombatLogEntry('info', 'You drank a medium potion and healed 60 HP!');
+                    alert('60 HP healed!');
+                    showInventory();
+                    return true;
+                }
+                alert('No medium health potion in inventory!');
+                return false;
+            },
+            'drink large': () => {
+                if (gameState.playerHealth >= 1000) {
+                    alert('You already have full health!');
+                    return false;
+                }
+                const largePotion = gameState.inventory.findIndex(item => 
+                    item.name === 'large' && item.type === 'potion'
+                );
+                if (largePotion !== -1) {
+                    gameState.playerHealth = Math.min(1000, gameState.playerHealth + 100);
+                    gameState.inventory.splice(largePotion, 1);
+                    updateDisplay();
+                    addCombatLogEntry('info', 'You drank a large potion and healed 100 HP!');
+                    alert('100 HP healed!');
+                    showInventory();
+                    return true;
+                }
+                alert('No large health potion in inventory!');
+                return false;
+            },
+            'use shield': () => {
+                        const shield = gameState.inventory.find(item => 
+                    item.name === 'shield' && item.type === 'equipment' && !item.equipped
+                        );
+                        if (shield) {
+                            shield.equipped = true;
+                    gameState.defense += 5; // Direkt Defense erhöhen
+                            updateDisplay();
+                    addCombatLogEntry('info', 'You equipped a shield and increased your defense by 5!');
+                    alert('Shield equipped! Defense increased by 5');
+                    showInventory(); // Aktualisiere die Anzeige
+                            return true;
+                        }
+                alert('No shield available to equip!');
+                    return false;
+            },
+            'menu': () => {
+                        returnToMenu();
+                        return true;
+                    }
+        };
+        
+        // Finde den passenden Befehl
+        const matchingCommand = Object.keys(commands).find(cmd => cmd.startsWith(input));
+        
+        // Markiere die passenden Befehle
+        const menuOptions = document.querySelectorAll('.menu-option');
+        menuOptions.forEach(option => {
+            // Suche nach der item-action Klasse für Befehle
+            const actionElement = option.querySelector('.item-action');
+            if (actionElement) {
+                const actionText = actionElement.textContent.toLowerCase();
+                
+                // Wenn der Befehl mit der Eingabe beginnt
+                if (actionText.startsWith(input)) {
+                    // Hervorhebe den eingegebenen Teil
+                    actionElement.innerHTML = `<span class="correct">${input}</span>${actionText.slice(input.length)}`;
+                } else {
+                    // Setze den Text zurück, wenn er nicht mehr passt
+                    actionElement.textContent = actionText;
+                }
+            } 
+            // Prüfe auf die "menu" Option oder "sell all materials" Option
+            else if ((option.textContent.toLowerCase() === 'menu' && 'menu'.startsWith(input)) ||
+                     (option.textContent.toLowerCase() === 'sell all materials' && 'sell all materials'.startsWith(input))) {
+                const text = option.textContent.toLowerCase();
+                option.innerHTML = `<span class="correct">${input}</span>${text.slice(input.length)}`;
             }
-        } 
-        // Prüfe auf die "menu" Option oder "sell all materials" Option
-        else if ((option.textContent.toLowerCase() === 'menu' && 'menu'.startsWith(input)) ||
-                 (option.textContent.toLowerCase() === 'sell all materials' && 'sell all materials'.startsWith(input))) {
-            const text = option.textContent.toLowerCase();
-            option.innerHTML = `<span class="correct">${input}</span>${text.slice(input.length)}`;
+        });
+        
+        // Wenn ein vollständiger Befehl eingegeben wurde, führe ihn aus
+        if (matchingCommand && input === matchingCommand) {
+            debugLog(`Führe Befehl aus: ${matchingCommand}`);
+            return commands[matchingCommand]();
         }
-    });
-    
-    // Wenn ein vollständiger Befehl eingegeben wurde, führe ihn aus
-    if (matchingCommand && input === matchingCommand) {
-        debugLog(`Führe Befehl aus: ${matchingCommand}`);
-        return commands[matchingCommand]();
+
+        return false;
     }
 
-    return false;
-}
+    // Shop anzeigen aktualisieren
+    function showShop() {
+                mainMenu.classList.add('hidden');
+                gameContainer.style.display = 'block';
+                
+        const gameScene = document.getElementById('gameScene');
+        gameScene.innerHTML = `
+                    <div class="menu-container">
+                <h2>Shop</h2>
+                ${shopItems.map(item => {
+                    let description = '';
+                    switch(item.name) {
+                        case 'small':
+                            description = 'Small Health Potion (Heals 30 HP)';
+                            break;
+                        case 'medium':
+                            description = 'Medium Health Potion (Heals 60 HP)';
+                            break;
+                        case 'large':
+                            description = 'Large Health Potion (Heals 100 HP)';
+                            break;
+                        case 'shield':
+                            description = 'Shield (Adds 5 Defense)';
+                            break;
+                    }
+                    return `<div class="menu-option">${description} - ${item.cost} gold</div>`;
+                }).join('')}
+                        <div class="menu-option">menu</div>
+                    </div>
+                `;
+                
+        updateDisplay();
+            }
 
-// Shop anzeigen aktualisieren
-function showShop() {
-            mainMenu.classList.add('hidden');
-            gameContainer.style.display = 'block';
-            
-    const gameScene = document.getElementById('gameScene');
-    gameScene.innerHTML = `
-                <div class="menu-container">
-            <h2>Shop</h2>
-            ${shopItems.map(item => {
-                let description = '';
-                switch(item.name) {
-                    case 'small':
-                        description = 'Small Health Potion (Heals 30 HP)';
-                        break;
-                    case 'medium':
-                        description = 'Medium Health Potion (Heals 60 HP)';
-                        break;
-                    case 'large':
-                        description = 'Large Health Potion (Heals 100 HP)';
-                        break;
-                    case 'shield':
-                        description = 'Shield (Adds 5 Defense)';
-                        break;
-                }
-                return `<div class="menu-option">${description} - ${item.cost} gold</div>`;
-            }).join('')}
-                    <div class="menu-option">menu</div>
-                </div>
-            `;
-            
-    updateDisplay();
-        }
-
-// Shop-Input-Handler aktualisieren
-        function handleShopInput(typed) {
-            debugLog(`Processing shop input: "${typed}"`);
-            
+    // Shop-Input-Handler aktualisieren
+            function handleShopInput(typed) {
+                debugLog(`Processing shop input: "${typed}"`);
+                
     // Markiere die Shop-Items entsprechend der Eingabe
     const menuOptions = document.querySelectorAll('.menu-option');
     menuOptions.forEach(option => {
@@ -2219,20 +2218,20 @@ function showShop() {
     const item = shopItems.find(item => item.name === typed);
 
     if (item) {
-                if (gameState.gold >= item.cost) {
-                    gameState.gold -= item.cost;
-                    const message = item.effect();
-                    debugLog(`Purchased ${item.name}: ${message}`);
+                    if (gameState.gold >= item.cost) {
+                        gameState.gold -= item.cost;
+                        const message = item.effect();
+                        debugLog(`Purchased ${item.name}: ${message}`);
             addCombatLogEntry('info', `You bought ${item.name} for ${item.cost} gold!`);
-                    alert(`Purchased ${item.name}! ${message}`);
+                        alert(`Purchased ${item.name}! ${message}`);
             saveGameState();
             showShop();
             updateDisplay();
-                    return true;
-                } else {
-                    alert('Not enough gold!');
-                    return false;
-                }
+                        return true;
+                    } else {
+                        alert('Not enough gold!');
+                        return false;
+                    }
     } else if (typed === 'menu') {
         returnToMenu();
         return true;
@@ -2258,8 +2257,8 @@ function showShop() {
     updateDisplay();
         }
 
-// Game Over Funktion aktualisieren
-        function gameOver() {
+    // Game Over Funktion aktualisieren
+            function gameOver() {
     const goldEarned = Math.floor(gameState.score / 20);
     alert(`Game Over!\n\nScore: ${gameState.score}\nGold earned: ${goldEarned}\nLevel reached: ${gameState.level}\nMonsters killed: ${gameState.monstersKilled}`);
     gameState.gold += goldEarned;
@@ -2267,14 +2266,14 @@ function showShop() {
             returnToMenu();
         }
 
-// Input Validierung hinzufügen
-function validateInput(input) {
-    // Entferne unerwünschte Zeichen
-    return input.replace(/[^a-zA-Z0-9\s]/g, '').toLowerCase();
-        }
+    // Input Validierung hinzufügen
+    function validateInput(input) {
+        // Entferne unerwünschte Zeichen
+        return input.replace(/[^a-zA-Z0-9\s]/g, '').toLowerCase();
+            }
 
-        // Input Handler aktualisieren
-        document.getElementById('typingInput').addEventListener('input', function(e) {
+            // Input Handler aktualisieren
+            document.getElementById('typingInput').addEventListener('input', function(e) {
     const typed = validateInput(e.target.value);
     if (typed !== e.target.value) {
         e.target.value = typed;
@@ -2518,95 +2517,54 @@ function validateInput(input) {
         document.addEventListener('click', focusInput);
         document.addEventListener('keydown', focusInput);
 
-// Funktion zum Hinzufügen von Material
-function addMaterial(material) {
-    const existingMaterial = gameState.materials.find(m => m.name === material);
-    if (existingMaterial) {
-        existingMaterial.amount++;
-    } else {
-        gameState.materials.push({ name: material, amount: 1 });
-    }
-    updateDisplay(); // Sofort aktualisieren
-    debugLog(`Added material: ${material}`);
-}
-
-// Funktion zum Speichern des Spielstands
-function saveGameState() {
-    const saveData = {
-        gold: gameState.gold,
-        level: gameState.level,
-        maxLevel: gameState.maxLevel,
-        defense: gameState.defense,
-        inventory: gameState.inventory.map(item => ({
-            ...item,
-            element: null // DOM-Elemente nicht speichern
-        })),
-        playerHealth: gameState.playerHealth,
-        monstersKilled: gameState.monstersKilled,
-        score: gameState.score,
-        materials: gameState.materials
-    };
-    try {
-        localStorage.setItem('roughTypeGameState', JSON.stringify(saveData));
-        debugLog('Spielstand erfolgreich gespeichert');
-    } catch (error) {
-        debugLog('Fehler beim Speichern des Spielstands: ' + error.message);
-        alert('Fehler beim Speichern des Spielstands!');
-    }
-}
-
-// Funktion zum Laden des Spielstands
-function loadGameState() {
-    try {
-        // Prüfe, ob ein Reset-Flag gesetzt ist
-        const resetDone = localStorage.getItem('roughTypeResetDone');
-        
-        if (!resetDone) {
-            // Einmaliger Reset: Lösche vorhandenen Spielstand
-            localStorage.removeItem('roughTypeGameState');
-            
-            // Setze Spielstand auf Standardwerte zurück
-            gameState.gold = 100;
-            gameState.level = 1;
-            gameState.maxLevel = 1;
-            gameState.defense = 0;
-            gameState.inventory = [];
-            gameState.playerHealth = 1000;
-            gameState.monstersKilled = 0;
-            gameState.score = 0;
-            gameState.materials = [];
-            
-            // Setze das Reset-Flag, damit der Reset nicht wieder durchgeführt wird
-            localStorage.setItem('roughTypeResetDone', 'true');
-            
-            debugLog('Neues Spiel gestartet (einmaliger Reset)');
+    // Funktion zum Hinzufügen von Material
+    function addMaterial(material) {
+        const existingMaterial = gameState.materials.find(m => m.name === material);
+        if (existingMaterial) {
+            existingMaterial.amount++;
         } else {
-            // Normales Laden des Spielstands
-            const savedData = localStorage.getItem('roughTypeGameState');
-            if (savedData) {
-                const data = JSON.parse(savedData);
-                gameState.gold = data.gold || 100;
-                gameState.level = data.level || 1;
-                gameState.maxLevel = data.maxLevel || 1;
-                gameState.defense = data.defense || 0;
-                gameState.inventory = data.inventory || [];
-                gameState.playerHealth = data.playerHealth || 1000;
-                gameState.monstersKilled = data.monstersKilled || 0;
-                gameState.score = data.score || 0;
-                gameState.materials = data.materials || [];
+            gameState.materials.push({ name: material, amount: 1 });
+        }
+        updateDisplay(); // Sofort aktualisieren
+        debugLog(`Added material: ${material}`);
+    }
+
+    // Funktion zum Speichern des Spielstands
+    function saveGameState() {
+        const saveData = {
+            gold: gameState.gold,
+            level: gameState.level,
+            maxLevel: gameState.maxLevel,
+            defense: gameState.defense,
+            inventory: gameState.inventory.map(item => ({
+                ...item,
+                element: null // DOM-Elemente nicht speichern
+            })),
+            playerHealth: gameState.playerHealth,
+            monstersKilled: gameState.monstersKilled,
+            score: gameState.score,
+            materials: gameState.materials
+        };
+        try {
+            localStorage.setItem('roughTypeGameState', JSON.stringify(saveData));
+            debugLog('Spielstand erfolgreich gespeichert');
+        } catch (error) {
+            debugLog('Fehler beim Speichern des Spielstands: ' + error.message);
+            alert('Fehler beim Speichern des Spielstands!');
+        }
+    }
+
+    // Funktion zum Laden des Spielstands
+    function loadGameState() {
+        try {
+            // Prüfe, ob ein Reset-Flag gesetzt ist
+            const resetDone = localStorage.getItem('roughTypeResetDone');
+            
+            if (!resetDone) {
+                // Einmaliger Reset: Lösche vorhandenen Spielstand
+                localStorage.removeItem('roughTypeGameState');
                 
-                // Stelle ausgerüstete Items wieder her
-                gameState.inventory.forEach(item => {
-                    if (item.type === 'equipment' && item.equipped) {
-                        if (item.name === 'shield') {
-                            gameState.defense = Math.max(gameState.defense, 5);
-                        }
-                    }
-                });
-                
-                debugLog('Spielstand erfolgreich geladen');
-            } else {
-                // Kein Spielstand vorhanden, starte neues Spiel
+                // Setze Spielstand auf Standardwerte zurück
                 gameState.gold = 100;
                 gameState.level = 1;
                 gameState.maxLevel = 1;
@@ -2617,296 +2575,337 @@ function loadGameState() {
                 gameState.score = 0;
                 gameState.materials = [];
                 
-                debugLog('Neues Spiel gestartet (kein Spielstand vorhanden)');
+                // Setze das Reset-Flag, damit der Reset nicht wieder durchgeführt wird
+                localStorage.setItem('roughTypeResetDone', 'true');
+                
+                debugLog('Neues Spiel gestartet (einmaliger Reset)');
+            } else {
+                // Normales Laden des Spielstands
+                const savedData = localStorage.getItem('roughTypeGameState');
+                if (savedData) {
+                    const data = JSON.parse(savedData);
+                    gameState.gold = data.gold || 100;
+                    gameState.level = data.level || 1;
+                    gameState.maxLevel = data.maxLevel || 1;
+                    gameState.defense = data.defense || 0;
+                    gameState.inventory = data.inventory || [];
+                    gameState.playerHealth = data.playerHealth || 1000;
+                    gameState.monstersKilled = data.monstersKilled || 0;
+                    gameState.score = data.score || 0;
+                    gameState.materials = data.materials || [];
+                    
+                    // Stelle ausgerüstete Items wieder her
+                    gameState.inventory.forEach(item => {
+                        if (item.type === 'equipment' && item.equipped) {
+                            if (item.name === 'shield') {
+                                gameState.defense = Math.max(gameState.defense, 5);
+                            }
+                        }
+                    });
+                    
+                    debugLog('Spielstand erfolgreich geladen');
+                } else {
+                    // Kein Spielstand vorhanden, starte neues Spiel
+                    gameState.gold = 100;
+                    gameState.level = 1;
+                    gameState.maxLevel = 1;
+                    gameState.defense = 0;
+                    gameState.inventory = [];
+                    gameState.playerHealth = 1000;
+                    gameState.monstersKilled = 0;
+                    gameState.score = 0;
+                    gameState.materials = [];
+                    
+                    debugLog('Neues Spiel gestartet (kein Spielstand vorhanden)');
+                }
             }
+            
+            // Aktualisiere die Anzeige
+            updateDisplay();
+        } catch (error) {
+            debugLog('Fehler beim Laden des Spielstands: ' + error.message);
+            alert('Fehler beim Laden des Spielstands!');
+            
+            // Setze auf Standardwerte zurück bei Fehler
+            gameState.gold = 100;
+            gameState.level = 1;
+            gameState.maxLevel = 1;
+            gameState.defense = 0;
+            gameState.inventory = [];
+            gameState.playerHealth = 1000;
+            gameState.monstersKilled = 0;
+            gameState.score = 0;
+            gameState.materials = [];
+            
+            updateDisplay();
         }
+    }
+
+    // Funktion zum Zurücksetzen des Spielstands
+    function resetGameState() {
+        // Setze alle Werte auf Anfangszustand zurück
+        gameState.playerHealth = 1000;
+        gameState.score = 0;
+        gameState.enemies = [];
+        gameState.inventory = [];
+        gameState.defense = 0;
+        gameState.level = 1;
+        gameState.maxLevel = 1;
+        gameState.monstersKilled = 0;
+        gameState.bossActive = false;
+        gameState.materials = [];
+        
+        // Lösche gespeicherten Spielstand
+        localStorage.removeItem('roughTypeGameState');
+        debugLog('Spielstand zurückgesetzt');
         
         // Aktualisiere die Anzeige
         updateDisplay();
-    } catch (error) {
-        debugLog('Fehler beim Laden des Spielstands: ' + error.message);
-        alert('Fehler beim Laden des Spielstands!');
-        
-        // Setze auf Standardwerte zurück bei Fehler
-        gameState.gold = 100;
-        gameState.level = 1;
-        gameState.maxLevel = 1;
-        gameState.defense = 0;
-        gameState.inventory = [];
-        gameState.playerHealth = 1000;
-        gameState.monstersKilled = 0;
-        gameState.score = 0;
-        gameState.materials = [];
-        
-        updateDisplay();
     }
-}
 
-// Funktion zum Zurücksetzen des Spielstands
-function resetGameState() {
-    // Setze alle Werte auf Anfangszustand zurück
-    gameState.playerHealth = 1000;
-    gameState.score = 0;
-    gameState.enemies = [];
-    gameState.inventory = [];
-    gameState.defense = 0;
-    gameState.level = 1;
-    gameState.maxLevel = 1;
-    gameState.monstersKilled = 0;
-    gameState.bossActive = false;
-    gameState.materials = [];
-    
-    // Lösche gespeicherten Spielstand
-    localStorage.removeItem('roughTypeGameState');
-    debugLog('Spielstand zurückgesetzt');
-    
-    // Aktualisiere die Anzeige
-    updateDisplay();
-}
-
-// Initialisierung aktualisieren
-        window.addEventListener('load', function() {
-            debugLog('Page loaded');
+    // Initialisierung aktualisieren
+            window.addEventListener('load', function() {
+                debugLog('Page loaded');
     loadGameState(); // Lade Spielstand beim Start
     updateDisplay(); // Aktualisiere die Sidebar
-            focusInput();
-            returnToMenu();
+                focusInput();
+                returnToMenu();
     refreshVirtualKeyboard(); // Initiale Tastatur anzeigen
     
     // Stelle sicher, dass die Sidebar immer sichtbar ist
     document.getElementById('statsSidebar').style.display = 'block';
-});
+    });
 
-// Tastatur-Highlight Funktionalität
-document.addEventListener('keydown', function(e) {
-    const key = e.key.toLowerCase();
-    const keyElement = document.querySelector(`.key[data-key="${key}"]`);
-    if (keyElement) {
-        keyElement.classList.add('active');
-    }
-});
-
-document.addEventListener('keyup', function(e) {
-    const key = e.key.toLowerCase();
-    const keyElement = document.querySelector(`.key[data-key="${key}"]`);
-    if (keyElement) {
-        keyElement.classList.remove('active');
-    }
-});
-
-// Neue Funktion für Combat Log Einträge
-function addCombatLogEntry(type, message) {
-    const combatLog = document.getElementById('combatLog');
-    if (!combatLog) return;
-
-    const entry = document.createElement('div');
-    entry.className = `combat-log-entry ${type}`;
-    entry.textContent = message;
-    
-    combatLog.insertBefore(entry, combatLog.firstChild);
-    
-    // Begrenze die Anzahl der Einträge
-    while (combatLog.children.length > 50) {
-        combatLog.removeChild(combatLog.lastChild);
-    }
-}
-
-// Neue Funktion für den Übungsmodus
-function initPracticeMode() {
-    gameState.currentScreen = 'practice';
-    gameState.practiceWord = '';
-    gameState.practiceScore = 0;
-    
-    // Setze die Spielszene zurück
-    const gameScene = document.getElementById('gameScene');
-    gameScene.innerHTML = `
-        <div class="player" id="player" style="bottom: 200px;"></div>
-        <div class="practice-dummy" style="position: absolute; top: 150px; left: 50%; transform: translateX(-50%); width: 60px; height: 60px; background: #888; border-radius: 50%; display: flex; justify-content: center; align-items: center;">
-            <span style="font-size: 24px;">🎯</span>
-        </div>
-        <div class="practice-word" style="position: absolute; top: 100px; left: 50%; transform: translateX(-50%); font-size: 24px; background: var(--debug-bg); padding: 10px; border-radius: 5px;"></div>
-        <div class="practice-score" style="position: absolute; top: 20px; left: 20px; font-size: 18px;">Score: 0</div>
-    `;
-    
-    // Leere den Combat Log
-    const combatLog = document.getElementById('combatLog');
-    combatLog.innerHTML = '';
-    
-    // Füge eine Erklärung hinzu
-    addCombatLogEntry('info', 'Practice Mode: Type the displayed words to practice. There is no time limit.');
-    addCombatLogEntry('info', 'Type "menu" to return to the main menu.');
-    
-    // Generiere das erste Wort
-    generatePracticeWord();
-    
-    // Entferne alten Hinweis falls vorhanden
-    const oldHint = document.querySelector('.menu-hint');
-    if (oldHint) {
-        oldHint.remove();
-    }
-
-    // Füge verbesserten Menü-Hinweis hinzu
-    const hint = document.createElement('div');
-    hint.className = 'menu-hint-improved';
-    hint.innerHTML = '⌨️ Type <strong>"menu"</strong> to return to the main menu';
-    
-    // Hinweis nach 5 Sekunden ausblenden
-    setTimeout(() => {
-        hint.style.opacity = '0';
-        hint.style.transition = 'opacity 1s ease-out';
-        
-        // Nach dem Ausblenden entfernen
-        setTimeout(() => {
-            hint.remove();
-        }, 1000);
-    }, 5000);
-    
-    document.body.appendChild(hint);
-}
-
-// Funktion zum Generieren eines zufälligen Übungswortes
-function generatePracticeWord() {
-    // Sammle alle Monsterwörter aus allen Leveln
-    let allMonsterWords = [];
-    for (let level = 1; level <= 10; level++) {
-        if (enemyTypes[level]) {
-            enemyTypes[level].forEach(enemy => {
-                allMonsterWords.push({
-                    word: enemy.name.toLowerCase(),
-                    icon: enemy.icon
-                });
-            });
-        }
-    }
-    
-    // Füge auch Boss-Wörter hinzu
-    Object.values(bosses).forEach(boss => {
-        allMonsterWords.push({
-            word: boss.name.toLowerCase(),
-            icon: '👑'
-        });
-        
-        // Füge auch Split-Wörter hinzu, falls vorhanden
-        if (boss.splitWords) {
-            boss.splitWords.forEach(word => {
-                allMonsterWords.push({
-                    word: word.toLowerCase(),
-                    icon: '🔥'
-                });
-            });
+    // Tastatur-Highlight Funktionalität
+    document.addEventListener('keydown', function(e) {
+        const key = e.key.toLowerCase();
+        const keyElement = document.querySelector(`.key[data-key="${key}"]`);
+        if (keyElement) {
+            keyElement.classList.add('active');
         }
     });
-    
-    // Wähle ein zufälliges Wort aus
-    const randomMonster = allMonsterWords[Math.floor(Math.random() * allMonsterWords.length)];
-    gameState.practiceWord = randomMonster.word;
-    
-    // Zeige das Wort an
-    const practiceWordElement = document.querySelector('.practice-word');
-    practiceWordElement.innerHTML = `${randomMonster.icon} ${randomMonster.word}`;
-    
-    debugLog(`Neues Übungswort generiert: ${randomMonster.word}`);
-}
 
-// Funktion zum Aktualisieren des Übungsmodus-Scores
-function updatePracticeScore() {
-    gameState.practiceScore++;
-    const scoreElement = document.querySelector('.practice-score');
-    scoreElement.textContent = `Score: ${gameState.practiceScore}`;
-    
-    // Füge einen Eintrag zum Combat Log hinzu
-    addCombatLogEntry('kill', `You correctly typed "${gameState.practiceWord}"!`);
-}
+    document.addEventListener('keyup', function(e) {
+        const key = e.key.toLowerCase();
+        const keyElement = document.querySelector(`.key[data-key="${key}"]`);
+        if (keyElement) {
+            keyElement.classList.remove('active');
+        }
+    });
 
-        // Neue Funktion zum Erstellen und Animieren eines Projektils
-        function createProjectile(targetEnemy) {
-            const gameScene = document.getElementById('gameScene');
-            const player = document.getElementById('player');
-            const projectile = document.createElement('div');
-            projectile.className = 'projectile';
-            
-            // Startposition (Spieler)
-            const playerRect = player.getBoundingClientRect();
-            const gameSceneRect = gameScene.getBoundingClientRect();
-            
-            const startX = playerRect.left + playerRect.width / 2 - gameSceneRect.left;
-            const startY = playerRect.top + playerRect.height / 2 - gameSceneRect.top;
-            
-            // Zielposition (Gegner)
-            const enemyRect = targetEnemy.element.getBoundingClientRect();
-            const targetX = enemyRect.left + enemyRect.width / 2 - gameSceneRect.left;
-            const targetY = enemyRect.top + enemyRect.height / 2 - gameSceneRect.top;
-            
-            projectile.style.left = `${startX}px`;
-            projectile.style.top = `${startY}px`;
-            
-            gameScene.appendChild(projectile);
-            
-            // Animation
-            const duration = 200; // ms
-            const startTime = performance.now();
-            
-            function animateProjectile(currentTime) {
-                const elapsed = currentTime - startTime;
-                const progress = Math.min(elapsed / duration, 1);
-                
-                const currentX = startX + (targetX - startX) * progress;
-                const currentY = startY + (targetY - startY) * progress;
-                
-                projectile.style.left = `${currentX}px`;
-                projectile.style.top = `${currentY}px`;
-                
-                if (progress < 1) {
-                    requestAnimationFrame(animateProjectile);
-                } else {
-                    // Treffer-Animation auslösen
-                    targetEnemy.takeDamage();
-                    
-                    // Projektil ausblenden und entfernen
-                    projectile.style.animation = 'projectileFade 0.2s forwards';
-                    setTimeout(() => {
-                        if (projectile.parentNode) {
-                            projectile.parentNode.removeChild(projectile);
-                        }
-                    }, 200);
-                }
-            }
-            
-            requestAnimationFrame(animateProjectile);
+    // Neue Funktion für Combat Log Einträge
+    function addCombatLogEntry(type, message) {
+        const combatLog = document.getElementById('combatLog');
+        if (!combatLog) return;
+
+        const entry = document.createElement('div');
+        entry.className = `combat-log-entry ${type}`;
+        entry.textContent = message;
+        
+        combatLog.insertBefore(entry, combatLog.firstChild);
+        
+        // Begrenze die Anzahl der Einträge
+        while (combatLog.children.length > 50) {
+            combatLog.removeChild(combatLog.lastChild);
+        }
+    }
+
+    // Neue Funktion für den Übungsmodus
+    function initPracticeMode() {
+        gameState.currentScreen = 'practice';
+        gameState.practiceWord = '';
+        gameState.practiceScore = 0;
+        
+        // Setze die Spielszene zurück
+        const gameScene = document.getElementById('gameScene');
+        gameScene.innerHTML = `
+            <div class="player" id="player" style="bottom: 200px;"></div>
+            <div class="practice-dummy" style="position: absolute; top: 150px; left: 50%; transform: translateX(-50%); width: 60px; height: 60px; background: #888; border-radius: 50%; display: flex; justify-content: center; align-items: center;">
+                <span style="font-size: 24px;">🎯</span>
+            </div>
+            <div class="practice-word" style="position: absolute; top: 100px; left: 50%; transform: translateX(-50%); font-size: 24px; background: var(--debug-bg); padding: 10px; border-radius: 5px;"></div>
+            <div class="practice-score" style="position: absolute; top: 20px; left: 20px; font-size: 18px;">Score: 0</div>
+        `;
+        
+        // Leere den Combat Log
+        const combatLog = document.getElementById('combatLog');
+        combatLog.innerHTML = '';
+        
+        // Füge eine Erklärung hinzu
+        addCombatLogEntry('info', 'Practice Mode: Type the displayed words to practice. There is no time limit.');
+        addCombatLogEntry('info', 'Type "menu" to return to the main menu.');
+        
+        // Generiere das erste Wort
+        generatePracticeWord();
+        
+        // Entferne alten Hinweis falls vorhanden
+        const oldHint = document.querySelector('.menu-hint');
+        if (oldHint) {
+            oldHint.remove();
         }
 
-        // Funktion zum Verkaufen aller Materialien
-        function sellAllMaterials() {
-            debugLog('sellAllMaterials-Funktion aufgerufen');
+        // Füge verbesserten Menü-Hinweis hinzu
+        const hint = document.createElement('div');
+        hint.className = 'menu-hint-improved';
+        hint.innerHTML = '⌨️ Type <strong>"menu"</strong> to return to the main menu';
+        
+        // Hinweis nach 5 Sekunden ausblenden
+        setTimeout(() => {
+            hint.style.opacity = '0';
+            hint.style.transition = 'opacity 1s ease-out';
             
-            if (gameState.materials.length === 0) {
-                alert('You have no materials to sell!');
-                return;
+            // Nach dem Ausblenden entfernen
+            setTimeout(() => {
+                hint.remove();
+            }, 1000);
+        }, 5000);
+        
+        document.body.appendChild(hint);
+    }
+
+    // Funktion zum Generieren eines zufälligen Übungswortes
+    function generatePracticeWord() {
+        // Sammle alle Monsterwörter aus allen Leveln
+        let allMonsterWords = [];
+        for (let level = 1; level <= 10; level++) {
+            if (enemyTypes[level]) {
+                enemyTypes[level].forEach(enemy => {
+                    allMonsterWords.push({
+                        word: enemy.name.toLowerCase(),
+                        icon: enemy.icon
+                    });
+                });
             }
-            
-            let totalGold = 0;
-            let soldItems = 0;
-            
-            // Berechne den Wert aller Materialien (5 Gold pro Material)
-            gameState.materials.forEach(material => {
-                totalGold += material.amount * 5;
-                soldItems += material.amount;
+        }
+        
+        // Füge auch Boss-Wörter hinzu
+        Object.values(bosses).forEach(boss => {
+            allMonsterWords.push({
+                word: boss.name.toLowerCase(),
+                icon: '👑'
             });
             
-            // Füge Gold hinzu und leere das Materials-Array
-            gameState.gold += totalGold;
-            gameState.materials = [];
-            
-            // Aktualisiere die Anzeige
-            updateDisplay();
-            
-            // Zeige eine Erfolgsmeldung an
-            addCombatLogEntry('success', `Sold ${soldItems} materials for ${totalGold} gold!`);
-            alert(`Sold ${soldItems} materials for ${totalGold} gold!`);
-            
-            // Aktualisiere das Inventar
-            showInventory();
-        }
+            // Füge auch Split-Wörter hinzu, falls vorhanden
+            if (boss.splitWords) {
+                boss.splitWords.forEach(word => {
+                    allMonsterWords.push({
+                        word: word.toLowerCase(),
+                        icon: '🔥'
+                    });
+                });
+            }
+        });
+        
+        // Wähle ein zufälliges Wort aus
+        const randomMonster = allMonsterWords[Math.floor(Math.random() * allMonsterWords.length)];
+        gameState.practiceWord = randomMonster.word;
+        
+        // Zeige das Wort an
+        const practiceWordElement = document.querySelector('.practice-word');
+        practiceWordElement.innerHTML = `${randomMonster.icon} ${randomMonster.word}`;
+        
+        debugLog(`Neues Übungswort generiert: ${randomMonster.word}`);
+    }
+
+    // Funktion zum Aktualisieren des Übungsmodus-Scores
+    function updatePracticeScore() {
+        gameState.practiceScore++;
+        const scoreElement = document.querySelector('.practice-score');
+        scoreElement.textContent = `Score: ${gameState.practiceScore}`;
+        
+        // Füge einen Eintrag zum Combat Log hinzu
+        addCombatLogEntry('kill', `You correctly typed "${gameState.practiceWord}"!`);
+    }
+
+            // Neue Funktion zum Erstellen und Animieren eines Projektils
+            function createProjectile(targetEnemy) {
+                const gameScene = document.getElementById('gameScene');
+                const player = document.getElementById('player');
+                const projectile = document.createElement('div');
+                projectile.className = 'projectile';
+                
+                // Startposition (Spieler)
+                const playerRect = player.getBoundingClientRect();
+                const gameSceneRect = gameScene.getBoundingClientRect();
+                
+                const startX = playerRect.left + playerRect.width / 2 - gameSceneRect.left;
+                const startY = playerRect.top + playerRect.height / 2 - gameSceneRect.top;
+                
+                // Zielposition (Gegner)
+                const enemyRect = targetEnemy.element.getBoundingClientRect();
+                const targetX = enemyRect.left + enemyRect.width / 2 - gameSceneRect.left;
+                const targetY = enemyRect.top + enemyRect.height / 2 - gameSceneRect.top;
+                
+                projectile.style.left = `${startX}px`;
+                projectile.style.top = `${startY}px`;
+                
+                gameScene.appendChild(projectile);
+                
+                // Animation
+                const duration = 200; // ms
+                const startTime = performance.now();
+                
+                function animateProjectile(currentTime) {
+                    const elapsed = currentTime - startTime;
+                    const progress = Math.min(elapsed / duration, 1);
+                    
+                    const currentX = startX + (targetX - startX) * progress;
+                    const currentY = startY + (targetY - startY) * progress;
+                    
+                    projectile.style.left = `${currentX}px`;
+                    projectile.style.top = `${currentY}px`;
+                    
+                    if (progress < 1) {
+                        requestAnimationFrame(animateProjectile);
+                    } else {
+                        // Treffer-Animation auslösen
+                        targetEnemy.takeDamage();
+                        
+                        // Projektil ausblenden und entfernen
+                        projectile.style.animation = 'projectileFade 0.2s forwards';
+                        setTimeout(() => {
+                            if (projectile.parentNode) {
+                                projectile.parentNode.removeChild(projectile);
+                            }
+                        }, 200);
+                    }
+                }
+                
+                requestAnimationFrame(animateProjectile);
+            }
+
+            // Funktion zum Verkaufen aller Materialien
+            function sellAllMaterials() {
+                debugLog('sellAllMaterials-Funktion aufgerufen');
+                
+                if (gameState.materials.length === 0) {
+                    alert('You have no materials to sell!');
+                    return;
+                }
+                
+                let totalGold = 0;
+                let soldItems = 0;
+                
+                // Berechne den Wert aller Materialien (5 Gold pro Material)
+                gameState.materials.forEach(material => {
+                    totalGold += material.amount * 5;
+                    soldItems += material.amount;
+                });
+                
+                // Füge Gold hinzu und leere das Materials-Array
+                gameState.gold += totalGold;
+                gameState.materials = [];
+                
+                // Aktualisiere die Anzeige
+                updateDisplay();
+                
+                // Zeige eine Erfolgsmeldung an
+                addCombatLogEntry('success', `Sold ${soldItems} materials for ${totalGold} gold!`);
+                alert(`Sold ${soldItems} materials for ${totalGold} gold!`);
+                
+                // Aktualisiere das Inventar
+                showInventory();
+            }
     </script>
 </body>
 </html> 
