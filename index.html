@@ -2331,12 +2331,24 @@
                     if (typed === gameState.practiceWord) {
                         updatePracticeScore();
                         generatePracticeWord();
+                        // Setze falsch eingetippte Buchstaben zurück
+                        gameState.wrongChars = '';
+                        document.querySelector('.wrong-chars').textContent = '';
                         e.target.value = '';
                     }
                 } else if (typed.length > 0) {
                     // Falsche Eingabe - setze das Wort zurück
                     const practiceWordElement = document.querySelector('.practice-word');
                     practiceWordElement.textContent = gameState.practiceWord;
+                    
+                    // Zeige falsch eingetippte Buchstaben an
+                    const lastChar = typed[typed.length - 1];
+                    if (!gameState.wrongChars.includes(lastChar)) {
+                        gameState.wrongChars += lastChar;
+                    }
+                    const wrongCharsElement = document.querySelector('.wrong-chars');
+                    wrongCharsElement.textContent = `Falsche Buchstaben: ${gameState.wrongChars}`;
+                    
                     e.target.value = '';
                 }
             } else if (gameState.currentScreen === 'game') {
@@ -2723,6 +2735,7 @@
         gameState.currentScreen = 'practice';
         gameState.practiceWord = '';
         gameState.practiceScore = 0;
+        gameState.wrongChars = ''; // Speichert falsch eingetippte Buchstaben
         
         // Setze die Spielszene zurück
         const gameScene = document.getElementById('gameScene');
@@ -2732,6 +2745,7 @@
                 <span style="font-size: 24px;">🎯</span>
             </div>
             <div class="practice-word" style="position: absolute; top: 100px; left: 50%; transform: translateX(-50%); font-size: 24px; background: var(--debug-bg); padding: 10px; border-radius: 5px;"></div>
+            <div class="wrong-chars" style="position: absolute; top: 160px; left: 50%; transform: translateX(-50%); font-size: 18px; color: #ff0000; padding: 5px; border-radius: 3px;"></div>
             <div class="practice-score" style="position: absolute; top: 20px; left: 20px; font-size: 18px;">Score: 0</div>
         `;
         
@@ -2811,6 +2825,13 @@
         // Zeige das Wort an
         const practiceWordElement = document.querySelector('.practice-word');
         practiceWordElement.innerHTML = `${randomMonster.icon} ${randomMonster.word}`;
+        
+        // Setze falsch eingetippte Buchstaben zurück
+        gameState.wrongChars = '';
+        const wrongCharsElement = document.querySelector('.wrong-chars');
+        if (wrongCharsElement) {
+            wrongCharsElement.textContent = '';
+        }
         
         debugLog(`Neues Übungswort generiert: ${randomMonster.word}`);
     }
