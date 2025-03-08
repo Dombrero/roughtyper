@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RoughType</title>
+    <!-- Lade die Datenbankerweiterung -->
+    <script src="Database_extender/levels.js"></script>
+    <script src="Database_extender/mechanics.js"></script>
+    <script src="Database_extender/loader.js"></script>
     <style>
         :root {
             --bg-color: #ffffff;
@@ -2696,15 +2700,21 @@
     // Initialisierung aktualisieren
             window.addEventListener('load', function() {
                 debugLog('Page loaded');
-    loadGameState(); // Lade Spielstand beim Start
-    updateDisplay(); // Aktualisiere die Sidebar
+                
+                // Lade die Datenbankerweiterung
+                if (typeof loadDatabaseExtender === 'function') {
+                    loadDatabaseExtender();
+                }
+                
+                loadGameState(); // Lade Spielstand beim Start
+                updateDisplay(); // Aktualisiere die Sidebar
                 focusInput();
                 returnToMenu();
-    refreshVirtualKeyboard(); // Initiale Tastatur anzeigen
+                refreshVirtualKeyboard(); // Initiale Tastatur anzeigen
     
-    // Stelle sicher, dass die Sidebar immer sichtbar ist
-    document.getElementById('statsSidebar').style.display = 'block';
-});
+                // Stelle sicher, dass die Sidebar immer sichtbar ist
+                document.getElementById('statsSidebar').style.display = 'block';
+            });
 
     // Tastatur-Highlight Funktionalität
     document.addEventListener('keydown', function(e) {

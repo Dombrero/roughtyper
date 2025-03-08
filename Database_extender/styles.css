@@ -1,0 +1,190 @@
+/* Database_extender/styles.css */
+/* Stile für die erweiterten Level 11-19 */
+
+/* Stile für Level 15 Boss (CHRONOS) */
+.enemy-entity.level15boss {
+    width: 120px;
+    height: 120px;
+    background: linear-gradient(135deg, #4b0082, #9400d3);
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 0 20px #9400d3;
+    animation: pulse 2s infinite alternate;
+}
+
+.level15boss .boss-icon {
+    font-size: 40px;
+    margin-bottom: 5px;
+}
+
+.level15boss .boss-name {
+    font-size: 16px;
+    font-weight: bold;
+    color: white;
+}
+
+.enemy-word.level15boss-word {
+    color: #9400d3;
+    font-weight: bold;
+    text-shadow: 0 0 3px #4b0082;
+    font-size: 18px;
+    transition: color 0.3s, text-shadow 0.3s;
+}
+
+/* Stile für Level 19 Boss (NEMESIS) */
+.enemy-entity.level19boss {
+    width: 120px;
+    height: 120px;
+    background: linear-gradient(135deg, #800000, #ff0000);
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 0 20px #ff0000;
+    animation: float 3s infinite alternate;
+}
+
+.level19boss .boss-icon {
+    font-size: 40px;
+    margin-bottom: 5px;
+}
+
+.level19boss .boss-name {
+    font-size: 16px;
+    font-weight: bold;
+    color: white;
+}
+
+.enemy-word.level19boss-word {
+    color: #ff0000;
+    font-weight: bold;
+    text-shadow: 0 0 3px #800000;
+    font-size: 18px;
+}
+
+.enemy-word.level19boss-word.mirrored {
+    color: #ff6600;
+    text-shadow: 0 0 5px #ff6600;
+    transform: scaleX(-1);
+    display: inline-block;
+}
+
+/* Allgemeine Boss-Stile */
+.boss-health-bar {
+    height: 20px;
+    background-color: #333;
+    border-radius: 10px;
+    overflow: hidden;
+    position: relative;
+}
+
+.boss-health-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #ff0000, #ff6600);
+    transition: width 0.3s ease-out;
+}
+
+.boss-health-text {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-weight: bold;
+    font-size: 14px;
+    text-shadow: 1px 1px 2px black;
+}
+
+/* Animationen */
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+    100% {
+        transform: scale(1.1);
+    }
+}
+
+@keyframes float {
+    0% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+    100% {
+        transform: translateY(0);
+    }
+}
+
+/* Stile für erweiterte Gegner */
+.enemy-entity[data-level="11"],
+.enemy-entity[data-level="12"],
+.enemy-entity[data-level="13"],
+.enemy-entity[data-level="14"],
+.enemy-entity[data-level="15"],
+.enemy-entity[data-level="16"],
+.enemy-entity[data-level="17"],
+.enemy-entity[data-level="18"],
+.enemy-entity[data-level="19"] {
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    transition: transform 0.3s;
+}
+
+.enemy-entity[data-level="11"] {
+    background: linear-gradient(135deg, #4b0082, #8a2be2);
+}
+
+.enemy-entity[data-level="12"] {
+    background: linear-gradient(135deg, #006400, #32cd32);
+}
+
+.enemy-entity[data-level="13"] {
+    background: linear-gradient(135deg, #8b4513, #d2691e);
+}
+
+.enemy-entity[data-level="14"] {
+    background: linear-gradient(135deg, #191970, #4169e1);
+}
+
+.enemy-entity[data-level="15"] {
+    background: linear-gradient(135deg, #800080, #da70d6);
+}
+
+.enemy-entity[data-level="16"] {
+    background: linear-gradient(135deg, #8b0000, #ff4500);
+}
+
+.enemy-entity[data-level="17"] {
+    background: linear-gradient(135deg, #ffd700, #ffff00);
+}
+
+.enemy-entity[data-level="18"] {
+    background: linear-gradient(135deg, #2f4f4f, #5f9ea0);
+}
+
+.enemy-entity[data-level="19"] {
+    background: linear-gradient(135deg, #000000, #696969);
+}
+
+/* Hover-Effekt für erweiterte Gegner */
+.enemy-entity[data-level="11"]:hover,
+.enemy-entity[data-level="12"]:hover,
+.enemy-entity[data-level="13"]:hover,
+.enemy-entity[data-level="14"]:hover,
+.enemy-entity[data-level="15"]:hover,
+.enemy-entity[data-level="16"]:hover,
+.enemy-entity[data-level="17"]:hover,
+.enemy-entity[data-level="18"]:hover,
+.enemy-entity[data-level="19"]:hover {
+    transform: scale(1.05);
+} 
