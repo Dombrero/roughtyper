@@ -3,243 +3,296 @@
 
 // Funktion zum Initialisieren des Level 15 Bosses (CHRONOS)
 function initLevel15Boss() {
+    console.log('Initialisiere Level 15 Boss...');
+    
+    // Setze den Boss-Status
     gameState.level15BossActive = true;
-    level15Boss.health = 15; // Reset boss health
-    level15Boss.activeWords = []; // Reset active words
-    level15Boss.lastSpawnTime = 0;
-    level15Boss.lastTimeshiftTime = 0;
-
-    // Entferne alle vorhandenen Gegner
-    for (let i = gameState.enemies.length - 1; i >= 0; i--) {
-        if (gameState.enemies[i].element) {
-            gameState.enemies[i].element.remove();
-        }
-    }
-    gameState.enemies = []; // Leere das Array
-    gameState.bossActive = true; // Setze den Boss-Status, um normale Gegner zu verhindern
-
-    // Hole den Container
-    const gameScene = document.getElementById('gameScene');
-    const gameContainer = document.getElementById('gameContainer');
-    const containerRect = gameContainer.getBoundingClientRect();
+    
+    // Initialisiere den Boss
+    level15Boss = {
+        health: levels[15].boss.health,
+        maxHealth: levels[15].boss.health,
+        gold: levels[15].boss.gold,
+        activeWords: [],
+        maxProjectiles: levels[15].boss.maxProjectiles,
+        wordPool: levels[15].boss.wordPool,
+        element: null,
+        timeshiftActive: false,
+        timeshiftRemaining: 0,
+        timeshiftCooldown: 0,
+        timeshiftInterval: levels[15].boss.timeshiftInterval || 900 // 15 Sekunden bei 60 FPS
+    };
     
     // Erstelle das Boss-Element
+    const gameContainer = document.getElementById('gameContainer');
     const bossElement = document.createElement('div');
-    bossElement.className = 'enemy-entity level15boss';
+    bossElement.id = 'level15Boss';
+    bossElement.className = 'boss';
     bossElement.innerHTML = `
-        <div class="boss-icon">⏳</div>
         <div class="boss-name">CHRONOS</div>
+        <div class="boss-health-bar">
+            <div class="boss-health-fill" style="width: 100%"></div>
+        </div>
     `;
     
-    // Positioniere den Boss in der Mitte des oberen Bereichs
+    // Positioniere den Boss
     bossElement.style.position = 'absolute';
     bossElement.style.top = '50px';
     bossElement.style.left = '50%';
     bossElement.style.transform = 'translateX(-50%)';
-    gameScene.appendChild(bossElement);
+    bossElement.style.width = '200px';
+    bossElement.style.height = '100px';
+    bossElement.style.backgroundColor = 'rgba(148, 0, 211, 0.7)'; // Lila Farbe
+    bossElement.style.color = 'white';
+    bossElement.style.fontWeight = 'bold';
+    bossElement.style.textAlign = 'center';
+    bossElement.style.padding = '10px';
+    bossElement.style.borderRadius = '10px';
+    bossElement.style.boxShadow = '0 0 20px #9400d3';
+    bossElement.style.zIndex = '100';
+    
+    // Füge den Boss zum Spielcontainer hinzu
+    gameContainer.appendChild(bossElement);
+    
+    // Speichere das Boss-Element
     level15Boss.element = bossElement;
-
-    // Erstelle die Health Bar
-    const healthBar = document.createElement('div');
-    healthBar.className = 'boss-health-bar';
-    healthBar.innerHTML = `
-        <div class="boss-health-fill" style="width: 100%;"></div>
-        <div class="boss-health-text">CHRONOS: 15/15</div>
-    `;
-    healthBar.style.position = 'absolute';
-    healthBar.style.top = '10px';
-    healthBar.style.left = '50%';
-    healthBar.style.transform = 'translateX(-50%)';
-    healthBar.style.width = '80%';
-    gameScene.appendChild(healthBar);
-    level15Boss.healthBarElement = healthBar;
-
-    // Füge eine Nachricht zum Combat Log hinzu
-    addCombatLogEntry('boss', 'CHRONOS erscheint! Tippe die Worte, die er auf dich wirft!');
-    addCombatLogEntry('info', 'CHRONOS kann die Zeit manipulieren und die Geschwindigkeit seiner Worte erhöhen!');
+    
+    // Füge einen Eintrag zum Kampflog hinzu
+    addCombatLogEntry('boss', 'CHRONOS erscheint! "ICH BIN DER HERR DER ZEIT!"');
+    
+    // Starte die Boss-Mechanik
+    spawnLevel15BossWord();
+    
+    console.log('Level 15 Boss erfolgreich initialisiert!');
 }
 
-// Funktion zum Spawnen eines Wortes für den Level 15 Boss
+// Funktion zum Erstellen eines Wortes für den Level 15 Boss
 function spawnLevel15BossWord() {
+    // Wenn der Boss nicht aktiv ist oder bereits genug Projektile hat, beende die Funktion
     if (!gameState.level15BossActive || level15Boss.activeWords.length >= level15Boss.maxProjectiles) {
         return;
     }
-
+    
     // Wähle ein zufälliges Wort aus dem Wortpool
-    const randomIndex = Math.floor(Math.random() * level15Boss.wordPool.length);
-    const word = level15Boss.wordPool[randomIndex];
+    const wordIndex = Math.floor(Math.random() * level15Boss.wordPool.length);
+    const word = level15Boss.wordPool[wordIndex];
     
-    console.log('Spawne neues Wort für Level 15 Boss:', word);
-
-    // Hole die Container-Elemente
-    const gameScene = document.getElementById('gameScene');
-    const gameContainer = document.getElementById('gameContainer');
-    const containerRect = gameContainer.getBoundingClientRect();
+    console.log('Erstelle neues Wort für Level 15 Boss:', word);
     
-    // Erstelle das Wort-Element
+    // Erstelle ein DOM-Element für das Wort
     const wordElement = document.createElement('div');
-    wordElement.className = 'enemy-word level15boss-word';
     wordElement.textContent = word;
-    wordElement.setAttribute('data-word', word); // Speichere das Wort als Attribut
+    wordElement.className = 'level15-boss-word';
+    wordElement.id = 'level15-boss-word-' + Date.now();
     
-    // Füge das Element zum DOM hinzu, um seine Größe zu messen
+    // Stelle sicher, dass das Wort vollständig im Container sichtbar ist
+    const gameContainer = document.getElementById('gameContainer');
+    const containerWidth = gameContainer.offsetWidth;
+    const containerHeight = gameContainer.offsetHeight;
+    
+    // Berechne die minimale und maximale X-Position, damit das Wort vollständig sichtbar ist
+    const wordWidth = word.length * 12; // Geschätzte Breite basierend auf der Wortlänge
+    const minX = 20;
+    const maxX = containerWidth - wordWidth - 20;
+    
+    // Positioniere das Wort relativ zum Boss
+    const bossElement = document.getElementById('level15Boss');
+    let bossX = 0;
+    let bossY = 0;
+    
+    if (bossElement) {
+        const bossRect = bossElement.getBoundingClientRect();
+        const containerRect = gameContainer.getBoundingClientRect();
+        bossX = bossRect.left - containerRect.left + bossRect.width / 2;
+        bossY = bossRect.top - containerRect.top + bossRect.height / 2;
+    } else {
+        // Fallback, wenn das Boss-Element nicht gefunden wird
+        bossX = containerWidth / 2;
+        bossY = 100;
+    }
+    
+    // Setze die CSS-Eigenschaften für das Wort
     wordElement.style.position = 'absolute';
-    wordElement.style.visibility = 'hidden'; // Verstecke es zunächst
-    gameScene.appendChild(wordElement);
-    
-    // Messe die Größe des Wortelements
-    const wordRect = wordElement.getBoundingClientRect();
-    const wordWidth = wordRect.width;
-    
-    // Hole die Position des Bosses relativ zum Container
-    const bossElement = level15Boss.element;
-    const bossRect = bossElement.getBoundingClientRect();
-    
-    // Berechne die Position des Bosses relativ zum Container
-    const containerLeft = containerRect.left;
-    const containerTop = containerRect.top;
-    const bossLeft = bossRect.left - containerLeft;
-    const bossCenter = bossLeft + bossRect.width / 2;
-    const bossBottom = bossRect.bottom - containerTop;
-    
-    // Berechne die Grenzen des Containers
-    const containerWidth = containerRect.width;
-    
-    // Stelle sicher, dass das Wort vollständig im Spielfeld ist
-    // Verwende relative Positionen zum Container
-    const minX = wordWidth / 2; // Mindestabstand vom linken Rand
-    const maxX = containerWidth - wordWidth / 2; // Maximalabstand vom linken Rand
-    
-    // Begrenze die X-Position, damit das Wort vollständig sichtbar ist
-    // Zentriere das Wort unter dem Boss, aber halte es im Container
-    const startX = Math.max(minX, Math.min(maxX, bossCenter));
-    
-    // Mache das Wort sichtbar und positioniere es relativ zum Container
     wordElement.style.visibility = 'visible';
-    wordElement.style.left = `${startX - wordWidth / 2}px`; // Zentriere das Wort
-    wordElement.style.top = `${bossBottom + 10}px`;
-    
-    // Füge eine CSS-Klasse hinzu, um sicherzustellen, dass das Wort hervorgehoben wird
-    wordElement.style.zIndex = '1000'; // Stelle sicher, dass das Wort über anderen Elementen liegt
-    wordElement.style.color = '#9400d3'; // Lila Farbe
+    wordElement.style.color = '#9932CC'; // Lila Farbe
     wordElement.style.fontWeight = 'bold';
-    wordElement.style.textShadow = '0 0 5px #9400d3';
-    wordElement.style.fontSize = '20px';
-    wordElement.style.padding = '5px 10px';
-    wordElement.style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
+    wordElement.style.fontSize = '18px';
+    wordElement.style.textShadow = '0 0 5px #fff, 0 0 10px #fff';
+    wordElement.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+    wordElement.style.padding = '5px';
     wordElement.style.borderRadius = '5px';
-
-    // Berechne die Richtung zum Spieler
+    wordElement.style.zIndex = '1000'; // Hoher z-index, um sicherzustellen, dass es über anderen Elementen liegt
+    wordElement.style.pointerEvents = 'none'; // Verhindert, dass das Wort Mausklicks blockiert
+    
+    // Berechne eine zufällige X-Position innerhalb der sichtbaren Grenzen
+    const x = Math.random() * (maxX - minX) + minX;
+    // Setze die Y-Position nahe dem Boss
+    const y = bossY + Math.random() * 40 - 20;
+    
+    wordElement.style.left = x + 'px';
+    wordElement.style.top = y + 'px';
+    
+    // Füge das Wort zum Spielcontainer hinzu
+    gameContainer.appendChild(wordElement);
+    
+    // Berechne die Richtung und Geschwindigkeit des Wortes basierend auf der Position des Spielers
     const playerElement = document.getElementById('player');
-    const playerRect = playerElement.getBoundingClientRect();
-    const playerLeft = playerRect.left - containerLeft;
-    const playerTop = playerRect.top - containerTop;
-    const playerCenter = playerLeft + playerRect.width / 2;
+    let playerX = containerWidth / 2;
+    let playerY = containerHeight - 100;
     
-    // Berechne den Winkel zum Spieler mit relativen Koordinaten
-    const deltaX = playerCenter - startX;
-    const deltaY = playerTop - (bossBottom + 10);
-    const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
-    const angle = Math.atan2(deltaY, deltaX);
+    if (playerElement) {
+        const playerRect = playerElement.getBoundingClientRect();
+        const containerRect = gameContainer.getBoundingClientRect();
+        playerX = playerRect.left - containerRect.left + playerRect.width / 2;
+        playerY = playerRect.top - containerRect.top + playerRect.height / 2;
+    }
     
-    // Berechne die Geschwindigkeitskomponenten (noch langsamer)
-    const baseSpeed = 0.3 + Math.random() * 0.2; // Stark reduzierte Basisgeschwindigkeit
-    const speedX = Math.cos(angle) * baseSpeed;
-    const speedY = Math.sin(angle) * baseSpeed;
-
-    // Erstelle das Wortobjekt
+    // Berechne den Richtungsvektor zum Spieler
+    const dx = playerX - x;
+    const dy = playerY - y;
+    const distance = Math.sqrt(dx * dx + dy * dy);
+    
+    // Normalisiere den Richtungsvektor und multipliziere mit der Geschwindigkeit
+    const speed = 1.5;
+    const vx = (dx / distance) * speed;
+    const vy = (dy / distance) * speed;
+    
+    // Erstelle ein Wortobjekt und füge es zur Liste der aktiven Wörter hinzu
     const wordObj = {
-        word: word, // Speichere das Wort
+        word: word,
         element: wordElement,
-        position: { x: startX - wordWidth / 2, y: bossBottom + 10 },
-        velocity: { x: speedX, y: speedY }, // Geschwindigkeitsvektor
-        speed: baseSpeed, // Basisgeschwindigkeit für Timeshift
-        timeShifted: false,
-        width: wordWidth // Speichere die Breite des Wortes
+        x: x,
+        y: y,
+        vx: vx,
+        vy: vy
     };
     
-    // Füge das Wort zur Liste der aktiven Worte hinzu
     level15Boss.activeWords.push(wordObj);
     
-    console.log('Wort zur Liste hinzugefügt:', wordObj);
-    console.log('Aktive Wörter:', level15Boss.activeWords.map(w => w.word));
-
-    // Versuche, ein weiteres Wort zu spawnen, wenn noch Platz ist
+    // Versuche, ein weiteres Wort zu erstellen, wenn noch nicht genug Projektile vorhanden sind
     if (level15Boss.activeWords.length < level15Boss.maxProjectiles) {
-        setTimeout(spawnLevel15BossWord, 1000 + Math.random() * 1000);
+        setTimeout(spawnLevel15BossWord, 1000);
     }
 }
 
 // Funktion zum Entfernen eines Wortes des Level 15 Bosses
 function removeLevel15BossWord(index) {
-    if (index < 0 || index >= level15Boss.activeWords.length) {
-        console.error('Ungültiger Index beim Entfernen eines Level 15 Boss-Wortes:', index);
+    // Stelle sicher, dass level15Boss.activeWords existiert und ein Array ist
+    if (!level15Boss.activeWords || !Array.isArray(level15Boss.activeWords)) {
+        console.error('level15Boss.activeWords ist nicht definiert oder kein Array!');
         return;
     }
     
-    const word = level15Boss.activeWords[index];
-    console.log('Entferne Wort:', word.word, 'an Index:', index);
-    
-    if (word.element) {
-        word.element.remove();
+    // Stelle sicher, dass der Index gültig ist
+    if (index < 0 || index >= level15Boss.activeWords.length) {
+        console.error('Ungültiger Index für removeLevel15BossWord:', index);
+        return;
     }
     
+    // Hole das Wortobjekt
+    const wordObj = level15Boss.activeWords[index];
+    
+    // Überprüfe, ob das Wortobjekt gültig ist
+    if (!wordObj) {
+        console.error('Ungültiges Wortobjekt gefunden:', wordObj);
+        level15Boss.activeWords.splice(index, 1);
+        return;
+    }
+    
+    console.log('Entferne Wort:', wordObj.word);
+    
+    // Entferne das DOM-Element, wenn es existiert
+    if (wordObj.element && wordObj.element.parentNode) {
+        wordObj.element.parentNode.removeChild(wordObj.element);
+    }
+    
+    // Entferne das Wortobjekt aus dem Array
     level15Boss.activeWords.splice(index, 1);
-    console.log('Aktive Wörter nach Entfernen:', level15Boss.activeWords.map(w => w.word));
 }
 
-// Funktion zum Aktualisieren der Health Bar des Level 15 Bosses
+// Funktion zum Aktualisieren der Gesundheitsanzeige des Level 15 Bosses
 function updateLevel15BossHealth() {
-    if (!level15Boss.healthBarElement) return;
-
-    const healthPercent = (level15Boss.health / 15) * 100;
-    const healthFill = level15Boss.healthBarElement.querySelector('.boss-health-fill');
-    const healthText = level15Boss.healthBarElement.querySelector('.boss-health-text');
+    // Stelle sicher, dass der Boss aktiv ist
+    if (!gameState.level15BossActive) {
+        return;
+    }
     
-    healthFill.style.width = `${healthPercent}%`;
-    healthText.textContent = `CHRONOS: ${level15Boss.health}/15`;
+    // Stelle sicher, dass das Boss-Element existiert
+    if (!level15Boss.element) {
+        console.error('Boss-Element nicht gefunden!');
+        return;
+    }
+    
+    // Finde die Gesundheitsanzeige
+    const healthFill = level15Boss.element.querySelector('.boss-health-fill');
+    if (!healthFill) {
+        console.error('Gesundheitsanzeige nicht gefunden!');
+        return;
+    }
+    
+    // Berechne den Prozentsatz der verbleibenden Gesundheit
+    const healthPercent = (level15Boss.health / level15Boss.maxHealth) * 100;
+    
+    // Aktualisiere die Breite der Gesundheitsanzeige
+    healthFill.style.width = healthPercent + '%';
+    
+    // Ändere die Farbe der Gesundheitsanzeige basierend auf dem Gesundheitszustand
+    if (healthPercent > 66) {
+        healthFill.style.backgroundColor = '#00ff00'; // Grün
+    } else if (healthPercent > 33) {
+        healthFill.style.backgroundColor = '#ffff00'; // Gelb
+    } else {
+        healthFill.style.backgroundColor = '#ff0000'; // Rot
+    }
+    
+    // Aktualisiere den Text der Boss-Anzeige
+    const bossName = level15Boss.element.querySelector('.boss-name');
+    if (bossName) {
+        bossName.textContent = `CHRONOS (${level15Boss.health}/${level15Boss.maxHealth})`;
+    }
 }
 
 // Funktion zum Besiegen des Level 15 Bosses
 function defeatLevel15Boss() {
+    console.log('Level 15 Boss besiegt!');
+    
+    // Stelle sicher, dass der Boss aktiv ist
+    if (!gameState.level15BossActive) {
+        console.error('Level 15 Boss ist nicht aktiv!');
+        return;
+    }
+    
+    // Deaktiviere den Boss
     gameState.level15BossActive = false;
-    gameState.bossActive = false; // Setze den Boss-Status zurück, um normale Gegner wieder zu erlauben
-
+    gameState.bossActive = false;
+    
+    // Entferne alle aktiven Wörter
+    while (level15Boss.activeWords.length > 0) {
+        removeLevel15BossWord(0);
+    }
+    
     // Entferne das Boss-Element
-    if (level15Boss.element) {
-        level15Boss.element.remove();
-        level15Boss.element = null;
+    if (level15Boss.element && level15Boss.element.parentNode) {
+        level15Boss.element.parentNode.removeChild(level15Boss.element);
     }
-
-    // Entferne die Health Bar
-    if (level15Boss.healthBarElement) {
-        level15Boss.healthBarElement.remove();
-        level15Boss.healthBarElement = null;
-    }
-
-    // Entferne alle aktiven Worte
-    level15Boss.activeWords.forEach(word => {
-        if (word.element) {
-            word.element.remove();
-        }
-    });
-    level15Boss.activeWords = [];
-
-    // Belohne den Spieler
-    gameState.gold += level15Boss.goldReward;
-    gameState.score += 150;
-
-    // Level Up
-    gameState.level++;
-    gameState.maxLevel = Math.max(gameState.level, gameState.maxLevel);
-    gameState.monstersKilled = 0;
-
-    // Benachrichtige den Spieler
-    alert(`Boss besiegt! Du bist jetzt Level ${gameState.level}!`);
-    addCombatLogEntry('kill', `Du hast CHRONOS besiegt! ${level15Boss.goldReward} Gold erhalten!`);
-
+    
+    // Füge Gold hinzu
+    gameState.gold += level15Boss.gold;
+    
+    // Füge einen Eintrag zum Kampflog hinzu
+    addCombatLogEntry('victory', `Du hast CHRONOS besiegt! +${level15Boss.gold} Gold!`);
+    
+    // Aktualisiere die Anzeige
+    updateDisplay();
+    
     // Speichere den Spielstand
     saveGameState();
+    
+    // Prüfe, ob der Spieler das Level abgeschlossen hat
+    if (gameState.level === 15) {
+        // Erhöhe das Level
+        levelUp();
+    }
 }
 
 // Funktion zum Initialisieren des Level 19 Bosses (NEMESIS)
@@ -398,101 +451,180 @@ function defeatLevel19Boss() {
     saveGameState();
 }
 
-// Funktion zum Aktualisieren der Level 15 Boss Mechanik im Game Loop
-function updateLevel15Boss(timestamp) {
-    if (!gameState.level15BossActive) return;
-
-    // Spawne neue Worte
-    if (timestamp - level15Boss.lastSpawnTime > 3000 && level15Boss.activeWords.length < level15Boss.maxProjectiles) {
-        spawnLevel15BossWord();
-        level15Boss.lastSpawnTime = timestamp;
+// Funktion zum Aktualisieren der Wörter des Level 15 Bosses
+function updateLevel15BossWords() {
+    // Wenn der Boss nicht aktiv ist, beende die Funktion
+    if (!gameState.level15BossActive) {
+        return;
     }
-
-    // Zeitverschiebung (Timeshift) - erhöht die Geschwindigkeit der Worte
-    if (timestamp - level15Boss.lastTimeshiftTime > level15Boss.timeshiftInterval) {
-        // Aktiviere Timeshift
-        addCombatLogEntry('boss', 'CHRONOS manipuliert die Zeit! Die Worte bewegen sich schneller!');
+    
+    // Stelle sicher, dass level15Boss.activeWords existiert und ein Array ist
+    if (!level15Boss.activeWords || !Array.isArray(level15Boss.activeWords)) {
+        console.error('level15Boss.activeWords ist nicht definiert oder kein Array!');
+        level15Boss.activeWords = [];
+        return;
+    }
+    
+    // Hole die Dimensionen des Spielcontainers
+    const gameContainer = document.getElementById('gameContainer');
+    const containerWidth = gameContainer.offsetWidth;
+    const containerHeight = gameContainer.offsetHeight;
+    
+    // Hole die Position des Spielers
+    const playerElement = document.getElementById('player');
+    let playerX = containerWidth / 2;
+    let playerY = containerHeight - 100;
+    
+    if (playerElement) {
+        const playerRect = playerElement.getBoundingClientRect();
+        const containerRect = gameContainer.getBoundingClientRect();
+        playerX = playerRect.left - containerRect.left + playerRect.width / 2;
+        playerY = playerRect.top - containerRect.top + playerRect.height / 2;
+    }
+    
+    // Durchlaufe alle aktiven Wörter rückwärts, um sie sicher entfernen zu können
+    for (let i = level15Boss.activeWords.length - 1; i >= 0; i--) {
+        const wordObj = level15Boss.activeWords[i];
         
-        level15Boss.activeWords.forEach(word => {
-            if (!word.timeShifted) {
-                // Erhöhe die Geschwindigkeit
-                word.velocity.x *= level15Boss.speedMultiplier;
-                word.velocity.y *= level15Boss.speedMultiplier;
-                word.timeShifted = true;
-                
-                // Visueller Effekt für Timeshift
-                if (word.element) {
-                    word.element.style.color = '#ff00ff';
-                    word.element.style.textShadow = '0 0 5px #ff00ff';
+        // Überprüfe, ob das Wortobjekt gültig ist
+        if (!wordObj || !wordObj.element) {
+            console.error('Ungültiges Wortobjekt gefunden:', wordObj);
+            level15Boss.activeWords.splice(i, 1);
+            continue;
+        }
+        
+        // Aktualisiere die Position des Wortes
+        wordObj.x += wordObj.vx;
+        wordObj.y += wordObj.vy;
+        
+        // Aktualisiere die Position des DOM-Elements
+        wordObj.element.style.left = wordObj.x + 'px';
+        wordObj.element.style.top = wordObj.y + 'px';
+        
+        // Überprüfe, ob das Wort den Spieler getroffen hat
+        const wordWidth = wordObj.element.offsetWidth;
+        const wordHeight = wordObj.element.offsetHeight;
+        const wordCenterX = wordObj.x + wordWidth / 2;
+        const wordCenterY = wordObj.y + wordHeight / 2;
+        
+        // Berechne den Abstand zwischen dem Wort und dem Spieler
+        const dx = wordCenterX - playerX;
+        const dy = wordCenterY - playerY;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        
+        // Wenn das Wort den Spieler getroffen hat
+        if (distance < 30) { // Angenommener Kollisionsradius
+            console.log('Spieler wurde von Wort getroffen:', wordObj.word);
+            
+            // Füge einen Eintrag zum Kampflog hinzu
+            addCombatLogEntry('damage', `Du wurdest von "${wordObj.word}" getroffen!`);
+            
+            // Füge Schaden hinzu
+            takeDamage(1);
+            
+            // Entferne das Wort
+            removeLevel15BossWord(i);
+            continue;
+        }
+        
+        // Überprüfe, ob das Wort außerhalb des Spielbereichs ist
+        if (wordObj.x < -wordWidth || wordObj.x > containerWidth || 
+            wordObj.y < -wordHeight || wordObj.y > containerHeight) {
+            console.log('Wort außerhalb des Spielbereichs:', wordObj.word);
+            
+            // Entferne das Wort
+            removeLevel15BossWord(i);
+            continue;
+        }
+    }
+    
+    // Wenn der Boss aktiv ist und nicht genug Wörter hat, erstelle ein neues Wort
+    if (gameState.level15BossActive && level15Boss.activeWords.length < level15Boss.maxProjectiles) {
+        if (Math.random() < 0.05) { // 5% Chance pro Frame, ein neues Wort zu erstellen
+            spawnLevel15BossWord();
+        }
+    }
+}
+
+// Funktion zum Aktualisieren der Level 15 Boss Mechanik im Game Loop
+function updateLevel15Boss() {
+    // Wenn der Boss nicht aktiv ist, beende die Funktion
+    if (!gameState.level15BossActive) {
+        return;
+    }
+    
+    // Aktualisiere die Wörter des Bosses
+    updateLevel15BossWords();
+    
+    // Timeshift-Mechanik
+    if (level15Boss.timeshiftActive) {
+        // Wenn Timeshift aktiv ist, verlangsame die Wörter
+        for (let i = 0; i < level15Boss.activeWords.length; i++) {
+            const word = level15Boss.activeWords[i];
+            if (word) {
+                // Reduziere die Geschwindigkeit der Wörter
+                word.vx *= 0.95;
+                word.vy *= 0.95;
+            }
+        }
+        
+        // Reduziere die verbleibende Timeshift-Zeit
+        level15Boss.timeshiftRemaining--;
+        
+        // Wenn die Timeshift-Zeit abgelaufen ist, deaktiviere Timeshift
+        if (level15Boss.timeshiftRemaining <= 0) {
+            level15Boss.timeshiftActive = false;
+            level15Boss.timeshiftCooldown = level15Boss.timeshiftInterval;
+            
+            // Setze die Geschwindigkeit der Wörter zurück
+            for (let i = 0; i < level15Boss.activeWords.length; i++) {
+                const word = level15Boss.activeWords[i];
+                if (word) {
+                    // Berechne die Richtung und Geschwindigkeit des Wortes neu
+                    const gameContainer = document.getElementById('gameContainer');
+                    const containerWidth = gameContainer.offsetWidth;
+                    const containerHeight = gameContainer.offsetHeight;
+                    
+                    // Hole die Position des Spielers
+                    const playerElement = document.getElementById('player');
+                    let playerX = containerWidth / 2;
+                    let playerY = containerHeight - 100;
+                    
+                    if (playerElement) {
+                        const playerRect = playerElement.getBoundingClientRect();
+                        const containerRect = gameContainer.getBoundingClientRect();
+                        playerX = playerRect.left - containerRect.left + playerRect.width / 2;
+                        playerY = playerRect.top - containerRect.top + playerRect.height / 2;
+                    }
+                    
+                    // Berechne den Richtungsvektor zum Spieler
+                    const dx = playerX - word.x;
+                    const dy = playerY - word.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    // Normalisiere den Richtungsvektor und multipliziere mit der Geschwindigkeit
+                    const speed = 1.5;
+                    word.vx = (dx / distance) * speed;
+                    word.vy = (dy / distance) * speed;
                 }
             }
-        });
-        
-        level15Boss.lastTimeshiftTime = timestamp;
-    }
-
-    // Bewege die Worte
-    for (let i = level15Boss.activeWords.length - 1; i >= 0; i--) {
-        const word = level15Boss.activeWords[i];
-        
-        // Aktualisiere die Position basierend auf der Geschwindigkeit
-        word.position.x += word.velocity.x;
-        word.position.y += word.velocity.y;
-        
-        if (word.element) {
-            word.element.style.left = `${word.position.x}px`;
-            word.element.style.top = `${word.position.y}px`;
+            
+            // Benachrichtige den Spieler
+            addCombatLogEntry('info', 'CHRONOS: "Die Zeit fließt wieder normal!"');
         }
-        
-        // Hole die Container- und Spieler-Elemente
-        const gameContainer = document.getElementById('gameContainer');
-        const containerRect = gameContainer.getBoundingClientRect();
-        const playerElement = document.getElementById('player');
-        const playerRect = playerElement.getBoundingClientRect();
-        
-        // Berechne die Position des Spielers relativ zum Container
-        const containerLeft = containerRect.left;
-        const containerTop = containerRect.top;
-        const playerLeft = playerRect.left - containerLeft;
-        const playerRight = playerRect.right - containerLeft;
-        const playerTop = playerRect.top - containerTop;
-        const playerBottom = playerRect.bottom - containerTop;
-        
-        // Verbesserte Kollisionserkennung mit dem Spieler (mit relativen Koordinaten)
-        if (word.position.y + 20 > playerTop && // Wort ist unterhalb der Oberkante des Spielers
-            word.position.y < playerBottom && // Wort ist oberhalb der Unterkante des Spielers
-            word.position.x + word.width > playerLeft && // Rechte Kante des Wortes ist rechts von der linken Kante des Spielers
-            word.position.x < playerRight) { // Linke Kante des Wortes ist links von der rechten Kante des Spielers
-            
-            // Spieler nimmt Schaden
-            gameState.playerHealth -= 20;
-            addCombatLogEntry('damage', `Du wurdest von "${word.word}" getroffen! -20 HP`);
-            
-            // Entferne das Wort
-            removeLevel15BossWord(i);
-            
-            // Prüfe, ob der Spieler tot ist
-            if (gameState.playerHealth <= 0) {
-                gameOver();
-                return;
+    } else {
+        // Wenn Timeshift nicht aktiv ist, reduziere den Cooldown
+        if (level15Boss.timeshiftCooldown > 0) {
+            level15Boss.timeshiftCooldown--;
+        } else {
+            // Wenn der Cooldown abgelaufen ist, aktiviere Timeshift
+            if (Math.random() < 0.01) { // 1% Chance pro Frame, Timeshift zu aktivieren
+                level15Boss.timeshiftActive = true;
+                level15Boss.timeshiftRemaining = 300; // 5 Sekunden bei 60 FPS
+                
+                // Benachrichtige den Spieler
+                addCombatLogEntry('info', 'CHRONOS: "ZEIT, STEHE STILL!"');
             }
-            
-            // Aktualisiere die Anzeige
-            updateDisplay();
-            continue; // Überspringe den Rest der Schleife für dieses Wort
-        }
-        
-        // Prüfe, ob das Wort außerhalb des Bildschirms ist (mit relativen Koordinaten)
-        const containerWidth = containerRect.width;
-        const containerHeight = containerRect.height;
-        
-        if (word.position.x + word.width < 0 || // Wort ist links vom Spielfeld
-            word.position.x > containerWidth || // Wort ist rechts vom Spielfeld
-            word.position.y + 30 < 0 || // Wort ist oberhalb des Spielfelds
-            word.position.y > containerHeight) { // Wort ist unterhalb des Spielfelds
-            
-            // Entferne das Wort
-            removeLevel15BossWord(i);
         }
     }
 }
