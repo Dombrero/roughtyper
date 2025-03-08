@@ -2901,101 +2901,115 @@ function updatePracticeScore() {
             // (kann nur bis zum höchsten erreichten Level oder maximal 10 auswählen)
             const maxSelectableLevel = Math.min(gameState.maxLevel, 10);
             
-            let levelOptions = '';
+            // Erstelle das HTML für die Level-Auswahl
+            let levelButtonsHTML = '';
             for (let i = 1; i <= maxSelectableLevel; i++) {
-                levelOptions += `<div class="menu-option level-option" data-level="${i}">level ${i}</div>`;
+                const specialClass = i === 10 ? 'boss-level' : '';
+                const bossLabel = i === 10 ? '<span class="boss-label">BOSS</span>' : '';
+                levelButtonsHTML += `<button class="level-button ${specialClass}" data-level="${i}">Level ${i} ${bossLabel}</button>`;
             }
             
+            // Erstelle das HTML für das Menü
             gameScene.innerHTML = `
-                <div class="menu-container">
+                <div class="level-select-container">
                     <h2>Select Starting Level</h2>
                     <p>Choose a level to start from (up to your highest reached level):</p>
-                    <div class="level-selection">
-                        ${levelOptions}
+                    
+                    <div class="level-buttons-grid">
+                        ${levelButtonsHTML}
                     </div>
-                    <div class="menu-hint">Type "level X" to select a level, or "menu" to go back</div>
+                    
+                    <button class="back-button" id="backToMenuButton">Back to Menu</button>
                 </div>
             `;
             
-            // Füge einen Hinweis hinzu, der nach 5 Sekunden verschwindet
-            const menuHint = document.createElement('div');
-            menuHint.className = 'menu-hint-improved';
-            menuHint.innerHTML = 'Type <strong>menu</strong> to return to main menu';
-            document.body.appendChild(menuHint);
+            // Füge CSS für das neue Menü hinzu
+            const style = document.createElement('style');
+            style.textContent = `
+                .level-select-container {
+                    max-width: 800px;
+                    margin: 0 auto;
+                    padding: 20px;
+                    text-align: center;
+                }
+                
+                .level-buttons-grid {
+                    display: grid;
+                    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                    gap: 15px;
+                    margin: 30px 0;
+                }
+                
+                .level-button {
+                    background-color: #4CAF50;
+                    color: white;
+                    border: none;
+                    padding: 15px 10px;
+                    font-size: 18px;
+                    border-radius: 5px;
+                    cursor: pointer;
+                    transition: all 0.3s;
+                    position: relative;
+                }
+                
+                .level-button:hover {
+                    transform: translateY(-3px);
+                    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+                }
+                
+                .level-button.boss-level {
+                    background-color: #ff9800;
+                    font-weight: bold;
+                }
+                
+                .boss-label {
+                    position: absolute;
+                    top: -10px;
+                    right: -10px;
+                    background-color: #f44336;
+                    color: white;
+                    font-size: 12px;
+                    padding: 3px 6px;
+                    border-radius: 10px;
+                }
+                
+                .back-button {
+                    background-color: #607d8b;
+                    color: white;
+                    border: none;
+                    padding: 12px 25px;
+                    font-size: 16px;
+                    border-radius: 5px;
+                    cursor: pointer;
+                    margin-top: 20px;
+                    transition: all 0.3s;
+                }
+                
+                .back-button:hover {
+                    background-color: #455a64;
+                }
+            `;
+            document.head.appendChild(style);
             
-            setTimeout(() => {
-                menuHint.style.opacity = '0';
-                setTimeout(() => {
-                    if (menuHint.parentNode) {
-                        menuHint.parentNode.removeChild(menuHint);
-                    }
-                }, 1000);
-            }, 5000);
-            
-            // Füge Klick-Events zu den Level-Optionen hinzu
-            const levelElements = document.querySelectorAll('.level-option');
-            levelElements.forEach(option => {
-                option.addEventListener('click', function() {
+            // Event-Listener für Level-Buttons
+            const levelButtons = document.querySelectorAll('.level-button');
+            levelButtons.forEach(button => {
+                button.addEventListener('click', function() {
                     const level = parseInt(this.getAttribute('data-level'));
                     startGameAtLevel(level);
                 });
             });
             
-            // Leere und fokussiere das Eingabefeld
-            const inputField = document.getElementById('gameInput');
-            inputField.value = '';
-            inputField.focus();
-            
-            // Entferne alle vorherigen Event-Listener
-            const newInputField = inputField.cloneNode(true);
-            inputField.parentNode.replaceChild(newInputField, inputField);
-            
-            // Füge einen neuen Event-Listener hinzu
-            newInputField.addEventListener('input', function(event) {
-                const typed = event.target.value.trim().toLowerCase();
-                
-                // Wenn "menu" eingegeben wurde, zurück zum Hauptmenü
-                if (typed === 'menu') {
-                    event.target.value = '';
-                    returnToMenu();
-                    return;
-                }
-                
-                // Erstelle eine Liste der verfügbaren Level-Optionen
-                const levelOptions = [];
-                for (let i = 1; i <= maxSelectableLevel; i++) {
-                    levelOptions.push(`level ${i}`);
-                }
-                
-                // Markiere die korrekt getippten Buchstaben in den Level-Optionen
-                const levelElements = document.querySelectorAll('.level-option');
-                levelElements.forEach(option => {
-                    const text = option.textContent.toLowerCase();
-                    let html = '';
-                    
-                    if (text.startsWith(typed)) {
-                        for(let i = 0; i < text.length; i++) {
-                            if (i < typed.length) {
-                                html += `<span class="correct">${text[i]}</span>`;
-                            } else {
-                                html += text[i];
-                            }
-                        }
-                    } else {
-                        html = text;
-                    }
-                    
-                    option.innerHTML = html;
-                });
-                
-                // Prüfe auf exakte Übereinstimmung
-                const exactMatch = levelOptions.find(option => option === typed);
-                if (exactMatch) {
-                    const selectedLevel = parseInt(exactMatch.replace('level ', ''));
-                    event.target.value = '';
-                    startGameAtLevel(selectedLevel);
-                }
+            // Event-Listener für den Zurück-Button
+            document.getElementById('backToMenuButton').addEventListener('click', function() {
+                returnToMenu();
             });
+            
+            // Leere das Eingabefeld, um Probleme zu vermeiden
+            const inputField = document.getElementById('gameInput');
+            if (inputField) {
+                inputField.value = '';
+            }
         }
 
         // Funktion zum Starten des Spiels mit einem ausgewählten Level
