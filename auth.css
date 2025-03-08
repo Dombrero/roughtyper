@@ -88,6 +88,24 @@
   }
 }
 
+.auth-error {
+  background-color: rgba(244, 67, 54, 0.2);
+  border: 1px solid #f44336;
+  border-radius: 4px;
+  padding: 8px 12px;
+  font-size: 12px;
+  text-align: center;
+}
+
+.auth-error p {
+  margin: 0 0 4px 0;
+  font-weight: bold;
+}
+
+.auth-error small {
+  opacity: 0.8;
+}
+
 /* Responsive adjustments */
 @media (max-width: 600px) {
   .auth-container {

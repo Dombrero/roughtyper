@@ -2,14 +2,29 @@
 // Handles user authentication with Google Firebase
 
 // Firebase Configuration
+// WICHTIG: Du musst diese Konfiguration mit deinen eigenen Firebase-Daten ersetzen!
+// Gehe zu https://console.firebase.google.com/ und erstelle ein neues Projekt
+// Aktiviere dann die Google-Authentifizierung und kopiere die Konfiguration hierher
 const firebaseConfig = {
-  apiKey: "AIzaSyBXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", // Ersetze dies mit deinem Firebase API-Key
-  authDomain: "roughtype-game.firebaseapp.com",      // Ersetze mit deiner Firebase Domain
-  projectId: "roughtype-game",                       // Ersetze mit deiner Projekt-ID
-  storageBucket: "roughtype-game.appspot.com",
-  messagingSenderId: "XXXXXXXXXXXX",
-  appId: "1:XXXXXXXXXXXX:web:XXXXXXXXXXXX"
+  apiKey: "DEIN_API_KEY_HIER_EINFÜGEN",           // Ersetze mit deinem Firebase API-Key
+  authDomain: "dein-projekt.firebaseapp.com",     // Ersetze mit deiner Firebase Domain
+  projectId: "dein-projekt",                      // Ersetze mit deiner Projekt-ID
+  storageBucket: "dein-projekt.appspot.com",
+  messagingSenderId: "deine-sender-id",
+  appId: "deine-app-id"
 };
+
+/*
+ANLEITUNG ZUM EINRICHTEN VON FIREBASE:
+1. Gehe zu https://console.firebase.google.com/
+2. Klicke auf "Projekt hinzufügen" und erstelle ein neues Projekt
+3. Gehe zu "Authentication" und aktiviere "Google" als Anmeldeanbieter
+4. Gehe zu "Firestore Database" und erstelle eine neue Datenbank
+5. Gehe zu "Project settings" (Zahnrad-Symbol) und scrolle zu "Your apps"
+6. Klicke auf das Web-Symbol (</>) um eine Web-App zu registrieren
+7. Gib einen Namen ein und klicke auf "Register app"
+8. Kopiere die angezeigte Konfiguration und ersetze die obige firebaseConfig
+*/
 
 // Auth state
 let authState = {
@@ -24,19 +39,33 @@ let authState = {
 function initializeFirebase() {
   // Check if Firebase is already loaded
   if (typeof firebase === 'undefined') {
-    console.error('Firebase SDK not loaded. Make sure to include the Firebase scripts.');
+    console.error('Firebase SDK not loaded. Authentication features will not work.');
+    showFirebaseError();
     return false;
   }
   
-  // Initialize Firebase
-  if (!firebase.apps.length) {
-    firebase.initializeApp(firebaseConfig);
+  // Check if API key is still the placeholder
+  if (firebaseConfig.apiKey === "DEIN_API_KEY_HIER_EINFÜGEN") {
+    console.error('Firebase API key not configured. Please update the auth.js file with your Firebase configuration.');
+    showFirebaseError();
+    return false;
   }
   
-  // Set up auth state change listener
-  firebase.auth().onAuthStateChanged(handleAuthStateChange);
-  
-  return true;
+  try {
+    // Initialize Firebase
+    if (!firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
+    }
+    
+    // Set up auth state change listener
+    firebase.auth().onAuthStateChanged(handleAuthStateChange);
+    
+    return true;
+  } catch (error) {
+    console.error('Firebase initialization error:', error);
+    showFirebaseError();
+    return false;
+  }
 }
 
 // Handle authentication state changes
@@ -209,6 +238,24 @@ function createAuthContainer() {
   
   // Update UI based on current auth state
   updateAuthUI(authState.isLoggedIn);
+}
+
+// Show Firebase error message in the auth container
+function showFirebaseError() {
+  const authContainer = document.getElementById('auth-container');
+  if (!authContainer) {
+    createAuthContainer();
+  }
+  
+  const container = document.getElementById('auth-container');
+  if (container) {
+    container.innerHTML = `
+      <div class="auth-error">
+        <p>Firebase nicht konfiguriert</p>
+        <small>Lokale Speicherung aktiv</small>
+      </div>
+    `;
+  }
 }
 
 // Initialize auth when DOM is loaded
