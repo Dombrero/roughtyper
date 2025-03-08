@@ -698,12 +698,50 @@
             font-weight: bold;
             animation: pulse 2s infinite;
             border: 2px solid #ffffff;
+            transition: opacity 0.5s ease;
         }
 
         @keyframes pulse {
             0% { transform: translateX(-50%) scale(1); }
             50% { transform: translateX(-50%) scale(1.05); }
             100% { transform: translateX(-50%) scale(1); }
+        }
+
+        /* Level-Auswahl Styling */
+        .level-selection {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        
+        .level-option {
+            background-color: #4CAF50;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 18px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        
+        .level-option:hover {
+            background-color: #45a049;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+        
+        .level-option[data-level="10"] {
+            background-color: #ff9800;
+            color: white;
+            font-weight: bold;
+            border: 2px solid #e65100;
+        }
+        
+        .level-option[data-level="10"]:hover {
+            background-color: #f57c00;
         }
 
         /* Tutorial-Bereich im Hauptmenü */
@@ -748,7 +786,7 @@
             padding-left: 20px;
             font-size: 14px;
         }
-
+        
         .tutorial-section li {
             margin-bottom: 5px;
         }
@@ -762,7 +800,7 @@
             font-family: monospace;
             margin: 0 2px;
         }
-
+        
         /* Anpassung für kleinere Bildschirme */
         @media (max-width: 1500px) {
             .tutorial-container {
@@ -850,6 +888,7 @@
         
         <div class="menu-container" id="mainMenu">
             <div class="menu-option">enter dungeon</div>
+            <div class="menu-option">select level</div>
             <div class="menu-option">practice mode</div>
             <div class="menu-option">inventory</div>
             <div class="menu-option">shop</div>
@@ -1816,7 +1855,7 @@
         function handleMenuInput(typed) {
             debugLog(`handleMenuInput called with: "${typed}"`);
             typed = typed.toLowerCase();
-            const menuOptions = ['enter dungeon', 'practice mode', 'inventory', 'shop', 'menu', 'new game'];
+            const menuOptions = ['enter dungeon', 'select level', 'practice mode', 'inventory', 'shop', 'menu', 'new game'];
             
             debugLog(`Current menu options: ${menuOptions.join(', ')}`);
             
@@ -1856,6 +1895,14 @@
                         mainMenu.classList.add('hidden');
                         gameContainer.style.display = 'block';
                         initGame();
+                        refreshVirtualKeyboard();
+                        break;
+                        
+                    case 'select level':
+                        gameState.currentScreen = 'selectLevel';
+                        mainMenu.classList.add('hidden');
+                        gameContainer.style.display = 'block';
+                        initSelectLevel();
                         refreshVirtualKeyboard();
                         break;
                         
@@ -2824,6 +2871,113 @@ function updatePracticeScore() {
             }
             
             requestAnimationFrame(animateProjectile);
+        }
+
+        // Level-Auswahl initialisieren
+        function initSelectLevel() {
+            const gameScene = document.getElementById('gameScene');
+            
+            // Bestimme das maximale Level, das der Spieler auswählen kann
+            // (kann nur bis zum höchsten erreichten Level oder maximal 10 auswählen)
+            const maxSelectableLevel = Math.min(gameState.maxLevel, 10);
+            
+            let levelOptions = '';
+            for (let i = 1; i <= maxSelectableLevel; i++) {
+                levelOptions += `<div class="level-option" data-level="${i}">Level ${i}</div>`;
+            }
+            
+            gameScene.innerHTML = `
+                <div class="menu-container">
+                    <h2>Select Starting Level</h2>
+                    <p>Choose a level to start from (up to your highest reached level):</p>
+                    <div class="level-selection">
+                        ${levelOptions}
+                    </div>
+                    <div class="menu-hint">Type the level number to select, or "menu" to go back</div>
+                </div>
+            `;
+            
+            // Füge einen Hinweis hinzu, der nach 5 Sekunden verschwindet
+            const menuHint = document.createElement('div');
+            menuHint.className = 'menu-hint-improved';
+            menuHint.innerHTML = 'Type <strong>menu</strong> to return to main menu';
+            document.body.appendChild(menuHint);
+            
+            setTimeout(() => {
+                menuHint.style.opacity = '0';
+                setTimeout(() => {
+                    if (menuHint.parentNode) {
+                        menuHint.parentNode.removeChild(menuHint);
+                    }
+                }, 1000);
+            }, 5000);
+            
+            // Event-Listener für die Eingabe
+            document.getElementById('gameInput').addEventListener('input', handleLevelSelection);
+        }
+
+        // Funktion zum Verarbeiten der Level-Auswahl
+        function handleLevelSelection(event) {
+            const typed = event.target.value.trim().toLowerCase();
+            
+            // Wenn "menu" eingegeben wurde, zurück zum Hauptmenü
+            if (typed === 'menu') {
+                event.target.value = '';
+                document.getElementById('gameInput').removeEventListener('input', handleLevelSelection);
+                returnToMenu();
+                return;
+            }
+            
+            // Prüfe, ob eine Zahl eingegeben wurde
+            if (/^[1-9]|10$/.test(typed)) {
+                const selectedLevel = parseInt(typed);
+                const maxSelectableLevel = Math.min(gameState.maxLevel, 10);
+                
+                // Prüfe, ob das ausgewählte Level gültig ist
+                if (selectedLevel >= 1 && selectedLevel <= maxSelectableLevel) {
+                    event.target.value = '';
+                    document.getElementById('gameInput').removeEventListener('input', handleLevelSelection);
+                    startGameAtLevel(selectedLevel);
+                }
+            }
+        }
+
+        // Funktion zum Starten des Spiels mit einem ausgewählten Level
+        function startGameAtLevel(level) {
+            loadGameState();
+            
+            // Setze das Level und die entsprechenden Werte
+            gameState.level = level;
+            gameState.monstersKilled = 0;
+            gameState.score = (level - 1) * 100; // Gib Punkte für vorherige Level
+            gameState.gold = 100 + (level - 1) * 50; // Mehr Gold für höhere Level
+            
+            // Starte das Spiel
+            gameState.currentScreen = 'game';
+            gameState.enemies = [];
+            gameState.spawnTimer = 0;
+            gameState.lastUpdate = 0;
+            gameState.bossActive = false;
+            gameState.level10BossActive = false;
+            
+            const gameScene = document.getElementById('gameScene');
+            gameScene.innerHTML = `<div class="player" id="player"></div>`;
+            
+            if (gameState.gameLoop) {
+                cancelAnimationFrame(gameState.gameLoop);
+            }
+            
+            // Zeige einen Hinweis an, dass das Spiel auf Level X gestartet wurde
+            addCombatLog(`Starting game at Level ${level}!`);
+            
+            // Aktualisiere die Anzeige
+            updateDisplay();
+            
+            // Starte das Spiel
+            gameLoop();
+            
+            // Speichere den Spielstand
+            saveGameState();
         }
     </script>
 </body>
