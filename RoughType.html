@@ -2734,6 +2734,28 @@
         
                     // Stelle sicher, dass die Sidebar immer sichtbar ist
                     document.getElementById('statsSidebar').style.display = 'block';
+                    
+                    // Füge den Event-Listener für das Menü-Eingabefeld hinzu
+                    const menuInput = document.getElementById('menuInput');
+                    if (menuInput) {
+                        menuInput.addEventListener('keydown', function(e) {
+                            if (e.key === 'Enter') {
+                                const command = this.value.trim();
+                                debugLog(`Menü-Befehl eingegeben: ${command}`);
+                                
+                                // Verarbeite spezielle Befehle
+                                if (processMenuCommand(command)) {
+                                    // Befehl wurde verarbeitet, leere das Eingabefeld
+                                    this.value = '';
+                                    e.preventDefault();
+                                    return;
+                                }
+                            }
+                        });
+                        debugLog('Event-Listener für Menü-Eingabefeld hinzugefügt');
+                    } else {
+                        debugLog('Fehler: Menü-Eingabefeld nicht gefunden!');
+                    }
                 });
 
         // Tastatur-Highlight Funktionalität
@@ -3018,11 +3040,15 @@
 
         // Funktion zum Verarbeiten von Befehlen im Hauptmenü
         function processMenuCommand(command) {
+            debugLog(`Verarbeite Menü-Befehl: "${command}"`);
+            
             // Prüfe, ob es ein Level-Lade-Befehl ist
             if (command.startsWith('load_level')) {
+                debugLog(`Level-Lade-Befehl erkannt: ${command}`);
                 const levelMatch = command.match(/load_level(\d+)/);
                 if (levelMatch && levelMatch[1]) {
                     const targetLevel = parseInt(levelMatch[1]);
+                    debugLog(`Ziel-Level: ${targetLevel}`);
                     if (targetLevel >= 1 && targetLevel <= 30) { // Begrenze auf sinnvolle Level
                         // Setze den Spielstand auf das gewünschte Level
                         gameState.level = targetLevel;
@@ -3042,11 +3068,13 @@
                         return true;
                     } else {
                         alert('Ungültiges Level! Bitte wähle ein Level zwischen 1 und 30.');
+                        debugLog(`Ungültiges Level: ${targetLevel}`);
                         return false;
                     }
                 }
             }
             
+            debugLog(`Befehl nicht erkannt: ${command}`);
             return false; // Befehl nicht erkannt
         }
 
