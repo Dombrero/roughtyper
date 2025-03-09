@@ -256,52 +256,6 @@ function extendInputHandling() {
                 return; // Beende die Funktion, um doppelte Verarbeitung zu vermeiden
             }
             
-            // Prüfe auch, ob das Wort mit einem der aktiven Wörter beginnt (für Teilübereinstimmungen)
-            for (let i = 0; i < level20Boss.activeWords.length; i++) {
-                const word = level20Boss.activeWords[i];
-                if (word && word.word && word.word.toLowerCase().startsWith(typed.toLowerCase()) && typed.length > 0) {
-                    console.log('Teilübereinstimmung gefunden:', typed, 'für Wort:', word.word);
-                    
-                    // Markiere das Wort visuell, um Feedback zu geben
-                    if (word.element) {
-                        // Erstelle HTML für die Markierung der korrekten Buchstaben
-                        let html = '';
-                        for (let j = 0; j < word.word.length; j++) {
-                            if (j < typed.length) {
-                                html += `<span style="color: #00ff00;">${word.word[j]}</span>`;
-                            } else {
-                                html += word.word[j];
-                            }
-                        }
-                        word.element.innerHTML = html;
-                    }
-                    
-                    // Wenn die Eingabe vollständig ist, aber der Fall nicht übereinstimmt
-                    if (typed.length === word.word.length && typed.toLowerCase() === word.word.toLowerCase()) {
-                        console.log('Vollständige Übereinstimmung mit unterschiedlicher Groß-/Kleinschreibung:', typed, 'für Wort:', word.word);
-                        
-                        // Entferne das Wort
-                        removeLevel20BossWord(i);
-                        
-                        // Reduziere die Boss-Gesundheit
-                        level20Boss.health--;
-                        updateLevel20BossHealth();
-                        
-                        // Prüfe, ob der Boss besiegt ist
-                        if (level20Boss.health <= 0) {
-                            defeatLevel20Boss();
-                        }
-                        
-                        // Leere das Eingabefeld
-                        e.target.value = '';
-                        return; // Beende die Funktion, um doppelte Verarbeitung zu vermeiden
-                    }
-                } else if (word && word.element) {
-                    // Setze das Wort zurück, wenn es nicht mehr übereinstimmt
-                    word.element.textContent = word.word;
-                }
-            }
-            
             // Wenn wir hier ankommen, wurde kein Wort vollständig getroffen
             // Rufe den ursprünglichen Handler nicht auf, um doppelte Verarbeitung zu vermeiden
             return;
