@@ -887,6 +887,11 @@
             <div class="menu-option">shop</div>
                 <div class="menu-option">new game</div>
                 
+                <!-- Eingabefeld für Befehle im Hauptmenü -->
+                <div class="command-input-container" style="margin-top: 20px; margin-bottom: 20px;">
+                    <input type="text" id="menuInput" placeholder="Befehl eingeben (z.B. load_level20)" style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid var(--debug-border); background: var(--debug-content-bg); color: var(--text-color);">
+                </div>
+                
                 <!-- Tutorial-Bereich -->
                 <div class="tutorial-container">
                     <h3>Game Guide</h3>
@@ -2298,8 +2303,8 @@
 
         // Input Validierung hinzufügen
         function validateInput(input) {
-            // Erlaube Buchstaben, Zahlen, Leerzeichen und Unterstriche
-            return input.replace(/[^a-zA-Z0-9\s_]/g, '').toLowerCase();
+            // Erlaube Buchstaben, Zahlen, Leerzeichen, Unterstriche und andere Sonderzeichen
+            return input.toLowerCase();
         }
 
         // Input Handler aktualisieren
