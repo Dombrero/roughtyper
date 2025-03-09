@@ -19,29 +19,62 @@ function startGame() {
  */
 function initGame() {
     debugLog('Initialisiere Spiel...');
+    console.log('Initialisiere Spiel mit Level:', gameState.level);
+    
+    // Zurücksetzen des Spielzustands für ein neues Spiel
     gameState.enemies = [];
     gameState.currentScreen = 'game';
     gameState.level10BossActive = false;
 
+    // Game Scene vorbereiten
     const gameScene = document.getElementById('gameScene');
+    if (!gameScene) {
+        console.error('Game Scene nicht gefunden!');
+        return;
+    }
     gameScene.innerHTML = `<div class="player" id="player"></div>`;
 
+    // Alte Game Loop stoppen, falls vorhanden
     if (gameState.gameLoop) {
         cancelAnimationFrame(gameState.gameLoop);
     }
+    
+    // Prüfe, ob enemyTypes verfügbar sind
+    if (!window.enemyTypes) {
+        console.error('enemyTypes nicht gefunden! Verwende Standard-Gegnertypen.');
+        
+        // Definiere Standard-Gegnertypen als Fallback
+        window.enemyTypes = {
+            1: [
+                { name: 'Rat', health: 1, goldReward: 2, icon: '🐀' },
+                { name: 'Bat', health: 1, goldReward: 2, icon: '🦇' }
+            ]
+        };
+    }
+    
+    // Setze lastUpdate, um die deltaTime-Berechnung zu starten
+    gameState.lastUpdate = performance.now();
+    gameState.spawnTimer = 0;
+    
+    // Starte die Game Loop
     gameState.gameLoop = requestAnimationFrame(gameLoop);
 
     // Prüfe, ob ein Boss-Level erreicht wurde
     if (gameState.level === 10) {
+        console.log('Initialisiere Level 10 Boss');
         initLevel10Boss();
     } else if (gameState.level === 15 && typeof initLevel15Boss === 'function') {
+        console.log('Initialisiere Level 15 Boss');
         initLevel15Boss();
     } else if (gameState.level === 20 && typeof initLevel20Boss === 'function') {
+        console.log('Initialisiere Level 20 Boss');
         initLevel20Boss();
     } else {
+        console.log('Spawne normalen Gegner für Level', gameState.level);
         spawnEnemy();
     }
     
+    // Aktualisiere die Anzeige
     updateDisplay();
 
     // Entferne alten Hinweis falls vorhanden
@@ -71,6 +104,9 @@ function initGame() {
     // Combat Log initialisieren
     const combatLog = document.getElementById('combatLog');
     if (combatLog) {
+        // Leere das Combat Log
+        combatLog.innerHTML = '';
+        
         // Füge eine Nachricht hinzu, dass die Etage zurückgesetzt wurde
         addCombatLogEntry('info', `Du betrittst Etage ${gameState.level}. Dein Fortschritt wurde zurückgesetzt.`);
         addCombatLogEntry('info', 'Type "menu" to return to the main menu.');
@@ -84,6 +120,8 @@ function initGame() {
             addCombatLogEntry('info', 'BOSS BATTLE! Defeat CHRONOS by typing the words before time runs out!');
         }
     }
+    
+    debugLog('Spiel initialisiert. Viel Spaß!');
 }
 
 /**
@@ -167,23 +205,37 @@ function spawnEnemy() {
     // Bestimme den Gegnertyp basierend auf dem aktuellen Level
     let enemyTypes = window.enemyTypes || {};
     
+    // Debug-Ausgabe für enemyTypes
+    console.log("Verfügbare enemyTypes:", enemyTypes);
+    console.log("Aktuelles Level:", gameState.level);
+    
     // Verwende erweiterte Gegnertypen, wenn verfügbar
     if (gameState.level > 10 && typeof window.extendedEnemyTypes !== 'undefined') {
+        console.log("Verwende erweiterte Gegnertypen:", window.extendedEnemyTypes);
         enemyTypes = window.extendedEnemyTypes;
     }
     
     // Wähle einen zufälligen Gegnertyp aus dem aktuellen Level
     const levelEnemies = enemyTypes[gameState.level] || [];
+    console.log("Gegner für Level " + gameState.level + ":", levelEnemies);
+    
     if (levelEnemies.length === 0) {
         debugLog(`Keine Gegner für Level ${gameState.level} gefunden`, 'warning');
+        console.warn(`Keine Gegner für Level ${gameState.level} gefunden. enemyTypes:`, enemyTypes);
         return;
     }
     
     const randomIndex = Math.floor(Math.random() * levelEnemies.length);
     const enemyType = levelEnemies[randomIndex];
+    console.log("Gewählter Gegnertyp:", enemyType);
     
     // Erstelle das Gegner-Element
     const gameScene = document.getElementById('gameScene');
+    if (!gameScene) {
+        console.error('gameScene nicht gefunden!');
+        return;
+    }
+    
     const enemy = document.createElement('div');
     enemy.className = 'enemy-entity';
     enemy.setAttribute('data-level', gameState.level);
@@ -270,37 +322,65 @@ function handleGameInput(e) {
         const typed = e.target.value.toLowerCase();
         debugLog(`Verarbeite Eingabe: "${typed}" im Bildschirm: ${gameState.currentScreen}`);
         
-        // Prüfe zuerst auf "menu" Befehl in allen Bildschirmen außer im Hauptmenü
-        if (typed === 'menu' && gameState.currentScreen !== 'menu') {
-            debugLog('Menu Befehl erkannt, kehre zum Hauptmenü zurück');
-            returnToMenu();
-            e.target.value = '';
-            return;
-        }
-        
-        // Jetzt die bildschirmspezifische Verarbeitung
+        // Bildschirmspezifische Verarbeitung
         // Wenn wir im Hauptmenü sind
         if (gameState.currentScreen === 'menu') {
             handleMenuInput(typed);
         }
         // Wenn wir im Inventar sind
         else if (gameState.currentScreen === 'inventory') {
+            // Prüfe zuerst auf "menu" Befehl
+            if (typed === 'menu') {
+                debugLog('Menu Befehl erkannt, kehre zum Hauptmenü zurück');
+                returnToMenu();
+                e.target.value = '';
+                return;
+            }
             handleInventoryInput(typed);
         }
         // Wenn wir im Shop sind
         else if (gameState.currentScreen === 'shop') {
+            // Prüfe zuerst auf "menu" Befehl
+            if (typed === 'menu') {
+                debugLog('Menu Befehl erkannt, kehre zum Hauptmenü zurück');
+                returnToMenu();
+                e.target.value = '';
+                return;
+            }
             handleShopInput(typed);
         }
         // Wenn wir in der Level-Auswahl sind
         else if (gameState.currentScreen === 'levelSelect') {
+            // Prüfe zuerst auf "menu" Befehl
+            if (typed === 'menu') {
+                debugLog('Menu Befehl erkannt, kehre zum Hauptmenü zurück');
+                returnToMenu();
+                e.target.value = '';
+                return;
+            }
             handleLevelSelectInput(typed);
         }
         // Wenn wir im Übungsmodus sind
         else if (gameState.currentScreen === 'practice') {
+            // Prüfe zuerst auf "menu" Befehl
+            if (typed === 'menu') {
+                debugLog('Menu Befehl erkannt, kehre zum Hauptmenü zurück');
+                returnToMenu();
+                e.target.value = '';
+                return;
+            }
             handlePracticeInput(typed);
         }
         // Wenn wir im Spiel sind
         else if (gameState.currentScreen === 'game') {
+            // Prüfe zuerst auf "menu" Befehl
+            if (typed === 'menu') {
+                debugLog('Menu Befehl erkannt, kehre zum Hauptmenü zurück');
+                returnToMenu();
+                e.target.value = '';
+                return;
+            }
+            
             // Prüfe auf Level 10 Boss
             if (gameState.level10BossActive) {
                 handleLevel10BossInput(typed, e);

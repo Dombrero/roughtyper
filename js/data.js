@@ -77,4 +77,12 @@ const shopItems = [
     { name: 'medium', type: 'potion', cost: 40, description: 'Medium Health Potion (Heals 60 HP)' },
     { name: 'large', type: 'potion', cost: 60, description: 'Large Health Potion (Heals 100 HP)' },
     { name: 'shield', type: 'equipment', cost: 100, description: 'Shield (Adds 5 Defense)' }
-]; 
+];
+
+// Explizit als window-Eigenschaften exportieren
+window.enemyTypes = enemyTypes;
+window.bosses = bosses;
+window.shopItems = shopItems;
+
+// Debug-Ausgabe, um zu überprüfen, ob die Daten korrekt exportiert wurden
+console.log('Data.js geladen. enemyTypes:', window.enemyTypes); 
