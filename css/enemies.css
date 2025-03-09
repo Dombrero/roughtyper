@@ -1,0 +1,146 @@
+/* enemies.css - Stile für die Gegner des Spiels */
+
+/* Grundlegende Gegner-Stile */
+.enemy-entity {
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    background-color: #f44336;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s;
+}
+
+.enemy-entity:hover {
+    transform: scale(1.1);
+}
+
+/* Erweiterte Level-Gegner */
+.enemy-entity[data-level="11"],
+.enemy-entity[data-level="12"],
+.enemy-entity[data-level="13"],
+.enemy-entity[data-level="14"],
+.enemy-entity[data-level="15"],
+.enemy-entity[data-level="16"],
+.enemy-entity[data-level="17"],
+.enemy-entity[data-level="18"],
+.enemy-entity[data-level="19"],
+.enemy-entity[data-level="20"] {
+    border-radius: 50%;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+/* Spezifische Level-Stile */
+.enemy-entity[data-level="11"] {
+    background: linear-gradient(135deg, #ff9800, #ff5722);
+}
+
+.enemy-entity[data-level="12"] {
+    background: linear-gradient(135deg, #ff5722, #f44336);
+}
+
+.enemy-entity[data-level="13"] {
+    background: linear-gradient(135deg, #f44336, #e91e63);
+}
+
+.enemy-entity[data-level="14"] {
+    background: linear-gradient(135deg, #e91e63, #9c27b0);
+}
+
+.enemy-entity[data-level="15"] {
+    background: linear-gradient(135deg, #9c27b0, #673ab7);
+}
+
+.enemy-entity[data-level="16"] {
+    background: linear-gradient(135deg, #673ab7, #3f51b5);
+}
+
+.enemy-entity[data-level="17"] {
+    background: linear-gradient(135deg, #3f51b5, #2196f3);
+}
+
+.enemy-entity[data-level="18"] {
+    background: linear-gradient(135deg, #2196f3, #03a9f4);
+}
+
+.enemy-entity[data-level="19"] {
+    background: linear-gradient(135deg, #03a9f4, #00bcd4);
+}
+
+.enemy-entity[data-level="20"] {
+    background: linear-gradient(135deg, #00bcd4, #009688);
+}
+
+/* Hover-Effekte für erweiterte Level */
+.enemy-entity[data-level="11"]:hover,
+.enemy-entity[data-level="12"]:hover,
+.enemy-entity[data-level="13"]:hover,
+.enemy-entity[data-level="14"]:hover,
+.enemy-entity[data-level="15"]:hover,
+.enemy-entity[data-level="16"]:hover,
+.enemy-entity[data-level="17"]:hover,
+.enemy-entity[data-level="18"]:hover,
+.enemy-entity[data-level="19"]:hover,
+.enemy-entity[data-level="20"]:hover {
+    transform: scale(1.15);
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+}
+
+/* Gegner-Wort-Stile für erweiterte Level */
+.enemy-entity[data-level="11"] .enemy-word,
+.enemy-entity[data-level="12"] .enemy-word,
+.enemy-entity[data-level="13"] .enemy-word,
+.enemy-entity[data-level="14"] .enemy-word,
+.enemy-entity[data-level="15"] .enemy-word,
+.enemy-entity[data-level="16"] .enemy-word,
+.enemy-entity[data-level="17"] .enemy-word,
+.enemy-entity[data-level="18"] .enemy-word,
+.enemy-entity[data-level="19"] .enemy-word,
+.enemy-entity[data-level="20"] .enemy-word {
+    font-weight: bold;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+/* Spezielle Effekte für Level 19 Boss */
+.enemy-entity.level19boss {
+    width: 120px;
+    height: 120px;
+    background: linear-gradient(135deg, #00bcd4, #009688);
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 0 20px #009688;
+}
+
+.level19boss .boss-icon {
+    font-size: 40px;
+    margin-bottom: 5px;
+}
+
+.level19boss .boss-name {
+    font-size: 16px;
+    font-weight: bold;
+    color: white;
+    text-align: center;
+}
+
+.enemy-word.level19boss-word {
+    background-color: rgba(0, 188, 212, 0.2);
+    padding: 5px 10px;
+    border-radius: 5px;
+    border: 1px solid #00bcd4;
+    box-shadow: 0 0 5px #00bcd4;
+    transition: all 0.3s;
+}
+
+.enemy-word.level19boss-word.mirrored {
+    transform: scaleX(-1);
+    background-color: rgba(0, 150, 136, 0.2);
+    border: 1px solid #009688;
+    box-shadow: 0 0 5px #009688;
+} 

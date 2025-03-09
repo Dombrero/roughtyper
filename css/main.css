@@ -1,0 +1,79 @@
+/* main.css - Hauptstile für RoughType */
+
+:root {
+    --bg-color: #ffffff;
+    --text-color: #000000;
+    --debug-bg: #f0f0f0;
+    --debug-border: #ccc;
+    --debug-content-bg: white;
+    --menu-option-bg: #f5f5f5;
+    --menu-option-hover-bg: #e0e0e0;
+    --menu-option-border: #ddd;
+    --correct-color: #4CAF50;
+    --error-color: #f44336;
+    --boss-color: #9c27b0;
+}
+
+[data-theme="dark"] {
+    --bg-color: #1a1a1a;
+    --text-color: #ffffff;
+    --debug-bg: #2d2d2d;
+    --debug-border: #404040;
+    --debug-content-bg: #333333;
+    --menu-option-bg: #2d2d2d;
+    --menu-option-hover-bg: #3d3d3d;
+    --menu-option-border: #404040;
+    --correct-color: #81c784;
+    --error-color: #e57373;
+    --boss-color: #ba68c8;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    margin-left: 240px; /* Platz für die Sidebar */
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: var(--text-color);
+}
+
+.hidden {
+    display: none !important;
+}
+
+.correct {
+    color: var(--correct-color);
+    font-weight: bold;
+}
+
+.error {
+    color: var(--error-color);
+    font-weight: bold;
+}
+
+/* Responsive Design */
+@media (max-width: 1199px) {
+    .container {
+        margin-left: auto;
+    }
+}
+
+@media (max-width: 768px) {
+    body {
+        margin: 10px;
+    }
+    
+    .container {
+        padding: 10px;
+    }
+} 

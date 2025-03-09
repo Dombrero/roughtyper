@@ -1,0 +1,128 @@
+/* tutorial.css - Stile für das Tutorial des Spiels */
+
+/* Tutorial-Container */
+.tutorial-container {
+    margin-top: 30px;
+    padding: 20px;
+    background-color: var(--debug-content-bg);
+    border-radius: 10px;
+    border: 1px solid var(--debug-border);
+}
+
+.tutorial-container h3 {
+    margin-top: 0;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--debug-border);
+    text-align: center;
+}
+
+.tutorial-section {
+    margin: 20px 0;
+    padding: 15px;
+    background-color: var(--debug-bg);
+    border-radius: 8px;
+}
+
+.tutorial-section h4 {
+    margin-top: 0;
+    color: #2196F3;
+    border-bottom: 1px solid #2196F3;
+    padding-bottom: 5px;
+}
+
+.tutorial-section p {
+    margin: 10px 0;
+    line-height: 1.5;
+}
+
+.tutorial-section ul {
+    padding-left: 20px;
+}
+
+.tutorial-section li {
+    margin: 8px 0;
+    line-height: 1.4;
+}
+
+.tutorial-key {
+    display: inline-block;
+    padding: 2px 8px;
+    background-color: var(--debug-border);
+    border-radius: 4px;
+    font-family: monospace;
+    font-weight: bold;
+    margin: 0 2px;
+}
+
+/* Übungsmodus */
+.practice-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    background-color: var(--debug-content-bg);
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+.practice-word {
+    font-size: 36px;
+    font-weight: bold;
+    margin: 20px 0;
+    padding: 10px 20px;
+    background-color: var(--debug-bg);
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s;
+}
+
+.practice-score {
+    font-size: 24px;
+    font-weight: bold;
+    margin: 10px 0;
+}
+
+.next-monster-container {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.next-monster-label {
+    font-size: 14px;
+    color: #888;
+    margin-bottom: 5px;
+}
+
+.next-monster-word {
+    font-size: 18px;
+    padding: 5px 10px;
+    background-color: var(--debug-bg);
+    border-radius: 5px;
+    display: inline-block;
+}
+
+.wrong-chars {
+    color: var(--error-color);
+    font-size: 18px;
+    margin-top: 10px;
+    min-height: 24px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .tutorial-container {
+        padding: 15px;
+    }
+    
+    .tutorial-section {
+        padding: 10px;
+    }
+    
+    .practice-word {
+        font-size: 28px;
+    }
+    
+    .practice-score {
+        font-size: 20px;
+    }
+} 
