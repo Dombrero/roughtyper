@@ -427,12 +427,18 @@ function handleGameInput(e) {
 function handleNormalGameInput(typed, e) {
     if (typed.length === 0) return;
     
+    console.log(`handleNormalGameInput: Verarbeite Eingabe "${typed}"`);
+    
     // Suche nach einem passenden Gegner
     let targetEnemyIndex = -1;
     let targetEnemy = null;
+    let anyMatchFound = false; // Zeigt an, ob irgendein Gegner mit der Eingabe übereinstimmt
     
     gameState.enemies.forEach((enemy, index) => {
         if (enemy.word.startsWith(typed)) {
+            anyMatchFound = true; // Es gibt einen Gegner, dessen Wort mit der Eingabe beginnt
+            console.log(`Match gefunden: "${typed}" passt zu "${enemy.word}"`);
+            
             // Markiere die korrekt eingegebenen Buchstaben
             const wordElement = enemy.element.querySelector('.enemy-word');
             let html = '';
@@ -449,6 +455,7 @@ function handleNormalGameInput(typed, e) {
             if (typed === enemy.word) {
                 targetEnemyIndex = index;
                 targetEnemy = enemy;
+                console.log(`Vollständiges Wort eingegeben: "${enemy.word}"`);
             }
         } else {
             // Setze das Wort zurück
@@ -459,6 +466,8 @@ function handleNormalGameInput(typed, e) {
     
     // Wenn ein Gegner besiegt wurde
     if (targetEnemy) {
+        console.log(`Gegner besiegt: "${targetEnemy.word}"`);
+        
         // Erstelle ein Projektil
         createProjectile(targetEnemy);
         
@@ -491,7 +500,11 @@ function handleNormalGameInput(typed, e) {
         
         // Aktualisiere die Anzeige
         updateDisplay();
-    } else if (typed.length > 0) {
+    } else if (typed.length > 0 && !anyMatchFound) {
+        // Nur wenn die Eingabe nicht mit dem Anfang irgendeines Gegnerwortes übereinstimmt
+        // dann ist es eine falsche Eingabe und der Spieler nimmt Schaden
+        console.log(`Keine Übereinstimmung gefunden für "${typed}" - Spieler nimmt Schaden`);
+        
         // Falsche Eingabe - Schaden direkt mit Verteidigung reduzieren
         const baseDamage = 10; // Basis-Schaden bei Tippfehler
         const damage = Math.max(1, baseDamage - gameState.defense); // Verteidigung reduziert den Schaden direkt, mindestens 1 Schaden
@@ -516,6 +529,8 @@ function handleNormalGameInput(typed, e) {
         
         // Aktualisiere die Anzeige
         updateDisplay();
+    } else {
+        console.log(`Eingabe "${typed}" ist Teil eines Gegnerwortes, kein Schaden`);
     }
 }
 
