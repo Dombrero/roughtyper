@@ -90,7 +90,7 @@
             max-width: 1200px;
             margin: 0 auto;
             padding: 20px;
-            margin-left: 240px; /* Platz fÃ¼r die Sidebar */
+            margin-left: 240px; /* Platz für die Sidebar */
         }
 
         #debugContainer {
@@ -104,7 +104,7 @@
             border-top: 2px solid var(--debug-border);
             padding: 10px;
             border-radius: 10px 10px 0 0;
-            display: none; /* StandardmÃ¤ÃŸig ausgeblendet */
+            display: none; /* Standardmäßig ausgeblendet */
         }
 
         #debugHeader {
@@ -332,10 +332,10 @@
             width: 100%;
             max-width: 1200px;
             margin: 0 auto;
-            position: relative; /* FÃ¼r die Positionierung des Tutorials */
+            position: relative; /* Für die Positionierung des Tutorials */
         }
 
-        /* HauptmenÃ¼-Optionen */
+        /* Hauptmenü-Optionen */
         .menu-container > .menu-option {
             font-size: 20px;
             padding: 10px;
@@ -343,7 +343,7 @@
             transition: all 0.3s;
             cursor: pointer;
             text-align: center;
-            display: block; /* Statt flex fÃ¼r HauptmenÃ¼-Optionen */
+            display: block; /* Statt flex für Hauptmenü-Optionen */
         }
 
         .menu-container > .menu-option:hover {
@@ -507,7 +507,7 @@
             gap: 20px;
             margin-bottom: 20px;
             width: 100%;
-            height: calc(100vh - 300px); /* HÃ¶he anpassen, um Platz fÃ¼r andere Elemente zu lassen */
+            height: calc(100vh - 300px); /* Höhe anpassen, um Platz für andere Elemente zu lassen */
         }
 
         .inventory-section, .materials-section {
@@ -666,10 +666,10 @@
             font-weight: bold;
         }
 
-        /* Anpassung fÃ¼r den Hauptinhalt */
+        /* Anpassung für den Hauptinhalt */
         @media (min-width: 1200px) {
             .container {
-                margin-left: 240px; /* Platz fÃ¼r die Sidebar */
+                margin-left: 240px; /* Platz für die Sidebar */
             }
         }
 
@@ -686,7 +686,7 @@
             }
         }
 
-        /* Neuer verbesserter MenÃ¼-Hinweis */
+        /* Neuer verbesserter Menü-Hinweis */
         .menu-hint-improved {
             position: fixed;
             top: 20px;
@@ -711,7 +711,7 @@
             100% { transform: translateX(-50%) scale(1); }
         }
 
-        /* Tutorial-Bereich im HauptmenÃ¼ */
+        /* Tutorial-Bereich im Hauptmenü */
         .tutorial-container {
             position: absolute;
             right: -320px;
@@ -768,7 +768,7 @@
             margin: 0 2px;
         }
 
-        /* Anpassung fÃ¼r kleinere Bildschirme */
+        /* Anpassung für kleinere Bildschirme */
         @media (max-width: 1500px) {
             .tutorial-container {
                 position: static;
@@ -778,7 +778,7 @@
             }
         }
 
-        /* Neue Animationen fÃ¼r Schuss und Treffer */
+        /* Neue Animationen für Schuss und Treffer */
         @keyframes hit {
             0% { transform: scale(1); }
             50% { transform: scale(1.3); background-color: #ff9800; }
@@ -831,48 +831,76 @@
             transform: scale(1.05);
             box-shadow: 0 4px 8px rgba(0,0,0,0.3);
         }
+
+        .level-select-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 10px;
+            margin: 20px 0;
+        }
+        
+        .level-option {
+            text-align: center;
+            padding: 15px 10px;
+        }
+        
+        .level-option[data-level="${gameState.level}"] {
+            background-color: #4CAF50;
+            color: white;
+        }
+        
+        .level-option:hover:not([data-level*="locked"]) {
+            background-color: #e0e0e0;
+            transform: scale(1.05);
+        }
+        
+        .level-option[data-level*="locked"] {
+            opacity: 0.5;
+            cursor: not-allowed;
+            background-color: #ccc;
+        }
     </style>
 </head>
 <body>
     <div id="mainContainer">
     <div class="theme-switch">
-        <span>â˜€ï¸</span>
+        <span>☀️</span>
         <label class="switch">
             <input type="checkbox" id="themeToggle">
             <span class="slider"></span>
         </label>
-        <span>ðŸŒ™</span>
+        <span>🌙</span>
     </div>
 
         <!-- Neuer Stats-Container -->
         <div class="stats-sidebar" id="statsSidebar">
             <h3>Player Stats</h3>
             <div class="stat-item">
-                <span>â¤ï¸ Health:</span>
+                <span>❤️ Health:</span>
                 <span class="stat-value" id="sidebarHealth">1000/1000</span>
             </div>
             <div class="stat-item">
-                <span>ðŸ'° Gold:</span>
+                <span>💰 Gold:</span>
                 <span class="stat-value" id="sidebarGold">0</span>
             </div>
             <div class="stat-item">
-                <span>ðŸ† Level:</span>
+                <span>🏆 Level:</span>
                 <span class="stat-value" id="sidebarLevel">1 (0/10)</span>
             </div>
             <div class="stat-item" id="sidebarDefenseContainer" style="display: none;">
-                <span>ðŸ›¡ï¸ Defense:</span>
+                <span>🛡️ Defense:</span>
                 <span class="stat-value" id="sidebarDefense">0</span>
             </div>
             <div class="stat-item">
-                <span>ðŸŽ¯ Score:</span>
+                <span>🎯 Score:</span>
                 <span class="stat-value" id="sidebarScore">0</span>
             </div>
             <div class="stat-item">
-                <span>ðŸ"¦ Inventory:</span>
+                <span>📦 Inventory:</span>
                 <span class="stat-value" id="sidebarInventory">0</span>
             </div>
             <div class="stat-item">
-                <span>ðŸ§ª Materials:</span>
+                <span>🧪 Materials:</span>
                 <span class="stat-value" id="sidebarMaterials">0</span>
             </div>
     </div>
@@ -1007,7 +1035,7 @@
 
     <div id="debugContainer">
         <div id="debugHeader">
-                Debug Window â–¼
+                Debug Window ▼
                 <button id="copyButton">Copy Log</button>
         </div>
         <div id="debugContent">
@@ -1016,7 +1044,7 @@
     </div>
 
     <script>
-        // Dark Mode FunktionalitÃ¤t
+        // Dark Mode Funktionalität
         const themeToggle = document.getElementById('themeToggle');
         
         // Gespeicherten Theme-Status laden
@@ -1044,12 +1072,12 @@
         debugHeader.addEventListener('click', function(e) {
             if (e.target !== copyButton) {
                 debugContent.style.display = debugContent.style.display === 'none' ? 'block' : 'none';
-                    debugHeader.innerHTML = `Debug Window ${debugContent.style.display === 'none' ? 'â–²' : 'â–¼'}
+                    debugHeader.innerHTML = `Debug Window ${debugContent.style.display === 'none' ? '▲' : '▼'}
                         <button id="copyButton">Copy Log</button>`;
             }
         });
 
-        // Log kopieren FunktionalitÃ¤t
+        // Log kopieren Funktionalität
         copyButton.addEventListener('click', function() {
             const text = debugContent.textContent;
             navigator.clipboard.writeText(text).then(() => {
@@ -1083,80 +1111,80 @@
                 maxLevel: 1,
                 monstersKilled: 0,
                 bossActive: false,
-                materials: [], // Neues Array fÃ¼r Materialien
-                level10BossActive: false, // Neuer Status fÃ¼r Level 10 Boss
-                debugMode: false, // Debug-Modus standardmÃ¤ÃŸig deaktiviert
+                materials: [], // Neues Array für Materialien
+                level10BossActive: false, // Neuer Status für Level 10 Boss
+                debugMode: false, // Debug-Modus standardmäßig deaktiviert
             };
 
-            // Liste mÃ¶glicher Gegner nach Level mit Icons
+            // Liste möglicher Gegner nach Level mit Icons
             const enemyTypes = {
                 1: [
-                    { name: 'I', health: 3, goldReward: 1, icon: 'ðŸ"¤' },
-                    { name: 'A', health: 3, goldReward: 1, icon: 'ðŸ"¤' },
-                    { name: 'O', health: 3, goldReward: 1, icon: 'ðŸ"¤' }
+                    { name: 'I', health: 3, goldReward: 1, icon: '🔤' },
+                    { name: 'A', health: 3, goldReward: 1, icon: '🔤' },
+                    { name: 'O', health: 3, goldReward: 1, icon: '🔤' }
                 ],
                 2: [
-                    { name: 'Up', health: 4, goldReward: 1, icon: 'â¬†ï¸' },
-                    { name: 'On', health: 4, goldReward: 1, icon: 'â­•' },
-                    { name: 'At', health: 4, goldReward: 1, icon: 'ðŸ"' },
-                    { name: 'In', health: 4, goldReward: 1, icon: 'ðŸ"¥' },
-                    { name: 'To', health: 4, goldReward: 1, icon: 'âž¡ï¸' }
+                    { name: 'Up', health: 4, goldReward: 1, icon: '⬆️' },
+                    { name: 'On', health: 4, goldReward: 1, icon: '⭕' },
+                    { name: 'At', health: 4, goldReward: 1, icon: '📍' },
+                    { name: 'In', health: 4, goldReward: 1, icon: '📥' },
+                    { name: 'To', health: 4, goldReward: 1, icon: '➡️' }
                 ],
                 3: [
-                    { name: 'Rat', health: 6, goldReward: 2, icon: 'ðŸ€' },
-                    { name: 'Cat', health: 6, goldReward: 2, icon: 'ðŸ±' },
-                    { name: 'Bat', health: 6, goldReward: 2, icon: 'ðŸ¦‡' },
-                    { name: 'Ant', health: 6, goldReward: 2, icon: 'ðŸœ' },
-                    { name: 'Bug', health: 6, goldReward: 2, icon: 'ðŸ›' }
+                    { name: 'Rat', health: 6, goldReward: 2, icon: '🐀' },
+                    { name: 'Cat', health: 6, goldReward: 2, icon: '🐱' },
+                    { name: 'Bat', health: 6, goldReward: 2, icon: '🦇' },
+                    { name: 'Ant', health: 6, goldReward: 2, icon: '🐜' },
+                    { name: 'Bug', health: 6, goldReward: 2, icon: '🐛' }
                 ],
                 4: [
-                    { name: 'Frog', health: 8, goldReward: 2, icon: 'ðŸ¸' },
-                    { name: 'Toad', health: 8, goldReward: 2, icon: 'ðŸ¦Ž' },
-                    { name: 'Worm', health: 8, goldReward: 2, icon: 'ðŸª±' },
-                    { name: 'Fish', health: 8, goldReward: 2, icon: 'ðŸŸ' },
-                    { name: 'Crab', health: 8, goldReward: 2, icon: 'ðŸ¦€' }
+                    { name: 'Frog', health: 8, goldReward: 2, icon: '🐸' },
+                    { name: 'Toad', health: 8, goldReward: 2, icon: '🦎' },
+                    { name: 'Worm', health: 8, goldReward: 2, icon: '🪱' },
+                    { name: 'Fish', health: 8, goldReward: 2, icon: '🐟' },
+                    { name: 'Crab', health: 8, goldReward: 2, icon: '🦀' }
                 ],
                 5: [
-                    { name: 'Snake', health: 10, goldReward: 3, icon: 'ðŸ' },
-                    { name: 'Ghost', health: 10, goldReward: 3, icon: 'ðŸ'»' },
-                    { name: 'Slime', health: 10, goldReward: 3, icon: 'ðŸ«§' },
-                    { name: 'Witch', health: 10, goldReward: 3, icon: 'ðŸ§™â€â™€ï¸' },
-                    { name: 'Demon', health: 10, goldReward: 3, icon: 'ðŸ'¿' }
+                    { name: 'Snake', health: 10, goldReward: 3, icon: '🐍' },
+                    { name: 'Ghost', health: 10, goldReward: 3, icon: '👻' },
+                    { name: 'Slime', health: 10, goldReward: 3, icon: '🫧' },
+                    { name: 'Witch', health: 10, goldReward: 3, icon: '🧙‍♀️' },
+                    { name: 'Demon', health: 10, goldReward: 3, icon: '👿' }
                 ],
                 6: [
-                    { name: 'Spider', health: 12, goldReward: 3, icon: 'ðŸ•·ï¸' },
-                    { name: 'Dragon', health: 12, goldReward: 3, icon: 'ðŸ²' },
-                    { name: 'Zombie', health: 12, goldReward: 3, icon: 'ðŸ§Ÿ' },
-                    { name: 'Knight', health: 12, goldReward: 3, icon: 'ðŸ›¡ï¸' },
-                    { name: 'Goblin', health: 12, goldReward: 3, icon: 'ðŸ'º' }
+                    { name: 'Spider', health: 12, goldReward: 3, icon: '🕷️' },
+                    { name: 'Dragon', health: 12, goldReward: 3, icon: '🐲' },
+                    { name: 'Zombie', health: 12, goldReward: 3, icon: '🧟' },
+                    { name: 'Knight', health: 12, goldReward: 3, icon: '🛡️' },
+                    { name: 'Goblin', health: 12, goldReward: 3, icon: '👺' }
                 ],
                 7: [
-                    { name: 'Vampire', health: 14, goldReward: 4, icon: 'ðŸ§›' },
-                    { name: 'Phantom', health: 14, goldReward: 4, icon: 'ðŸ'»' },
-                    { name: 'Warrior', health: 14, goldReward: 4, icon: 'âš"ï¸' },
-                    { name: 'Mermaid', health: 14, goldReward: 4, icon: 'ðŸ§œâ€â™€ï¸' },
-                    { name: 'Griffin', health: 14, goldReward: 4, icon: 'ðŸ¦…' }
+                    { name: 'Vampire', health: 14, goldReward: 4, icon: '🧛' },
+                    { name: 'Phantom', health: 14, goldReward: 4, icon: '👻' },
+                    { name: 'Warrior', health: 14, goldReward: 4, icon: '⚔️' },
+                    { name: 'Mermaid', health: 14, goldReward: 4, icon: '🧜‍♀️' },
+                    { name: 'Griffin', health: 14, goldReward: 4, icon: '🦅' }
                 ],
                 8: [
-                    { name: 'Skeleton', health: 16, goldReward: 4, icon: 'ðŸ'€' },
-                    { name: 'Werewolf', health: 16, goldReward: 4, icon: 'ðŸº' },
-                    { name: 'Basilisk', health: 16, goldReward: 4, icon: 'ðŸ' },
-                    { name: 'Scorpion', health: 16, goldReward: 4, icon: 'ðŸ¦‚' },
-                    { name: 'Gargoyle', health: 16, goldReward: 4, icon: 'ðŸ—¿' }
+                    { name: 'Skeleton', health: 16, goldReward: 4, icon: '💀' },
+                    { name: 'Werewolf', health: 16, goldReward: 4, icon: '🐺' },
+                    { name: 'Basilisk', health: 16, goldReward: 4, icon: '🐍' },
+                    { name: 'Scorpion', health: 16, goldReward: 4, icon: '🦂' },
+                    { name: 'Gargoyle', health: 16, goldReward: 4, icon: '🗿' }
                 ],
                 9: [
-                    { name: 'Hydralisk', health: 18, goldReward: 5, icon: 'ðŸ‰' },
-                    { name: 'Behemoth', health: 18, goldReward: 5, icon: 'ðŸ¦•' },
-                    { name: 'Leviathan', health: 18, goldReward: 5, icon: 'ðŸ‹' },
-                    { name: 'Hellspawn', health: 18, goldReward: 5, icon: 'ðŸ˜ˆ' },
-                    { name: 'Dreadlord', health: 18, goldReward: 5, icon: 'ðŸ''' }
+                    { name: 'Hydralisk', health: 18, goldReward: 5, icon: '🐉' },
+                    { name: 'Behemoth', health: 18, goldReward: 5, icon: '🦕' },
+                    { name: 'Leviathan', health: 18, goldReward: 5, icon: '🐋' },
+                    { name: 'Hellspawn', health: 18, goldReward: 5, icon: '😈' },
+                    { name: 'Dreadlord', health: 18, goldReward: 5, icon: '👑' }
                 ],
                 10: [
-                    { name: 'Dragonlord', health: 20, goldReward: 5, icon: 'ðŸ²' },
-                    { name: 'Shadowking', health: 20, goldReward: 5, icon: 'ðŸŒ' } },
-                    { name: 'Deathblade', health: 20, goldReward: 5, icon: 'âš"ï¸' },
-                    { name: 'Soulreaper', health: 20, goldReward: 5, icon: 'ðŸ'€' },
-                    { name: 'Doomslayer', health: 20, goldReward: 5, icon: 'ðŸ"¥' }
+                    { name: 'Dragonlord', health: 20, goldReward: 5, icon: '🐲' },
+                    { name: 'Shadowking', health: 20, goldReward: 5, icon: '🌑' },
+                    { name: 'Deathblade', health: 20, goldReward: 5, icon: '⚔️' },
+                    { name: 'Soulreaper', health: 20, goldReward: 5, icon: '💀' },
+                    { name: 'Doomslayer', health: 20, goldReward: 5, icon: '🔥' }
                 ]
             };
 
@@ -1238,7 +1266,7 @@
                         if (!hasEquippedShield) {
                             const newShield = {name: "shield", type: "equipment", equipped: true};
                             gameState.inventory.push(newShield);
-                            gameState.defense += 5; // Direkt Defense erhÃ¶hen
+                            gameState.defense += 5; // Direkt Defense erhöhen
                             updateDisplay(); // Sofort aktualisieren
                             return 'Shield equipped! Defense increased by 5';
                         } else {
@@ -1250,7 +1278,7 @@
                 }
             ];
 
-            // Drop-Definitionen fÃ¼r Monster
+            // Drop-Definitionen für Monster
             const monsterDrops = {
                 // Level 1
                 'I': { item: 'letter fragment', chance: 0.3 },
@@ -1297,7 +1325,7 @@
                     this.icon = icon;
                     
                     // Sichere Spawn-Zone berechnen
-                    const wordWidth = this.word.length * 10; // GeschÃ¤tzte Breite pro Buchstabe
+                    const wordWidth = this.word.length * 10; // Geschätzte Breite pro Buchstabe
                     const safeMargin = Math.max(wordWidth, 100); // Mindestens 100px oder Wortbreite
                     this.x = Math.random() * (760 - 2 * safeMargin) + safeMargin; // Zentrierterer Spawn-Bereich
                 this.y = -50;
@@ -1335,7 +1363,7 @@
                     this.element.style.top = this.y + 'px';
                 }
 
-                    // Boss-SpezialfÃ¤higkeiten
+                    // Boss-Spezialfähigkeiten
                     if (this.special === 'regenerate') {
                         this.regenCooldown -= deltaTime;
                         if (this.regenCooldown <= 0 && Date.now() - this.lastDamageTime > 3000) {
@@ -1354,7 +1382,7 @@
                 if(this.element) {
                     this.element.querySelector('.enemy-health').textContent = `${this.health} HP`;
                         
-                        // FÃ¼ge Trefferanimation hinzu
+                        // Füge Trefferanimation hinzu
                         this.element.classList.add('hit');
                         setTimeout(() => {
                             if (this.element) {
@@ -1363,7 +1391,7 @@
                         }, 300);
                     }
 
-                    // Boss-SpezialfÃ¤higkeiten bei Tod
+                    // Boss-Spezialfähigkeiten bei Tod
                     if (this.health <= 0 && this.special === 'split') {
                         // Maximal 3 Split-Gegner gleichzeitig
                         const maxSplits = Math.min(3, bosses[10].splitWords.length);
@@ -1404,7 +1432,7 @@
                     if (level10Boss.element) {
                         // Boss-Animation wird durch CSS-Animation gesteuert
                         
-                        // Spawn-Timer fÃ¼r Worte
+                        // Spawn-Timer für Worte
                         if (timestamp - level10Boss.lastSpawnTime > 3000 && level10Boss.activeWords.length < level10Boss.maxProjectiles) {
                             spawnBossWord();
                             level10Boss.lastSpawnTime = timestamp;
@@ -1416,7 +1444,7 @@
                             word.position.y += word.speed * (deltaTime / 1000);
                             word.element.style.top = `${word.position.y}px`;
                             
-                            // PrÃ¼fen, ob das Wort den Spieler erreicht hat
+                            // Prüfen, ob das Wort den Spieler erreicht hat
                             if (word.position.y > gameState.playerPosition.y - 40) {
                                 gameState.playerHealth -= 20;
                                 word.element.remove();
@@ -1439,7 +1467,7 @@
                         const enemy = gameState.enemies[i];
                 enemy.update(deltaTime);
                 
-                // PrÃ¼fen ob Gegner den Spieler erreicht hat
+                // Prüfen ob Gegner den Spieler erreicht hat
                 if (enemy.y > gameState.playerPosition.y - 40) {
                     gameState.playerHealth -= 10;
                             removeEnemy(i);
@@ -1471,7 +1499,7 @@
             gameState.enemies.splice(index, 1);
         }
 
-        // Spiel initialisieren (Ã¼berarbeitet)
+        // Spiel initialisieren (überarbeitet)
         function initGame() {
                 loadGameState();
                 if (gameState.playerHealth <= 0) {
@@ -1482,9 +1510,9 @@
             gameState.spawnTimer = 0;
             gameState.lastUpdate = 0;
             gameState.currentScreen = 'game';
-                gameState.monstersKilled = 0; // Setze getÃ¶tete Monster zurÃ¼ck
+                gameState.monstersKilled = 0; // Setze getötete Monster zurück
                 gameState.bossActive = false;
-                gameState.level10BossActive = false; // Neuer Status fÃ¼r Level 10 Boss
+                gameState.level10BossActive = false; // Neuer Status für Level 10 Boss
 
             const gameScene = document.getElementById('gameScene');
                 gameScene.innerHTML = `<div class="player" id="player"></div>`;
@@ -1509,10 +1537,10 @@
                     oldHint.remove();
                 }
 
-                // FÃ¼ge verbesserten MenÃ¼-Hinweis hinzu
+                // Füge verbesserten Menü-Hinweis hinzu
             const hint = document.createElement('div');
                 hint.className = 'menu-hint-improved';
-                hint.innerHTML = 'âŒ¨ï¸ Type <strong>"menu"</strong> to return to the main menu';
+                hint.innerHTML = '⌨️ Type <strong>"menu"</strong> to return to the main menu';
                 
                 // Hinweis nach 5 Sekunden ausblenden
                 setTimeout(() => {
@@ -1530,11 +1558,11 @@
                 // Combat Log initialisieren
                 const combatLog = document.getElementById('combatLog');
                 if (combatLog) {
-                    // FÃ¼ge eine Nachricht hinzu, dass die Etage zurÃ¼ckgesetzt wurde
-                    addCombatLogEntry('info', `Du betrittst Etage ${gameState.level}. Dein Fortschritt wurde zurÃ¼ckgesetzt.`);
+                    // Füge eine Nachricht hinzu, dass die Etage zurückgesetzt wurde
+                    addCombatLogEntry('info', `Du betrittst Etage ${gameState.level}. Dein Fortschritt wurde zurückgesetzt.`);
                     addCombatLogEntry('info', 'Type "menu" to return to the main menu.');
                     
-                    // Spezielle Nachricht fÃ¼r Level 10 Boss
+                    // Spezielle Nachricht für Level 10 Boss
                     if (gameState.level === 10) {
                         addCombatLogEntry('info', 'BOSS BATTLE! Defeat TYPEREX by typing all the words it throws at you!');
                     }
@@ -1582,7 +1610,7 @@
                 
                 const gameScene = document.getElementById('gameScene');
                 
-                // ZufÃ¤lliges Wort aus dem Pool auswÃ¤hlen
+                // Zufälliges Wort aus dem Pool auswählen
                 const randomIndex = Math.floor(Math.random() * level10Boss.wordPool.length);
                 const word = level10Boss.wordPool[randomIndex];
                 
@@ -1609,7 +1637,7 @@
                 wordElement.style.top = '-25px';
                 projectile.appendChild(wordElement);
                 
-                // Wort zum aktiven Array hinzufÃ¼gen
+                // Wort zum aktiven Array hinzufügen
                 level10Boss.activeWords.push({
                     word: word.toLowerCase(),
                     element: projectile,
@@ -1618,7 +1646,7 @@
                     speed: 40 + Math.random() * 20
                 });
                 
-                // NÃ¤chstes Wort spawnen, wenn weniger als maxProjectiles aktiv sind
+                // Nächstes Wort spawnen, wenn weniger als maxProjectiles aktiv sind
                 if (level10Boss.activeWords.length < level10Boss.maxProjectiles) {
                     setTimeout(spawnBossWord, 1000);
                 }
@@ -1639,7 +1667,7 @@
                 level10Boss.health--;
                 updateBossHealthBar();
                 
-                // PrÃ¼fen, ob der Boss besiegt wurde
+                // Prüfen, ob der Boss besiegt wurde
                 if (level10Boss.health <= 0) {
                     defeatLevel10Boss();
                 }
@@ -1685,7 +1713,7 @@
                 gameState.gold += level10Boss.goldReward;
                 gameState.score += 100;
                 
-                // Level erhÃ¶hen
+                // Level erhöhen
                 gameState.level++;
                 gameState.maxLevel = Math.max(gameState.level, gameState.maxLevel);
                 gameState.monstersKilled = 0;
@@ -1694,7 +1722,7 @@
                 addCombatLogEntry('kill', `You defeated TYPEREX! Earned ${level10Boss.goldReward} gold!`);
                 alert(`Boss defeated! You are now Level ${gameState.level}!`);
                 
-                // NÃ¤chstes Level starten
+                // Nächstes Level starten
                 spawnEnemy();
                 updateDisplay();
                 saveGameState();
@@ -1708,12 +1736,12 @@
                     return;
                 }
                 
-                // Berechne die Anzahl der benÃ¶tigten Monster fÃ¼r das aktuelle Level
+                // Berechne die Anzahl der benötigten Monster für das aktuelle Level
                 const monstersNeeded = gameState.level <= 3 ? 4 : 10;
                 
                 if (gameState.monstersKilled > 0 && gameState.monstersKilled % monstersNeeded === 0 && !gameState.bossActive) {
-                    // Berechne das Boss-Level basierend auf der Anzahl der getÃ¶teten Monster
-                    // FÃ¼r die ersten 3 Level erscheint der Boss nach 4 Monstern, danach nach 10
+                    // Berechne das Boss-Level basierend auf der Anzahl der getöteten Monster
+                    // Für die ersten 3 Level erscheint der Boss nach 4 Monstern, danach nach 10
                     let bossLevel;
                     if (gameState.level <= 3) {
                         bossLevel = Math.floor(gameState.level * 4 / 10) * 10;
@@ -1724,7 +1752,7 @@
                     if (bosses[bossLevel]) {
                         const boss = bosses[bossLevel];
                         gameState.bossActive = true;
-                        const enemy = new Enemy(boss.name, boss.health, boss.goldReward, 'ðŸ', boss.special);
+                        const enemy = new Enemy(boss.name, boss.health, boss.goldReward, '👑', boss.special);
             const element = enemy.createDOMElement();
                         document.getElementById('gameScene').appendChild(element);
                         enemy.element = element;
@@ -1758,7 +1786,7 @@
                 alert(`Level Up! You are now Level ${gameState.level}!`);
                 addCombatLogEntry('info', `You leveled up! Level ${gameState.level} reached!`);
                 
-                // Eingabefeld zurÃ¼cksetzen
+                // Eingabefeld zurücksetzen
                 document.getElementById('typingInput').value = '';
                 
                 updateDisplay();
@@ -1767,18 +1795,17 @@
 
         // Display aktualisieren
         function updateDisplay() {
-                // Berechne die Anzahl der benÃ¶tigten Monster fÃ¼r das aktuelle Level
-                const monstersNeeded = gameState.level <= 3 ? 4 : 10;
-                
-                // Sidebar Stats aktualisieren
+                // Aktualisiere die Sidebar-Anzeige
                 document.getElementById('sidebarHealth').textContent = `${gameState.playerHealth}/1000`;
                 document.getElementById('sidebarGold').textContent = gameState.gold;
-                document.getElementById('sidebarLevel').textContent = `${gameState.level} (${gameState.monstersKilled}/${monstersNeeded})`;
-                document.getElementById('sidebarInventory').textContent = gameState.inventory.length;
-                document.getElementById('sidebarMaterials').textContent = gameState.materials.reduce((total, mat) => total + mat.amount, 0);
-                document.getElementById('sidebarScore').textContent = gameState.score;
                 
-                // Defense anzeigen wenn vorhanden
+                // Berechne die Anzahl der Monster, die für ein Level-Up benötigt werden
+                const monstersNeeded = gameState.level <= 3 ? 4 : 10;
+                
+                // Aktualisiere die Level-Anzeige mit dem aktuellen Level und dem Fortschritt
+                document.getElementById('sidebarLevel').textContent = `${gameState.level} (${gameState.monstersKilled}/${monstersNeeded})`;
+                
+                // Zeige die Verteidigung an, wenn sie größer als 0 ist
                 if (gameState.defense > 0) {
                     document.getElementById('sidebarDefenseContainer').style.display = 'flex';
                     document.getElementById('sidebarDefense').textContent = gameState.defense;
@@ -1786,7 +1813,17 @@
                     document.getElementById('sidebarDefenseContainer').style.display = 'none';
                 }
                 
-                // Speichern nach jeder Aktualisierung
+                document.getElementById('sidebarScore').textContent = gameState.score;
+                document.getElementById('sidebarInventory').textContent = gameState.inventory.length;
+                
+                // Berechne die Gesamtzahl der Materialien
+                let totalMaterials = 0;
+                gameState.materials.forEach(material => {
+                    totalMaterials += material.amount;
+                });
+                document.getElementById('sidebarMaterials').textContent = totalMaterials;
+                
+                // Speichere den Spielstand
                 saveGameState();
         }
 
@@ -1863,128 +1900,58 @@
                 inputContainer.appendChild(newKeyboard);
         }
 
-        // MenÃ¼-Handling aktualisieren
-        function handleMenuInput(typed) {
-            debugLog(`handleMenuInput called with: "${typed}"`);
-            typed = typed.toLowerCase();
-            const menuOptions = ['enter dungeon', 'practice mode', 'inventory', 'shop', 'menu', 'new game'];
-
-            debugLog(`Current menu options: ${menuOptions.join(', ')}`);
+        // Menü-Handling aktualisieren
+        function handleMenuInput(input) {
+            const menuOptions = document.querySelectorAll('.menu-option');
+            let matchFound = false;
             
-            // Prüfe, ob es ein Level-Lade-Befehl ist
-            if (typed.startsWith('load_level')) {
-                debugLog(`Level-Lade-Befehl erkannt: ${typed}`);
-                const levelMatch = typed.match(/load_level(\d+)/);
-                if (levelMatch && levelMatch[1]) {
-                    const targetLevel = parseInt(levelMatch[1]);
-                    debugLog(`Ziel-Level: ${targetLevel}`);
-                    if (targetLevel >= 1 && targetLevel <= 30) { // Begrenze auf sinnvolle Level
-                        // Setze den Spielstand auf das gewünschte Level
-                        gameState.level = targetLevel;
-                        gameState.maxLevel = Math.max(gameState.maxLevel, targetLevel);
-                        gameState.monstersKilled = 0;
-                        
-                        // Aktualisiere die Anzeige
-                        updateDisplay();
-                        
-                        // Starte das Spiel
-                        gameState.currentScreen = 'game';
-                        mainMenu.classList.add('hidden');
-                        gameContainer.style.display = 'block';
-                        initGame();
-                        refreshVirtualKeyboard();
-                        
-                        // Füge eine Nachricht zum Combat Log hinzu
-                        addCombatLogEntry('info', `Level ${targetLevel} geladen!`);
-                        debugLog(`Level ${targetLevel} durch Befehl geladen`);
-                        
-                        return true;
-                    } else {
-                        alert('Ungültiges Level! Bitte wähle ein Level zwischen 1 und 30.');
-                        debugLog(`Ungültiges Level: ${targetLevel}`);
-                        return false;
-                    }
-                }
-            }
-
-            // Finde die erste Menüoption, die mit der Eingabe beginnt
-            const matchingOption = menuOptions.find(option => option.startsWith(typed));
-            debugLog(`Matching option found: ${matchingOption || 'none'}`);
-
-            // Setze alle Menüoptionen zurück und markiere korrekte Buchstaben
-            const menuElements = document.querySelectorAll('.menu-container > .menu-option');
-            debugLog(`Found ${menuElements.length} menu elements`);
-
-            menuElements.forEach(option => {
-                const text = option.textContent.toLowerCase();
-                debugLog(`Processing menu option: "${text}"`);
-
-                // Prüfe, ob es sich um eine Hauptmenüoption handelt
-                if (menuOptions.includes(text)) {
-                    let html = '';
-                    for(let i = 0; i < text.length; i++) {
-                        if(text.startsWith(typed) && i < typed.length) {
-                            html += `<span class="correct">${text[i]}</span>`;
-                        } else {
-                            html += text[i];
+            menuOptions.forEach(option => {
+                const optionText = option.textContent.toLowerCase();
+                
+                // Wenn die Eingabe mit einer Option beginnt
+                if (optionText.startsWith(input)) {
+                    // Hervorhebe den eingegebenen Teil
+                    option.innerHTML = `<span class="correct">${input}</span>${optionText.slice(input.length)}`;
+                    matchFound = true;
+                    
+                    // Wenn die Eingabe exakt mit einer Option übereinstimmt
+                    if (input === optionText) {
+                        // Führe die entsprechende Aktion aus
+                        switch (optionText) {
+                            case 'enter dungeon':
+                                startGame();
+                                break;
+                            case 'practice mode':
+                                startPracticeMode();
+                                break;
+                            case 'inventory':
+                                showInventory();
+                                break;
+                            case 'shop':
+                                showShop();
+                                break;
+                            case 'select level':
+                                showLevelSelect();
+                                break;
+                            case 'new game':
+                                if (confirm('Are you sure you want to start a new game? All progress will be lost.')) {
+                                    resetGameState();
+                                    saveGameState();
+                                    updateDisplay();
+                                }
+                                break;
                         }
+                        
+                        // Leere das Eingabefeld
+                        document.getElementById('typingInput').value = '';
                     }
-                    debugLog(`Setting innerHTML for "${text}" to: ${html}`);
-                    option.innerHTML = html;
+                } else {
+                    // Setze den Text zurück, wenn er nicht mehr passt
+                    option.textContent = optionText;
                 }
             });
-
-            if (matchingOption && typed === matchingOption) {
-                debugLog(`Complete match found: ${matchingOption}`);
-                // Vollständiges Wort eingegeben
-                switch(matchingOption) {
-                    case 'enter dungeon':
-                        gameState.currentScreen = 'game';
-                        mainMenu.classList.add('hidden');
-                        gameContainer.style.display = 'block';
-                        initGame();
-                        refreshVirtualKeyboard();
-                        break;
-                        
-                    case 'practice mode':
-                        gameState.currentScreen = 'practice';
-                        mainMenu.classList.add('hidden');
-                        gameContainer.style.display = 'block';
-                        initPracticeMode();
-                        refreshVirtualKeyboard();
-                    break;
-                    
-                    case 'inventory':
-                        gameState.currentScreen = 'inventory';
-                        showInventory();
-                        refreshVirtualKeyboard();
-                    break;
-                    
-                    case 'shop':
-                        gameState.currentScreen = 'shop';
-                        showShop();
-                        refreshVirtualKeyboard();
-                    break;
-                    
-                    case 'menu':
-                        if (gameState.currentScreen !== 'menu') {
-                            returnToMenu();
-                            refreshVirtualKeyboard();
-                        }
-                        break;
-
-                    case 'new game':
-                        if (confirm('Do you really want to start a new game? The current progress will be lost!')) {
-                            resetGameState();
-                            returnToMenu();
-                            refreshVirtualKeyboard();
-                            alert('New game started!');
-                        }
-                        break;
-                }
-                return true;
-            }
-            return false;
+            
+            return matchFound;
         }
 
             // Inventory-Handler aktualisieren
@@ -2047,7 +2014,7 @@
                             
                             <!-- Deutlicher Hinweis direkt im Materials-Container -->
                             <div style="background-color: #4CAF50; color: white; padding: 10px; margin-top: 15px; border-radius: 5px; text-align: center; font-weight: bold; font-size: 16px;">
-                                ðŸ'° Type "sell all materials" to sell all materials (5 gold each) ðŸ'°
+                                💰 Type "sell all materials" to sell all materials (5 gold each) 💰
                             </div>
                         </div>
                     </div>
@@ -2060,13 +2027,13 @@
             </div>
             `;
 
-            // Event-Listener fÃ¼r den Sell All Materials Button hinzufÃ¼gen
+            // Event-Listener für den Sell All Materials Button hinzufügen
             const sellAllButton = document.querySelector('.sell-all-button');
             if (sellAllButton) {
                 sellAllButton.addEventListener('click', () => {
                     sellAllMaterials();
                 });
-                debugLog('Sell All Materials Button gefunden und Event-Listener hinzugefÃ¼gt');
+                debugLog('Sell All Materials Button gefunden und Event-Listener hinzugefügt');
             } else {
                 debugLog('Sell All Materials Button nicht gefunden!');
             }
@@ -2077,7 +2044,7 @@
         function handleInventoryInput(input) {
             debugLog(`Processing inventory input: "${input}"`);
             
-            // Definiere die mÃ¶glichen Befehle
+            // Definiere die möglichen Befehle
             const commands = {
                 'sell all materials': () => {
                     debugLog('Befehl "sell all materials" erkannt');
@@ -2150,7 +2117,7 @@
                     );
                     if (shield) {
                         shield.equipped = true;
-                        gameState.defense += 5; // Direkt Defense erhÃ¶hen
+                        gameState.defense += 5; // Direkt Defense erhöhen
                         updateDisplay();
                         addCombatLogEntry('info', 'You equipped a shield and increased your defense by 5!');
                         alert('Shield equipped! Defense increased by 5');
@@ -2172,7 +2139,7 @@
             // Markiere die passenden Befehle
             const menuOptions = document.querySelectorAll('.menu-option');
             menuOptions.forEach(option => {
-                // Suche nach der item-action Klasse fÃ¼r Befehle
+                // Suche nach der item-action Klasse für Befehle
                 const actionElement = option.querySelector('.item-action');
                 if (actionElement) {
                     const actionText = actionElement.textContent.toLowerCase();
@@ -2182,11 +2149,11 @@
                         // Hervorhebe den eingegebenen Teil
                         actionElement.innerHTML = `<span class="correct">${input}</span>${actionText.slice(input.length)}`;
                     } else {
-                        // Setze den Text zurÃ¼ck, wenn er nicht mehr passt
+                        // Setze den Text zurück, wenn er nicht mehr passt
                         actionElement.textContent = actionText;
                     }
                 } 
-                // PrÃ¼fe auf die "menu" Option oder "sell all materials" Option
+                // Prüfe auf die "menu" Option oder "sell all materials" Option
                 else if ((option.textContent.toLowerCase() === 'menu' && 'menu'.startsWith(input)) ||
                          (option.textContent.toLowerCase() === 'sell all materials' && 'sell all materials'.startsWith(input))) {
                     const text = option.textContent.toLowerCase();
@@ -2194,9 +2161,9 @@
                 }
             });
             
-            // Wenn ein vollstÃ¤ndiger Befehl eingegeben wurde, fÃ¼hre ihn aus
+            // Wenn ein vollständiger Befehl eingegeben wurde, führe ihn aus
             if (matchingCommand && input === matchingCommand) {
-                debugLog(`FÃ¼hre Befehl aus: ${matchingCommand}`);
+                debugLog(`Führe Befehl aus: ${matchingCommand}`);
                 return commands[matchingCommand]();
             }
 
@@ -2246,7 +2213,7 @@
         menuOptions.forEach(option => {
             const text = option.textContent.toLowerCase();
             
-            // PrÃ¼fe, ob es sich um ein Shop-Item handelt
+            // Prüfe, ob es sich um ein Shop-Item handelt
             if (text.includes('-') && text.includes('gold')) {
                 // Extrahiere den Item-Namen (alles vor dem ersten Leerzeichen)
                 const itemName = text.split(' ')[0];
@@ -2275,7 +2242,7 @@
                     }
                 }
             } else if (text === 'menu' && 'menu'.startsWith(typed)) {
-                // Hervorhebung fÃ¼r die "menu" Option
+                // Hervorhebung für die "menu" Option
                 option.innerHTML = `<span class="correct">${typed}</span>${text.slice(typed.length)}`;
             }
         });
@@ -2316,7 +2283,7 @@
             if (gameState.gameLoop) {
                 cancelAnimationFrame(gameState.gameLoop);
             }
-        // Setze Eingabefeld zurÃ¼ck
+        // Setze Eingabefeld zurück
         document.getElementById('typingInput').value = '';
         
         // Aktualisiere die Sidebar
@@ -2332,22 +2299,20 @@
             returnToMenu();
             }
 
-        // Input Validierung hinzufÃ¼gen
+        // Input Validierung hinzufügen
         function validateInput(input) {
-            // Erlaube Buchstaben, Zahlen, Leerzeichen, Unterstriche und andere Sonderzeichen
-            return input.toLowerCase();
+            // Entferne unerwünschte Zeichen
+            return input.replace(/[^a-zA-Z0-9\s]/g, '').toLowerCase();
         }
 
         // Input Handler aktualisieren
         document.getElementById('typingInput').addEventListener('input', function(e) {
         const typed = validateInput(e.target.value);
+        if (typed !== e.target.value) {
+            e.target.value = typed;
+        }
         
-        // Entferne die Zeile, die den Wert zurÃ¼cksetzt, wenn er nicht der Validierung entspricht
-        // if (typed !== e.target.value) {
-        //     e.target.value = typed;
-        // }
-        
-                // PrÃ¼fe auf Debug-Befehl
+                // Prüfe auf Debug-Befehl
                 if (typed === '/debug') {
                     toggleDebugMode();
                     e.target.value = '';
@@ -2370,7 +2335,7 @@
                     e.target.value = '';
                 }
                 } else if (gameState.currentScreen === 'practice') {
-                    // Ãœbungsmodus-Logik
+                    // Übungsmodus-Logik
                     if ('menu'.startsWith(typed)) {
                         if (typed === 'menu') {
                             returnToMenu();
@@ -2380,7 +2345,7 @@
                         return;
                     }
                     
-                    // ÃœberprÃ¼fe, ob das eingegebene Wort mit dem Ãœbungswort Ã¼bereinstimmt
+                    // Überprüfe, ob das eingegebene Wort mit dem Übungswort übereinstimmt
                     if (gameState.practiceWord.startsWith(typed)) {
                         // Markiere den korrekten Teil des Wortes
                         const practiceWordElement = document.querySelector('.practice-word');
@@ -2394,17 +2359,17 @@
                         }
                         practiceWordElement.innerHTML = wordDisplay;
                         
-                        // Wenn das Wort vollstÃ¤ndig ist
+                        // Wenn das Wort vollständig ist
                         if (typed === gameState.practiceWord) {
                             updatePracticeScore();
                             generatePracticeWord();
-                            // Setze falsch eingetippte Buchstaben zurÃ¼ck
+                            // Setze falsch eingetippte Buchstaben zurück
                             gameState.wrongChars = '';
                             document.querySelector('.wrong-chars').textContent = '';
                             e.target.value = '';
                         }
                     } else if (typed.length > 0) {
-                        // Falsche Eingabe - setze das Wort zurÃ¼ck
+                        // Falsche Eingabe - setze das Wort zurück
                         const practiceWordElement = document.querySelector('.practice-word');
                         practiceWordElement.textContent = gameState.practiceWord;
                         
@@ -2421,7 +2386,7 @@
             } else if (gameState.currentScreen === 'game') {
                 debugLog('Processing game input');
                 
-                // PrÃ¼fe ob die Eingabe mit "menu" beginnt
+                // Prüfe ob die Eingabe mit "menu" beginnt
                 if ('menu'.startsWith(typed)) {
                     debugLog('Potential menu command');
                     if (typed === 'menu') {
@@ -2430,7 +2395,7 @@
                         e.target.value = '';
                         return;
                     }
-                    return; // Keine weitere Verarbeitung wenn es ein potentielles MenÃ¼-Kommando ist
+                    return; // Keine weitere Verarbeitung wenn es ein potentielles Menü-Kommando ist
                 }
                 
                     // Level 10 Boss-Logik
@@ -2474,7 +2439,7 @@
                             debugLog(`Taking ${damage} damage (Reduced by defense: ${gameState.defense})`);
                             e.target.value = '';
                             
-                            // Setze alle Wortanzeigen zurÃ¼ck
+                            // Setze alle Wortanzeigen zurück
                             level10Boss.activeWords.forEach(word => {
                                 word.wordElement.textContent = word.word;
                             });
@@ -2515,13 +2480,13 @@
                             debugLog(`Earned ${targetEnemy.goldReward} gold!`);
                         }
                         
-                                // FÃ¼ge Materialien-Drop hinzu
+                                // Füge Materialien-Drop hinzu
                                 const droppedItem = targetEnemy.dropLoot();
                                 
-                                // Level-Up Logik hinzufÃ¼gen
+                                // Level-Up Logik hinzufügen
                                 if (!targetEnemy.isBoss) {
                                     gameState.monstersKilled++;
-                                    // FÃ¼r die ersten 3 Level nur 4 Monster benÃ¶tigen
+                                    // Für die ersten 3 Level nur 4 Monster benötigen
                                     const monstersNeeded = gameState.level <= 3 ? 4 : 10;
                                     if (gameState.monstersKilled >= monstersNeeded) {
                                         levelUp();
@@ -2533,7 +2498,7 @@
                         removeEnemy(targetEnemyIndex);
                         e.target.value = '';
                     } else {
-                                // Schussanimation fÃ¼r jeden korrekten Buchstaben
+                                // Schussanimation für jeden korrekten Buchstaben
                                 createProjectile(targetEnemy);
                                 
                                 // Wenn der Gegner durch den Schaden stirbt
@@ -2546,13 +2511,13 @@
                                 debugLog(`Earned ${targetEnemy.goldReward} gold!`);
                             }
                             
-                                    // FÃ¼ge Materialien-Drop hinzu
+                                    // Füge Materialien-Drop hinzu
                                     const droppedItem = targetEnemy.dropLoot();
                                     
-                                    // Level-Up Logik hinzufÃ¼gen
+                                    // Level-Up Logik hinzufügen
                                     if (!targetEnemy.isBoss) {
                                         gameState.monstersKilled++;
-                                        // FÃ¼r die ersten 3 Level nur 4 Monster benÃ¶tigen
+                                        // Für die ersten 3 Level nur 4 Monster benötigen
                                         const monstersNeeded = gameState.level <= 3 ? 4 : 10;
                                         if (gameState.monstersKilled >= monstersNeeded) {
                                             levelUp();
@@ -2561,7 +2526,7 @@
                                         gameState.bossActive = false;
                                     }
                                     
-                                    // Kurze VerzÃ¶gerung vor dem Entfernen des Gegners fÃ¼r bessere visuelle Wirkung
+                                    // Kurze Verzögerung vor dem Entfernen des Gegners für bessere visuelle Wirkung
                                     setTimeout(() => {
                             removeEnemy(targetEnemyIndex);
                             e.target.value = '';
@@ -2578,7 +2543,7 @@
                     debugLog(`Taking ${damage} damage (Reduced by defense: ${gameState.defense})`);
                     e.target.value = '';
                     
-                    // Setze alle Wortanzeigen zurÃ¼ck
+                    // Setze alle Wortanzeigen zurück
                     gameState.enemies.forEach(enemy => {
                         const wordElement = enemy.element.querySelector('.enemy-word');
                         wordElement.textContent = enemy.word;
@@ -2600,11 +2565,11 @@
             debugLog('Input field focused');
         }
 
-        // Event Listener fÃ¼r Klicks
+        // Event Listener für Klicks
         document.addEventListener('click', focusInput);
         document.addEventListener('keydown', focusInput);
 
-        // Funktion zum HinzufÃ¼gen von Material
+        // Funktion zum Hinzufügen von Material
         function addMaterial(material) {
             const existingMaterial = gameState.materials.find(m => m.name === material);
             if (existingMaterial) {
@@ -2644,14 +2609,14 @@
         // Funktion zum Laden des Spielstands
         function loadGameState() {
             try {
-                // PrÃ¼fe, ob ein Reset-Flag gesetzt ist
+                // Prüfe, ob ein Reset-Flag gesetzt ist
                 const resetDone = localStorage.getItem('roughTypeResetDone');
                 
                 if (!resetDone) {
-                    // Einmaliger Reset: LÃ¶sche vorhandenen Spielstand
+                    // Einmaliger Reset: Lösche vorhandenen Spielstand
                     localStorage.removeItem('roughTypeGameState');
                     
-                    // Setze Spielstand auf Standardwerte zurÃ¼ck
+                    // Setze Spielstand auf Standardwerte zurück
                     gameState.gold = 100;
                     gameState.level = 1;
                     gameState.maxLevel = 1;
@@ -2662,7 +2627,7 @@
                     gameState.score = 0;
                     gameState.materials = [];
                     
-                    // Setze das Reset-Flag, damit der Reset nicht wieder durchgefÃ¼hrt wird
+                    // Setze das Reset-Flag, damit der Reset nicht wieder durchgeführt wird
                     localStorage.setItem('roughTypeResetDone', 'true');
                     
                     debugLog('Neues Spiel gestartet (einmaliger Reset)');
@@ -2681,7 +2646,7 @@
                         gameState.score = data.score || 0;
                         gameState.materials = data.materials || [];
                         
-                        // Stelle ausgerÃ¼stete Items wieder her
+                        // Stelle ausgerüstete Items wieder her
                         gameState.inventory.forEach(item => {
                             if (item.type === 'equipment' && item.equipped) {
                                 if (item.name === 'shield') {
@@ -2713,7 +2678,7 @@
                 debugLog('Fehler beim Laden des Spielstands: ' + error.message);
                 alert('Fehler beim Laden des Spielstands!');
                 
-                // Setze auf Standardwerte zurÃ¼ck bei Fehler
+                // Setze auf Standardwerte zurück bei Fehler
                 gameState.gold = 100;
                 gameState.level = 1;
                 gameState.maxLevel = 1;
@@ -2728,9 +2693,9 @@
             }
         }
 
-        // Funktion zum ZurÃ¼cksetzen des Spielstands
+        // Funktion zum Zurücksetzen des Spielstands
         function resetGameState() {
-            // Setze alle Werte auf Anfangszustand zurÃ¼ck
+            // Setze alle Werte auf Anfangszustand zurück
             gameState.playerHealth = 1000;
             gameState.score = 0;
             gameState.enemies = [];
@@ -2742,9 +2707,9 @@
             gameState.bossActive = false;
             gameState.materials = [];
             
-            // LÃ¶sche gespeicherten Spielstand
+            // Lösche gespeicherten Spielstand
             localStorage.removeItem('roughTypeGameState');
-            debugLog('Spielstand zurÃ¼ckgesetzt');
+            debugLog('Spielstand zurückgesetzt');
             
             // Aktualisiere die Anzeige
             updateDisplay();
@@ -2767,31 +2732,9 @@
         
                     // Stelle sicher, dass die Sidebar immer sichtbar ist
                     document.getElementById('statsSidebar').style.display = 'block';
-                    
-                    // FÃ¼ge den Event-Listener fÃ¼r das MenÃ¼-Eingabefeld hinzu
-                    const menuInput = document.getElementById('menuInput');
-                    if (menuInput) {
-                        menuInput.addEventListener('keydown', function(e) {
-                            if (e.key === 'Enter') {
-                                const command = this.value.trim();
-                                debugLog(`MenÃ¼-Befehl eingegeben: ${command}`);
-                                
-                                // Verarbeite spezielle Befehle
-                                if (processMenuCommand(command)) {
-                                    // Befehl wurde verarbeitet, leere das Eingabefeld
-                                    this.value = '';
-                                    e.preventDefault();
-                                    return;
-                                }
-                            }
-                        });
-                        debugLog('Event-Listener fÃ¼r MenÃ¼-Eingabefeld hinzugefÃ¼gt');
-                    } else {
-                        debugLog('Fehler: MenÃ¼-Eingabefeld nicht gefunden!');
-                    }
                 });
 
-        // Tastatur-Highlight FunktionalitÃ¤t
+        // Tastatur-Highlight Funktionalität
         document.addEventListener('keydown', function(e) {
             const key = e.key.toLowerCase();
             const keyElement = document.querySelector(`.key[data-key="${key}"]`);
@@ -2808,7 +2751,7 @@
             }
         });
 
-        // Neue Funktion fÃ¼r Combat Log EintrÃ¤ge
+        // Neue Funktion für Combat Log Einträge
         function addCombatLogEntry(type, message) {
             const combatLog = document.getElementById('combatLog');
             if (!combatLog) return;
@@ -2819,26 +2762,26 @@
             
             combatLog.insertBefore(entry, combatLog.firstChild);
             
-            // Begrenze die Anzahl der EintrÃ¤ge
+            // Begrenze die Anzahl der Einträge
             while (combatLog.children.length > 50) {
                 combatLog.removeChild(combatLog.lastChild);
             }
         }
 
-        // Neue Funktion fÃ¼r den Ãœbungsmodus
+        // Neue Funktion für den Übungsmodus
         function initPracticeMode() {
             gameState.currentScreen = 'practice';
             gameState.practiceWord = '';
             gameState.practiceScore = 0;
             gameState.wrongChars = ''; // Speichert falsch eingetippte Buchstaben
-            gameState.nextMonster = null; // Speichert das nÃ¤chste Monster
+            gameState.nextMonster = null; // Speichert das nächste Monster
             
-            // Setze die Spielszene zurÃ¼ck
+            // Setze die Spielszene zurück
             const gameScene = document.getElementById('gameScene');
             gameScene.innerHTML = `
                 <div class="player" id="player" style="bottom: 200px;"></div>
                 <div class="practice-dummy" style="position: absolute; top: 150px; left: 50%; transform: translateX(-50%); width: 60px; height: 60px; background: #888; border-radius: 50%; display: flex; justify-content: center; align-items: center;">
-                    <span style="font-size: 24px;">ðŸŽ¯</span>
+                    <span style="font-size: 24px;">🎯</span>
                 </div>
                 <div class="practice-word" style="position: absolute; top: 100px; left: 50%; transform: translateX(-50%); font-size: 24px; background: var(--debug-bg); padding: 10px; border-radius: 5px;"></div>
                 <div class="wrong-chars" style="position: absolute; top: 160px; left: 50%; transform: translateX(-50%); font-size: 18px; color: #ff0000; padding: 5px; border-radius: 3px;"></div>
@@ -2853,7 +2796,7 @@
             const combatLog = document.getElementById('combatLog');
             combatLog.innerHTML = '';
             
-            // FÃ¼ge eine ErklÃ¤rung hinzu
+            // Füge eine Erklärung hinzu
             addCombatLogEntry('info', 'Practice Mode: Type the displayed words to practice. There is no time limit.');
             addCombatLogEntry('info', 'Type "menu" to return to the main menu.');
             
@@ -2866,10 +2809,10 @@
                 oldHint.remove();
             }
 
-            // FÃ¼ge verbesserten MenÃ¼-Hinweis hinzu
+            // Füge verbesserten Menü-Hinweis hinzu
             const hint = document.createElement('div');
             hint.className = 'menu-hint-improved';
-            hint.innerHTML = 'âŒ¨ï¸ Type <strong>"menu"</strong> to return to the main menu';
+            hint.innerHTML = '⌨️ Type <strong>"menu"</strong> to return to the main menu';
             
             // Hinweis nach 5 Sekunden ausblenden
             setTimeout(() => {
@@ -2885,9 +2828,9 @@
             document.body.appendChild(hint);
         }
 
-        // Funktion zum Generieren eines zufÃ¤lligen Ãœbungswortes
+        // Funktion zum Generieren eines zufälligen Übungswortes
         function generatePracticeWord() {
-            // Sammle alle MonsterwÃ¶rter aus allen Leveln
+            // Sammle alle Monsterwörter aus allen Leveln
             let allMonsterWords = [];
             for (let level = 1; level <= 10; level++) {
                 if (enemyTypes[level]) {
@@ -2900,34 +2843,34 @@
                 }
             }
             
-            // FÃ¼ge auch Boss-WÃ¶rter hinzu
+            // Füge auch Boss-Wörter hinzu
             Object.values(bosses).forEach(boss => {
                 allMonsterWords.push({
                     word: boss.name.toLowerCase(),
-                    icon: 'ðŸ'¿'
+                    icon: '👑'
                 });
                 
-                // FÃ¼ge auch Split-WÃ¶rter hinzu, falls vorhanden
+                // Füge auch Split-Wörter hinzu, falls vorhanden
                 if (boss.splitWords) {
                     boss.splitWords.forEach(word => {
                         allMonsterWords.push({
                             word: word.toLowerCase(),
-                            icon: 'ðŸ"¥'
+                            icon: '🔥'
                         });
                     });
                 }
             });
             
-            // Wenn es ein nÃ¤chstes Monster gibt, verwende es als aktuelles Monster
+            // Wenn es ein nächstes Monster gibt, verwende es als aktuelles Monster
             let currentMonster;
             if (gameState.nextMonster) {
                 currentMonster = gameState.nextMonster;
             } else {
-                // WÃ¤hle ein zufÃ¤lliges Wort aus
+                // Wähle ein zufälliges Wort aus
                 currentMonster = allMonsterWords[Math.floor(Math.random() * allMonsterWords.length)];
             }
             
-            // WÃ¤hle ein neues zufÃ¤lliges Wort fÃ¼r das nÃ¤chste Monster aus
+            // Wähle ein neues zufälliges Wort für das nächste Monster aus
             // Stelle sicher, dass es nicht das gleiche Wort ist
             let nextMonster;
             do {
@@ -2942,29 +2885,29 @@
             const practiceWordElement = document.querySelector('.practice-word');
             practiceWordElement.innerHTML = `${currentMonster.icon} ${currentMonster.word}`;
             
-            // Zeige das nÃ¤chste Monster an
+            // Zeige das nächste Monster an
             const nextMonsterElement = document.querySelector('.next-monster-word');
             if (nextMonsterElement) {
                 nextMonsterElement.innerHTML = `${nextMonster.icon} ${nextMonster.word}`;
             }
             
-            // Setze falsch eingetippte Buchstaben zurÃ¼ck
+            // Setze falsch eingetippte Buchstaben zurück
             gameState.wrongChars = '';
             const wrongCharsElement = document.querySelector('.wrong-chars');
             if (wrongCharsElement) {
                 wrongCharsElement.textContent = '';
             }
             
-            debugLog(`Neues Ãœbungswort generiert: ${currentMonster.word}`);
+            debugLog(`Neues Übungswort generiert: ${currentMonster.word}`);
         }
 
-        // Funktion zum Aktualisieren des Ãœbungsmodus-Scores
+        // Funktion zum Aktualisieren des Übungsmodus-Scores
         function updatePracticeScore() {
             gameState.practiceScore++;
             const scoreElement = document.querySelector('.practice-score');
             scoreElement.textContent = `Score: ${gameState.practiceScore}`;
             
-            // FÃ¼ge einen Eintrag zum Combat Log hinzu
+            // Füge einen Eintrag zum Combat Log hinzu
             addCombatLogEntry('kill', `You correctly typed "${gameState.practiceWord}"!`);
         }
 
@@ -3009,7 +2952,7 @@
                         if (progress < 1) {
                             requestAnimationFrame(animateProjectile);
                         } else {
-                            // Treffer-Animation auslÃ¶sen
+                            // Treffer-Animation auslösen
                             targetEnemy.takeDamage();
                             
                             // Projektil ausblenden und entfernen
@@ -3043,7 +2986,7 @@
                         soldItems += material.amount;
                     });
                     
-                    // FÃ¼ge Gold hinzu und leere das Materials-Array
+                    // Füge Gold hinzu und leere das Materials-Array
                     gameState.gold += totalGold;
                     gameState.materials = [];
                     
@@ -3071,72 +3014,127 @@
             }
         });
 
-        // Funktion zum Verarbeiten von Befehlen im HauptmenÃ¼
-        function processMenuCommand(command) {
-            debugLog(`Verarbeite MenÃ¼-Befehl: "${command}"`);
+        // Funktion zum Anzeigen der Level-Auswahl
+        function showLevelSelect() {
+            mainMenu.classList.add('hidden');
+            gameContainer.style.display = 'block';
             
-            // PrÃ¼fe, ob es ein Level-Lade-Befehl ist
-            if (command.startsWith('load_level')) {
-                debugLog(`Level-Lade-Befehl erkannt: ${command}`);
-                const levelMatch = command.match(/load_level(\d+)/);
-                if (levelMatch && levelMatch[1]) {
-                    const targetLevel = parseInt(levelMatch[1]);
-                    debugLog(`Ziel-Level: ${targetLevel}`);
-                    if (targetLevel >= 1 && targetLevel <= 30) { // Begrenze auf sinnvolle Level
-                        // Setze den Spielstand auf das gewÃ¼nschte Level
-                        gameState.level = targetLevel;
-                        gameState.maxLevel = Math.max(gameState.maxLevel, targetLevel);
-                        gameState.monstersKilled = 0;
-                        
-                        // Aktualisiere die Anzeige
-                        updateDisplay();
-                        
-                        // Starte das Spiel
-                        startGame();
-                        
-                        // FÃ¼ge eine Nachricht zum Combat Log hinzu
-                        addCombatLogEntry('info', `Level ${targetLevel} geladen!`);
-                        debugLog(`Level ${targetLevel} durch Befehl geladen`);
-                        
-                        return true;
-                    } else {
-                        alert('UngÃ¼ltiges Level! Bitte wÃ¤hle ein Level zwischen 1 und 30.');
-                        debugLog(`UngÃ¼ltiges Level: ${targetLevel}`);
-                        return false;
-                    }
+            const gameScene = document.getElementById('gameScene');
+            
+            // Erstelle eine Liste aller verfügbaren Level
+            let levelOptions = '';
+            
+            // Füge Level 1-10 hinzu
+            for (let i = 1; i <= 10; i++) {
+                levelOptions += `<div class="menu-option level-option" data-level="${i}">Level ${i}${i <= gameState.maxLevel ? '' : ' (locked)'}</div>`;
+            }
+            
+            // Füge erweiterte Level 11-20 hinzu, wenn verfügbar
+            if (typeof extendedEnemyTypes !== 'undefined') {
+                for (let i = 11; i <= 20; i++) {
+                    levelOptions += `<div class="menu-option level-option" data-level="${i}">Level ${i}${i <= gameState.maxLevel ? '' : ' (locked)'}</div>`;
                 }
             }
             
-            debugLog(`Befehl nicht erkannt: ${command}`);
-            return false; // Befehl nicht erkannt
+            gameScene.innerHTML = `
+                <div class="menu-container">
+                    <h2>Select Level</h2>
+                    <p>Choose a level to play (max level reached: ${gameState.maxLevel})</p>
+                    <div class="level-select-grid">
+                        ${levelOptions}
+                    </div>
+                    <div class="menu-option">menu</div>
+                </div>
+            `;
+            
+            // Füge CSS für das Level-Auswahlraster hinzu
+            const style = document.createElement('style');
+            style.textContent = `
+                .level-select-grid {
+                    display: grid;
+                    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                    gap: 10px;
+                    margin: 20px 0;
+                }
+                
+                .level-option {
+                    text-align: center;
+                    padding: 15px 10px;
+                }
+                
+                .level-option[data-level="${gameState.level}"] {
+                    background-color: #4CAF50;
+                    color: white;
+                }
+                
+                .level-option:hover:not([data-level*="locked"]) {
+                    background-color: #e0e0e0;
+                    transform: scale(1.05);
+                }
+                
+                .level-option[data-level*="locked"] {
+                    opacity: 0.5;
+                    cursor: not-allowed;
+                    background-color: #ccc;
+                }
+            `;
+            document.head.appendChild(style);
+            
+            // Füge Event-Listener für die Level-Optionen hinzu
+            const levelButtons = document.querySelectorAll('.level-option');
+            levelButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const level = parseInt(this.getAttribute('data-level'));
+                    if (level <= gameState.maxLevel) {
+                        selectLevel(level);
+                    } else {
+                        alert(`Level ${level} is locked. You need to reach it first.`);
+                    }
+                });
+            });
+            
+            updateDisplay();
         }
 
-        // Ãœberschreibe die Funktion zum Starten des Spiels
-        const originalStartGame = startGame;
-        startGame = function() {
-            // Rufe die ursprÃ¼ngliche Funktion auf
-            originalStartGame();
-            
-            // PrÃ¼fe, ob Level 20 erreicht ist und der Boss aktiviert werden soll
-            if (gameState.level === 20) {
-                // Warte kurz, bis das Spiel initialisiert ist
-                setTimeout(() => {
-                    if (typeof initLevel20Boss === 'function') {
-                        initLevel20Boss();
-                        debugLog('Level 20 Boss manuell initialisiert');
-                    } else {
-                        debugLog('Fehler: initLevel20Boss ist nicht definiert!');
-                    }
-                }, 500);
+        // Funktion zum Auswählen eines Levels
+        function selectLevel(level) {
+            if (level > gameState.maxLevel) {
+                alert(`Level ${level} is locked. You need to reach it first.`);
+                return;
             }
-        };
+            
+            // Setze das Level
+            gameState.level = level;
+            gameState.monstersKilled = 0;
+            
+            // Aktualisiere die Anzeige
+            updateDisplay();
+            
+            // Starte das Spiel
+            startGame();
+            
+            // Füge eine Nachricht zum Combat Log hinzu
+            addCombatLogEntry('info', `Level ${level} selected.`);
+        }
 
-        // Erweitere die Eingabeverarbeitung im HauptmenÃ¼
-        
+        // Funktion zum Starten des Spiels
+        function startGame() {
+            gameState.currentScreen = 'game';
+            mainMenu.classList.add('hidden');
+            gameContainer.style.display = 'block';
+            initGame();
+            refreshVirtualKeyboard();
+        }
+
+        // Funktion zum Starten des Übungsmodus
+        function startPracticeMode() {
+            gameState.currentScreen = 'practice';
+            mainMenu.classList.add('hidden');
+            gameContainer.style.display = 'block';
+            initPracticeMode();
+            refreshVirtualKeyboard();
+        }
     </script>
     </div>
 </body>
 </html> 
-
-
-
