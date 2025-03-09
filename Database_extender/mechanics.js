@@ -574,11 +574,34 @@ function initLevel20Boss() {
         healthBarElement: null,
         direction: 1,
         position: { x: 100, y: 50 },
-        lastSpawnTime: 0
+        lastSpawnTime: 0,
+        timeReversalActive: false,
+        lastTimeReversal: 0,
+        timeReversalInterval: 5000 // 5 Sekunden zwischen globalen Zeitumkehrungen
     };
     
     // Erstelle das Boss-Element
     const gameScene = document.getElementById('gameScene');
+    if (!gameScene) {
+        console.error('gameScene nicht gefunden!');
+        const gameContainer = document.getElementById('gameContainer');
+        if (gameContainer) {
+            // Erstelle gameScene, falls es nicht existiert
+            const newGameScene = document.createElement('div');
+            newGameScene.id = 'gameScene';
+            newGameScene.style.width = '100%';
+            newGameScene.style.height = '100%';
+            newGameScene.style.position = 'relative';
+            gameContainer.appendChild(newGameScene);
+            console.log('gameScene erstellt');
+        } else {
+            console.error('Auch gameContainer nicht gefunden!');
+            return;
+        }
+    }
+    
+    const sceneElement = document.getElementById('gameScene') || document.getElementById('gameContainer');
+    
     const bossElement = document.createElement('div');
     bossElement.className = 'enemy-entity boss level20-boss';
     bossElement.style.width = '120px';
@@ -599,7 +622,7 @@ function initLevel20Boss() {
     bossElement.innerHTML = 'CHRONOS';
     
     // Füge den Boss zum Spielfeld hinzu
-    gameScene.appendChild(bossElement);
+    sceneElement.appendChild(bossElement);
     level20Boss.element = bossElement;
     
     // Erstelle die Gesundheitsanzeige
@@ -640,7 +663,7 @@ function initLevel20Boss() {
     
     healthBar.appendChild(healthFill);
     healthBar.appendChild(healthText);
-    gameScene.appendChild(healthBar);
+    sceneElement.appendChild(healthBar);
     level20Boss.healthBarElement = healthBar;
     
     // Füge einen Eintrag zum Kampflog hinzu
@@ -655,7 +678,12 @@ function initLevel20Boss() {
 
 // Funktion zum Erstellen eines Wortes für den Level 20 Boss
 function spawnLevel20BossWord() {
-    if (!gameState.level20BossActive || level20Boss.activeWords.length >= level20Boss.maxProjectiles) {
+    if (!gameState.level20BossActive || !level20Boss) {
+        console.error('Level 20 Boss ist nicht aktiv oder nicht definiert!');
+        return;
+    }
+    
+    if (level20Boss.activeWords.length >= level20Boss.maxProjectiles) {
         return;
     }
     
@@ -665,8 +693,14 @@ function spawnLevel20BossWord() {
     
     console.log('Erstelle neues Wort für Level 20 Boss:', word);
     
+    // Finde das gameScene-Element
+    const sceneElement = document.getElementById('gameScene') || document.getElementById('gameContainer');
+    if (!sceneElement) {
+        console.error('Kein gameScene oder gameContainer gefunden!');
+        return;
+    }
+    
     // Erstelle das Wort-Element
-    const gameScene = document.getElementById('gameScene');
     const wordElement = document.createElement('div');
     wordElement.className = 'enemy-word level20-boss-word';
     wordElement.textContent = word;
@@ -679,24 +713,34 @@ function spawnLevel20BossWord() {
     wordElement.style.borderRadius = '5px';
     wordElement.style.boxShadow = '0 0 10px #9400d3';
     wordElement.style.zIndex = '99';
-    wordElement.style.transition = 'all 0.3s ease-in-out'; // Smooth transition
     
     // Positioniere das Wort beim Boss
-    const bossRect = level20Boss.element.getBoundingClientRect();
-    const gameSceneRect = gameScene.getBoundingClientRect();
-    const startX = bossRect.left - gameSceneRect.left + bossRect.width / 2;
-    const startY = bossRect.top - gameSceneRect.top + bossRect.height / 2;
+    let startX = 100;
+    let startY = 100;
+    
+    if (level20Boss.element) {
+        const bossRect = level20Boss.element.getBoundingClientRect();
+        const sceneRect = sceneElement.getBoundingClientRect();
+        startX = bossRect.left - sceneRect.left + bossRect.width / 2;
+        startY = bossRect.top - sceneRect.top + bossRect.height / 2;
+    }
     
     wordElement.style.left = startX + 'px';
     wordElement.style.top = startY + 'px';
     
-    gameScene.appendChild(wordElement);
+    sceneElement.appendChild(wordElement);
     
     // Berechne die Richtung zum Spieler
     const playerElement = document.getElementById('player');
-    const playerRect = playerElement.getBoundingClientRect();
-    const targetX = playerRect.left - gameSceneRect.left + playerRect.width / 2;
-    const targetY = playerRect.top - gameSceneRect.top + playerRect.height / 2;
+    let targetX = sceneElement.offsetWidth / 2;
+    let targetY = sceneElement.offsetHeight - 100;
+    
+    if (playerElement) {
+        const playerRect = playerElement.getBoundingClientRect();
+        const sceneRect = sceneElement.getBoundingClientRect();
+        targetX = playerRect.left - sceneRect.left + playerRect.width / 2;
+        targetY = playerRect.top - sceneRect.top + playerRect.height / 2;
+    }
     
     // Berechne den Richtungsvektor
     const dx = targetX - startX;
@@ -714,10 +758,10 @@ function spawnLevel20BossWord() {
         element: wordElement,
         position: { x: startX, y: startY },
         velocity: { x: vx, y: vy },
-        originalVelocity: { x: vx, y: vy }, // Speichere die ursprüngliche Geschwindigkeit
-        lastTimeReverse: 0, // Zeitpunkt der letzten Umkehrung
-        isReversing: false, // Flag für Umkehrung
-        reverseTime: 0 // Dauer der aktuellen Umkehrung
+        originalVelocity: { x: vx, y: vy },
+        reverseTime: 0,
+        isReversing: false,
+        lastReverseTime: 0
     });
     
     // Aktualisiere den Zeitpunkt des letzten Spawns
@@ -824,14 +868,22 @@ function defeatLevel20Boss() {
 
 // Funktion zum Aktualisieren des Level 20 Bosses im Game Loop
 function updateLevel20Boss() {
-    if (!gameState.level20BossActive) return;
+    if (!gameState.level20BossActive || !level20Boss) {
+        return;
+    }
+    
+    // Finde das gameScene-Element
+    const sceneElement = document.getElementById('gameScene') || document.getElementById('gameContainer');
+    if (!sceneElement) {
+        console.error('Kein gameScene oder gameContainer gefunden!');
+        return;
+    }
     
     // Bewege den Boss hin und her
     const bossElement = level20Boss.element;
     if (bossElement) {
         // Hole die Dimensionen des Spielfelds
-        const gameScene = document.getElementById('gameScene');
-        const gameWidth = gameScene.offsetWidth;
+        const gameWidth = sceneElement.offsetWidth;
         
         // Aktualisiere die Position des Bosses
         level20Boss.position.x += level20Boss.direction * 2; // 2 Pixel pro Frame
@@ -847,48 +899,68 @@ function updateLevel20Boss() {
     
     const currentTime = Date.now();
     
-    // Bewege die aktiven Wörter
-    for (let i = level20Boss.activeWords.length - 1; i >= 0; i--) {
-        const word = level20Boss.activeWords[i];
+    // Prüfe, ob eine globale Zeitumkehrung aktiviert werden soll
+    if (!level20Boss.timeReversalActive && 
+        currentTime - level20Boss.lastTimeReversal > level20Boss.timeReversalInterval) {
         
-        // Prüfe, ob es Zeit für eine Zeitumkehrung ist
-        if (!word.isReversing && currentTime - word.lastTimeReverse > 3000) { // Alle 3 Sekunden
-            // Starte die Zeitumkehrung
+        // Aktiviere die Zeitumkehrung für alle Wörter
+        level20Boss.timeReversalActive = true;
+        level20Boss.lastTimeReversal = currentTime;
+        
+        // Füge einen Eintrag zum Kampflog hinzu
+        addCombatLogEntry('boss', 'CHRONOS: "ZEIT, SPULE ZURÜCK!"');
+        
+        // Kehre die Geschwindigkeit aller Wörter um
+        for (let i = 0; i < level20Boss.activeWords.length; i++) {
+            const word = level20Boss.activeWords[i];
             word.isReversing = true;
             word.reverseTime = currentTime;
             
             // Kehre die Geschwindigkeit um
-            word.velocity.x = -word.originalVelocity.x * 0.7; // Etwas langsamer zurück
+            word.velocity.x = -word.originalVelocity.x * 0.7;
             word.velocity.y = -word.originalVelocity.y * 0.7;
             
-            // Visueller Effekt für die Umkehrung
-            word.element.style.backgroundColor = 'rgba(0, 255, 255, 0.7)'; // Cyan-Farbe während der Umkehrung
-            word.element.style.boxShadow = '0 0 15px cyan';
-            
-            // Füge einen Eintrag zum Kampflog hinzu
-            addCombatLogEntry('info', `CHRONOS: "Zeit, spule zurück!"`);
+            // Visueller Effekt
+            if (word.element) {
+                word.element.style.backgroundColor = 'rgba(0, 255, 255, 0.7)';
+                word.element.style.boxShadow = '0 0 15px cyan';
+            }
         }
         
-        // Prüfe, ob die Zeitumkehrung beendet werden soll
-        if (word.isReversing && currentTime - word.reverseTime > 1000) { // 1 Sekunde Umkehrung
-            // Beende die Zeitumkehrung
-            word.isReversing = false;
-            word.lastTimeReverse = currentTime;
+        // Deaktiviere die Zeitumkehrung nach 1 Sekunde
+        setTimeout(() => {
+            level20Boss.timeReversalActive = false;
             
-            // Stelle die ursprüngliche Geschwindigkeit wieder her
-            word.velocity.x = word.originalVelocity.x;
-            word.velocity.y = word.originalVelocity.y;
+            // Stelle die ursprüngliche Geschwindigkeit aller Wörter wieder her
+            for (let i = 0; i < level20Boss.activeWords.length; i++) {
+                const word = level20Boss.activeWords[i];
+                word.isReversing = false;
+                
+                // Stelle die ursprüngliche Geschwindigkeit wieder her
+                word.velocity.x = word.originalVelocity.x;
+                word.velocity.y = word.originalVelocity.y;
+                
+                // Stelle das ursprüngliche Aussehen wieder her
+                if (word.element) {
+                    word.element.style.backgroundColor = 'rgba(148, 0, 211, 0.7)';
+                    word.element.style.boxShadow = '0 0 10px #9400d3';
+                }
+            }
             
-            // Stelle das ursprüngliche Aussehen wieder her
-            word.element.style.backgroundColor = 'rgba(148, 0, 211, 0.7)';
-            word.element.style.boxShadow = '0 0 10px #9400d3';
-        }
+            // Füge einen Eintrag zum Kampflog hinzu
+            addCombatLogEntry('info', 'CHRONOS: "Die Zeit fließt wieder normal."');
+        }, 1000);
+    }
+    
+    // Bewege die aktiven Wörter
+    for (let i = level20Boss.activeWords.length - 1; i >= 0; i--) {
+        const word = level20Boss.activeWords[i];
         
         // Aktualisiere die Position
         word.position.x += word.velocity.x;
         word.position.y += word.velocity.y;
         
-        // Aktualisiere das DOM-Element mit einer sanften Übergangsanimation
+        // Aktualisiere das DOM-Element
         if (word.element) {
             word.element.style.left = word.position.x + 'px';
             word.element.style.top = word.position.y + 'px';
@@ -918,9 +990,8 @@ function updateLevel20Boss() {
         }
         
         // Prüfe, ob das Wort außerhalb des Spielfelds ist
-        const gameScene = document.getElementById('gameScene');
-        const gameWidth = gameScene.offsetWidth;
-        const gameHeight = gameScene.offsetHeight;
+        const gameWidth = sceneElement.offsetWidth;
+        const gameHeight = sceneElement.offsetHeight;
         
         if (word.position.x < -100 || word.position.x > gameWidth + 100 ||
             word.position.y < -100 || word.position.y > gameHeight + 100) {

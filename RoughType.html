@@ -3010,6 +3010,77 @@
                 debugLog('Fehler: loadDatabaseExtender ist nicht definiert!');
             }
         });
+
+        // Funktion zum Verarbeiten von Befehlen im Hauptmenü
+        function processMenuCommand(command) {
+            // Prüfe, ob es ein Level-Lade-Befehl ist
+            if (command.startsWith('load_level')) {
+                const levelMatch = command.match(/load_level(\d+)/);
+                if (levelMatch && levelMatch[1]) {
+                    const targetLevel = parseInt(levelMatch[1]);
+                    if (targetLevel >= 1 && targetLevel <= 30) { // Begrenze auf sinnvolle Level
+                        // Setze den Spielstand auf das gewünschte Level
+                        gameState.level = targetLevel;
+                        gameState.maxLevel = Math.max(gameState.maxLevel, targetLevel);
+                        gameState.monstersKilled = 0;
+                        
+                        // Aktualisiere die Anzeige
+                        updateDisplay();
+                        
+                        // Starte das Spiel
+                        startGame();
+                        
+                        // Füge eine Nachricht zum Combat Log hinzu
+                        addCombatLogEntry('info', `Level ${targetLevel} geladen!`);
+                        debugLog(`Level ${targetLevel} durch Befehl geladen`);
+                        
+                        return true;
+                    } else {
+                        alert('Ungültiges Level! Bitte wähle ein Level zwischen 1 und 30.');
+                        return false;
+                    }
+                }
+            }
+            
+            return false; // Befehl nicht erkannt
+        }
+
+        // Überschreibe die Funktion zum Starten des Spiels
+        const originalStartGame = startGame;
+        startGame = function() {
+            // Rufe die ursprüngliche Funktion auf
+            originalStartGame();
+            
+            // Prüfe, ob Level 20 erreicht ist und der Boss aktiviert werden soll
+            if (gameState.level === 20) {
+                // Warte kurz, bis das Spiel initialisiert ist
+                setTimeout(() => {
+                    if (typeof initLevel20Boss === 'function') {
+                        initLevel20Boss();
+                        debugLog('Level 20 Boss manuell initialisiert');
+                    } else {
+                        debugLog('Fehler: initLevel20Boss ist nicht definiert!');
+                    }
+                }, 500);
+            }
+        };
+
+        // Erweitere die Eingabeverarbeitung im Hauptmenü
+        document.getElementById('menuInput').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                const command = this.value.trim();
+                
+                // Verarbeite spezielle Befehle
+                if (processMenuCommand(command)) {
+                    // Befehl wurde verarbeitet, leere das Eingabefeld
+                    this.value = '';
+                    e.preventDefault();
+                    return;
+                }
+                
+                // Normale Verarbeitung fortsetzen
+            }
+        });
     </script>
     </div>
 </body>
