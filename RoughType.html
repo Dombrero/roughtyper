@@ -2310,9 +2310,11 @@
         // Input Handler aktualisieren
         document.getElementById('typingInput').addEventListener('input', function(e) {
         const typed = validateInput(e.target.value);
-        if (typed !== e.target.value) {
-            e.target.value = typed;
-        }
+        
+        // Entferne die Zeile, die den Wert zurücksetzt, wenn er nicht der Validierung entspricht
+        // if (typed !== e.target.value) {
+        //     e.target.value = typed;
+        // }
         
                 // Prüfe auf Debug-Befehl
                 if (typed === '/debug') {
