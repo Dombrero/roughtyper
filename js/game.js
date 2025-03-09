@@ -270,6 +270,15 @@ function handleGameInput(e) {
         const typed = e.target.value.toLowerCase();
         debugLog(`Verarbeite Eingabe: "${typed}" im Bildschirm: ${gameState.currentScreen}`);
         
+        // Prüfe zuerst auf "menu" Befehl in allen Bildschirmen außer im Hauptmenü
+        if (typed === 'menu' && gameState.currentScreen !== 'menu') {
+            debugLog('Menu Befehl erkannt, kehre zum Hauptmenü zurück');
+            returnToMenu();
+            e.target.value = '';
+            return;
+        }
+        
+        // Jetzt die bildschirmspezifische Verarbeitung
         // Wenn wir im Hauptmenü sind
         if (gameState.currentScreen === 'menu') {
             handleMenuInput(typed);
@@ -292,13 +301,6 @@ function handleGameInput(e) {
         }
         // Wenn wir im Spiel sind
         else if (gameState.currentScreen === 'game') {
-            // Prüfe zuerst auf "menu" Befehl
-            if (typed === 'menu') {
-                returnToMenu();
-                e.target.value = '';
-                return;
-            }
-            
             // Prüfe auf Level 10 Boss
             if (gameState.level10BossActive) {
                 handleLevel10BossInput(typed, e);

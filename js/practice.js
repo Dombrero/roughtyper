@@ -199,12 +199,9 @@ function updatePracticeScore() {
  * @returns {boolean} - Gibt zurück, ob die Eingabe verarbeitet wurde
  */
 function handlePracticeInput(input) {
-    // Prüfe auf "menu" Befehl
-    if (input === 'menu') {
-        returnToMenu();
-        document.getElementById('typingInput').value = '';
-        return true;
-    }
+    debugLog(`Processing practice input: "${input}"`);
+    
+    // Menü-Command wird jetzt in handleGameInput verarbeitet
     
     const practiceWord = gameState.practiceWord;
     

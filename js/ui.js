@@ -173,6 +173,8 @@ function showInventory() {
 function handleInventoryInput(input) {
     debugLog(`Processing inventory input: "${input}"`);
     
+    // Menü-Command wird jetzt in handleGameInput verarbeitet
+    
     // Definiere die möglichen Befehle
     const commands = {
         'sell all materials': () => {
@@ -255,10 +257,6 @@ function handleInventoryInput(input) {
             }
             alert('No shield available to equip!');
             return false;
-        },
-        'menu': () => {
-            returnToMenu();
-            return true;
         }
     };
     
@@ -400,12 +398,9 @@ function showShop() {
  * @returns {boolean} - Gibt zurück, ob die Eingabe verarbeitet wurde
  */
 function handleShopInput(input) {
-    // Prüfe auf "menu" Befehl
-    if (input === 'menu') {
-        returnToMenu();
-        document.getElementById('typingInput').value = '';
-        return true;
-    }
+    debugLog(`Processing shop input: "${input}"`);
+    
+    // Menü-Command wird jetzt in handleGameInput verarbeitet
     
     // Prüfe auf Kauf-Befehle
     const buyCommands = ['buy small', 'buy medium', 'buy large', 'buy shield'];
@@ -459,6 +454,14 @@ function handleShopInput(input) {
         document.getElementById('typingInput').value = '';
         buyItem(itemName, itemType, itemCost);
         return true;
+    }
+    
+    // Prüfe auf teilweise eingegebene buy-Befehle
+    if ('buy'.startsWith(input)) {
+        buyButtons.forEach(button => {
+            button.innerHTML = `<span class="correct">${input}</span>${button.textContent.toLowerCase().slice(input.length)}`;
+        });
+        return false;
     }
     
     return false;
@@ -569,12 +572,9 @@ function showLevelSelect() {
  * @returns {boolean} - Gibt zurück, ob die Eingabe verarbeitet wurde
  */
 function handleLevelSelectInput(input) {
-    // Prüfe auf "menu" Befehl
-    if (input === 'menu') {
-        returnToMenu();
-        document.getElementById('typingInput').value = '';
-        return true;
-    }
+    debugLog(`Processing level select input: "${input}"`);
+    
+    // Menü-Command wird jetzt in handleGameInput verarbeitet
     
     // Prüfe, ob die Eingabe eine Zahl ist
     const level = parseInt(input);
