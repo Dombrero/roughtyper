@@ -835,14 +835,14 @@
 </head>
 <body>
     <div id="mainContainer">
-        <div class="theme-switch">
-            <span>☀️</span>
-            <label class="switch">
-                <input type="checkbox" id="themeToggle">
-                <span class="slider"></span>
-            </label>
-            <span>🌙</span>
-        </div>
+    <div class="theme-switch">
+        <span>☀️</span>
+        <label class="switch">
+            <input type="checkbox" id="themeToggle">
+            <span class="slider"></span>
+        </label>
+        <span>🌙</span>
+    </div>
 
         <!-- Neuer Stats-Container -->
         <div class="stats-sidebar" id="statsSidebar">
@@ -875,16 +875,16 @@
                 <span>🧪 Materials:</span>
                 <span class="stat-value" id="sidebarMaterials">0</span>
             </div>
-        </div>
+    </div>
 
-        <div class="container">
-            <h1>RoughType</h1>
-            
-            <div class="menu-container" id="mainMenu">
-                <div class="menu-option">enter dungeon</div>
+    <div class="container">
+        <h1>RoughType</h1>
+        
+        <div class="menu-container" id="mainMenu">
+            <div class="menu-option">enter dungeon</div>
                 <div class="menu-option">practice mode</div>
-                <div class="menu-option">inventory</div>
-                <div class="menu-option">shop</div>
+            <div class="menu-option">inventory</div>
+            <div class="menu-option">shop</div>
                 <div class="menu-option">new game</div>
                 
                 <!-- Tutorial-Bereich -->
@@ -902,7 +902,7 @@
                             <li><strong>new game</strong> - Start a new game</li>
                         </ul>
                         <p>Type <span class="tutorial-key">menu</span> at any time to return to the main menu.</p>
-            </div>
+        </div>
 
                     <div class="tutorial-section">
                         <h4>Gameplay</h4>
@@ -915,7 +915,7 @@
                             <li>Defeat 4 monsters (levels 1-3) or 10 monsters (from level 4) to level up</li>
                             <li>Bosses appear after certain levels</li>
                         </ul>
-                </div>
+            </div>
 
                     <div class="tutorial-section">
                         <h4>Inventory & Shop</h4>
@@ -956,15 +956,15 @@
             <div class="game-container" id="gameContainer">
                 <div class="menu-hint">Type "menu" to return to main menu</div>
                 <div class="game-layout">
-                <div class="game-scene" id="gameScene">
-                    <div class="player" id="player"></div>
+            <div class="game-scene" id="gameScene">
+                <div class="player" id="player"></div>
                     </div>
                     <div class="combat-log" id="combatLog"></div>
-                </div>
             </div>
+        </div>
 
-            <div class="input-container">
-                <input type="text" class="typing-area" id="typingInput" placeholder="Type here..." autocomplete="off">
+        <div class="input-container">
+            <input type="text" class="typing-area" id="typingInput" placeholder="Type here..." autocomplete="off">
                 <div class="virtual-keyboard">
                     <div class="keyboard-row">
                         <div class="key" data-key="q">Q</div>
@@ -1002,82 +1002,82 @@
                         <div class="key space" data-key=" ">Space</div>
                     </div>
                 </div>
-            </div>
         </div>
+    </div>
 
-        <div id="debugContainer">
-            <div id="debugHeader">
+    <div id="debugContainer">
+        <div id="debugHeader">
                 Debug Window ▼
                 <button id="copyButton">Copy Log</button>
-            </div>
-            <div id="debugContent">
-                Debug information appears here...
-            </div>
         </div>
+        <div id="debugContent">
+                Debug information appears here...
+        </div>
+    </div>
 
-        <script>
-            // Dark Mode Funktionalität
-            const themeToggle = document.getElementById('themeToggle');
-            
-            // Gespeicherten Theme-Status laden
-            const savedTheme = localStorage.getItem('theme');
-            if (savedTheme === 'dark') {
+    <script>
+        // Dark Mode Funktionalität
+        const themeToggle = document.getElementById('themeToggle');
+        
+        // Gespeicherten Theme-Status laden
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'dark') {
+            document.documentElement.setAttribute('data-theme', 'dark');
+            themeToggle.checked = true;
+        }
+
+        themeToggle.addEventListener('change', function() {
+            if (this.checked) {
                 document.documentElement.setAttribute('data-theme', 'dark');
-                themeToggle.checked = true;
+                localStorage.setItem('theme', 'dark');
+            } else {
+                document.documentElement.removeAttribute('data-theme');
+                localStorage.setItem('theme', 'light');
             }
+        });
 
-            themeToggle.addEventListener('change', function() {
-                if (this.checked) {
-                    document.documentElement.setAttribute('data-theme', 'dark');
-                    localStorage.setItem('theme', 'dark');
-                } else {
-                    document.documentElement.removeAttribute('data-theme');
-                    localStorage.setItem('theme', 'light');
-                }
-            });
+        const debugHeader = document.getElementById('debugHeader');
+        const debugContent = document.getElementById('debugContent');
+        const copyButton = document.getElementById('copyButton');
 
-            const debugHeader = document.getElementById('debugHeader');
-            const debugContent = document.getElementById('debugContent');
-            const copyButton = document.getElementById('copyButton');
-
-            // Debug-Fenster ein-/ausklappen
-            debugHeader.addEventListener('click', function(e) {
-                if (e.target !== copyButton) {
-                    debugContent.style.display = debugContent.style.display === 'none' ? 'block' : 'none';
+        // Debug-Fenster ein-/ausklappen
+        debugHeader.addEventListener('click', function(e) {
+            if (e.target !== copyButton) {
+                debugContent.style.display = debugContent.style.display === 'none' ? 'block' : 'none';
                     debugHeader.innerHTML = `Debug Window ${debugContent.style.display === 'none' ? '▲' : '▼'}
                         <button id="copyButton">Copy Log</button>`;
-                }
-            });
+            }
+        });
 
-            // Log kopieren Funktionalität
-            copyButton.addEventListener('click', function() {
-                const text = debugContent.textContent;
-                navigator.clipboard.writeText(text).then(() => {
+        // Log kopieren Funktionalität
+        copyButton.addEventListener('click', function() {
+            const text = debugContent.textContent;
+            navigator.clipboard.writeText(text).then(() => {
                     alert('Log copied to clipboard!');
-                }).catch(err => {
+            }).catch(err => {
                     console.error('Error copying:', err);
-                });
             });
+        });
 
-            // DOM-Elemente initialisieren
-            const mainMenu = document.getElementById('mainMenu');
-            const gameContainer = document.getElementById('gameContainer');
-            const typingInput = document.getElementById('typingInput');
+        // DOM-Elemente initialisieren
+        const mainMenu = document.getElementById('mainMenu');
+        const gameContainer = document.getElementById('gameContainer');
+        const typingInput = document.getElementById('typingInput');
             // Entfernt: const playerHealthDisplay = document.getElementById('playerHealth');
             // Entfernt: const scoreDisplay = document.getElementById('score');
 
-            // Spielzustand
-            const gameState = {
+        // Spielzustand
+        const gameState = {
                 playerHealth: 1000,
-                score: 0,
-                enemies: [],
-                gameLoop: null,
-                playerPosition: { x: 400, y: 380 },
-                spawnTimer: 0,
-                lastUpdate: 0,
-                currentScreen: 'menu',
-                inventory: [],
-                gold: 100,
+            score: 0,
+            enemies: [],
+            gameLoop: null,
+            playerPosition: { x: 400, y: 380 },
+            spawnTimer: 0,
+            lastUpdate: 0,
+            currentScreen: 'menu',
+            inventory: [],
+            gold: 100,
                 defense: 0,
                 level: 1,
                 maxLevel: 1,
@@ -1199,11 +1199,11 @@
             };
 
             // Shop-Items mit Icons aktualisieren
-            const shopItems = [
-                { 
+        const shopItems = [
+            { 
                     name: "small",
-                    cost: 50, 
-                    effect: () => {
+                cost: 50, 
+                effect: () => {
                         gameState.inventory.push({name: "small", type: "potion"});
                         updateDisplay(); // Sofort aktualisieren
                         return 'Small health potion added to inventory!';
@@ -1211,8 +1211,8 @@
                 },
                 {
                     name: "medium",
-                    cost: 100, 
-                    effect: () => {
+                cost: 100, 
+                effect: () => {
                         gameState.inventory.push({name: "medium", type: "potion"});
                         updateDisplay(); // Sofort aktualisieren
                         return 'Medium health potion added to inventory!';
@@ -1244,7 +1244,7 @@
                         } else {
                             gameState.inventory.push({name: "shield", type: "equipment"});
                             updateDisplay(); // Sofort aktualisieren
-                        return 'Shield added to inventory!';
+                    return 'Shield added to inventory!';
                         }
                     }
                 }
@@ -1286,54 +1286,54 @@
                 'Demon': { item: 'demon horn', chance: 0.2 }
             };
 
-            // Gegner-Klasse aktualisieren
-            class Enemy {
+        // Gegner-Klasse aktualisieren
+        class Enemy {
                 constructor(name, health, goldReward, icon, special = null) {
-                    this.name = name;
+                this.name = name;
                     this.health = health;
                     this.maxHealth = health;
                     this.goldReward = goldReward * gameState.level;
-                    this.word = name.toLowerCase();
+                this.word = name.toLowerCase();
                     this.icon = icon;
                     
                     // Sichere Spawn-Zone berechnen
                     const wordWidth = this.word.length * 10; // Geschätzte Breite pro Buchstabe
                     const safeMargin = Math.max(wordWidth, 100); // Mindestens 100px oder Wortbreite
                     this.x = Math.random() * (760 - 2 * safeMargin) + safeMargin; // Zentrierterer Spawn-Bereich
-                    this.y = -50;
-                    this.speed = 30;
-                    this.element = null;
+                this.y = -50;
+                this.speed = 30;
+                this.element = null;
                     this.special = special;
                     this.isBoss = special !== null;
                     this.lastDamageTime = Date.now();
                     this.regenCooldown = 0;
-                }
+            }
 
-                createDOMElement() {
-                    const div = document.createElement('div');
+            createDOMElement() {
+                const div = document.createElement('div');
                     div.className = 'enemy-entity' + (this.isBoss ? ' boss' : '');
-                    div.style.left = this.x + 'px';
-                    div.style.top = this.y + 'px';
+                div.style.left = this.x + 'px';
+                div.style.top = this.y + 'px';
 
-                    const word = document.createElement('div');
-                    word.className = 'enemy-word';
+                const word = document.createElement('div');
+                word.className = 'enemy-word';
                     word.innerHTML = `${this.icon} ${this.word}`;
 
-                    const health = document.createElement('div');
-                    health.className = 'enemy-health';
-                    health.textContent = `${this.health} HP`;
+                const health = document.createElement('div');
+                health.className = 'enemy-health';
+                health.textContent = `${this.health} HP`;
 
-                    div.appendChild(word);
-                    div.appendChild(health);
-                    return div;
+                div.appendChild(word);
+                div.appendChild(health);
+                return div;
+            }
+
+            update(deltaTime) {
+                this.y += this.speed * (deltaTime / 1000);
+                if(this.element) {
+                    this.element.style.left = this.x + 'px';
+                    this.element.style.top = this.y + 'px';
                 }
-
-                update(deltaTime) {
-                    this.y += this.speed * (deltaTime / 1000);
-                    if(this.element) {
-                        this.element.style.left = this.x + 'px';
-                        this.element.style.top = this.y + 'px';
-                    }
 
                     // Boss-Spezialfähigkeiten
                     if (this.special === 'regenerate') {
@@ -1345,14 +1345,14 @@
                                 this.element.querySelector('.enemy-health').textContent = `${this.health} HP`;
                             }
                         }
-                    }
                 }
+            }
 
-                takeDamage() {
-                    this.health--;
+            takeDamage() {
+                this.health--;
                     this.lastDamageTime = Date.now();
-                    if(this.element) {
-                        this.element.querySelector('.enemy-health').textContent = `${this.health} HP`;
+                if(this.element) {
+                    this.element.querySelector('.enemy-health').textContent = `${this.health} HP`;
                         
                         // Füge Trefferanimation hinzu
                         this.element.classList.add('hit');
@@ -1377,8 +1377,8 @@
                         }
                     }
 
-                    return this.health <= 0;
-                }
+                return this.health <= 0;
+            }
 
                 dropLoot() {
                     const drop = monsterDrops[this.name];
@@ -1390,13 +1390,13 @@
                         return drop.item;
                     }
                     return null;
-                }
             }
+        }
 
-            // Spiel-Loop
-            function gameLoop(timestamp) {
-                if (!gameState.lastUpdate) gameState.lastUpdate = timestamp;
-                const deltaTime = timestamp - gameState.lastUpdate;
+        // Spiel-Loop
+        function gameLoop(timestamp) {
+            if (!gameState.lastUpdate) gameState.lastUpdate = timestamp;
+            const deltaTime = timestamp - gameState.lastUpdate;
 
                 // Level 10 Boss-Logik
                 if (gameState.level10BossActive) {
@@ -1437,72 +1437,72 @@
                     // Normale Gegner-Logik
                     for (let i = gameState.enemies.length - 1; i >= 0; i--) {
                         const enemy = gameState.enemies[i];
-                    enemy.update(deltaTime);
-                    
-                    // Prüfen ob Gegner den Spieler erreicht hat
-                    if (enemy.y > gameState.playerPosition.y - 40) {
-                        gameState.playerHealth -= 10;
+                enemy.update(deltaTime);
+                
+                // Prüfen ob Gegner den Spieler erreicht hat
+                if (enemy.y > gameState.playerPosition.y - 40) {
+                    gameState.playerHealth -= 10;
                             removeEnemy(i);
-                        if (gameState.playerHealth <= 0) {
-                            gameOver();
-                            return;
-                        }
-                        updateDisplay();
+                    if (gameState.playerHealth <= 0) {
+                        gameOver();
+                        return;
                     }
+                    updateDisplay();
+                }
                     }
 
-                // Neue Gegner spawnen
-                gameState.spawnTimer += deltaTime;
+            // Neue Gegner spawnen
+            gameState.spawnTimer += deltaTime;
                     if (gameState.spawnTimer > 3000 && gameState.enemies.length < 10) { // Maximal 10 Gegner gleichzeitig
-                    spawnEnemy();
-                    gameState.spawnTimer = 0;
+                spawnEnemy();
+                gameState.spawnTimer = 0;
                     }
-                }
-
-                gameState.lastUpdate = timestamp;
-                gameState.gameLoop = requestAnimationFrame(gameLoop);
             }
 
-            // Gegner entfernen
-            function removeEnemy(index) {
-                if (gameState.enemies[index].element) {
-                    gameState.enemies[index].element.remove();
-                }
-                gameState.enemies.splice(index, 1);
-            }
+            gameState.lastUpdate = timestamp;
+            gameState.gameLoop = requestAnimationFrame(gameLoop);
+        }
 
-            // Spiel initialisieren (überarbeitet)
-            function initGame() {
+        // Gegner entfernen
+        function removeEnemy(index) {
+            if (gameState.enemies[index].element) {
+                gameState.enemies[index].element.remove();
+            }
+            gameState.enemies.splice(index, 1);
+        }
+
+        // Spiel initialisieren (überarbeitet)
+        function initGame() {
                 loadGameState();
                 if (gameState.playerHealth <= 0) {
                     gameState.playerHealth = 1000;
                 }
-                gameState.score = 0;
-                gameState.enemies = [];
-                gameState.spawnTimer = 0;
-                gameState.lastUpdate = 0;
-                gameState.currentScreen = 'game';
+            gameState.score = 0;
+            gameState.enemies = [];
+            gameState.spawnTimer = 0;
+            gameState.lastUpdate = 0;
+            gameState.currentScreen = 'game';
                 gameState.monstersKilled = 0; // Setze getötete Monster zurück
                 gameState.bossActive = false;
                 gameState.level10BossActive = false; // Neuer Status für Level 10 Boss
 
-                const gameScene = document.getElementById('gameScene');
+            const gameScene = document.getElementById('gameScene');
                 gameScene.innerHTML = `<div class="player" id="player"></div>`;
 
-                if (gameState.gameLoop) {
-                    cancelAnimationFrame(gameState.gameLoop);
-                }
-                gameState.gameLoop = requestAnimationFrame(gameLoop);
+            if (gameState.gameLoop) {
+                cancelAnimationFrame(gameState.gameLoop);
+            }
+            gameState.gameLoop = requestAnimationFrame(gameLoop);
 
                 // Wenn Level 10 erreicht ist, starte den Level 10 Boss
                 if (gameState.level === 10) {
                     initLevel10Boss();
                 } else {
-                    spawnEnemy();
+            spawnEnemy();
                 }
                 
-                updateDisplay();
-                
+            updateDisplay();
+
                 // Entferne alten Hinweis falls vorhanden
                 const oldHint = document.querySelector('.menu-hint');
                 if (oldHint) {
@@ -1510,7 +1510,7 @@
                 }
 
                 // Füge verbesserten Menü-Hinweis hinzu
-                const hint = document.createElement('div');
+            const hint = document.createElement('div');
                 hint.className = 'menu-hint-improved';
                 hint.innerHTML = '⌨️ Type <strong>"menu"</strong> to return to the main menu';
                 
@@ -1698,10 +1698,10 @@
                 spawnEnemy();
                 updateDisplay();
                 saveGameState();
-            }
+        }
 
-            // Gegner spawnen aktualisieren
-            function spawnEnemy() {
+        // Gegner spawnen aktualisieren
+        function spawnEnemy() {
                 // Wenn Level 10 erreicht ist und der Boss noch nicht aktiv ist, starte den Boss-Kampf
                 if (gameState.level === 10 && !gameState.level10BossActive) {
                     initLevel10Boss();
@@ -1725,7 +1725,7 @@
                         const boss = bosses[bossLevel];
                         gameState.bossActive = true;
                         const enemy = new Enemy(boss.name, boss.health, boss.goldReward, '👑', boss.special);
-                const element = enemy.createDOMElement();
+            const element = enemy.createDOMElement();
                         document.getElementById('gameScene').appendChild(element);
                         enemy.element = element;
                         gameState.enemies.push(enemy);
@@ -1737,10 +1737,10 @@
                 const randomEnemy = levelEnemies[Math.floor(Math.random() * levelEnemies.length)];
                 const enemy = new Enemy(randomEnemy.name, randomEnemy.health, randomEnemy.goldReward, randomEnemy.icon);
                 const element = enemy.createDOMElement();
-                document.getElementById('gameScene').appendChild(element);
-                enemy.element = element;
-                gameState.enemies.push(enemy);
-            }
+            document.getElementById('gameScene').appendChild(element);
+            enemy.element = element;
+            gameState.enemies.push(enemy);
+        }
 
             // Level-Up Funktion aktualisieren
             function levelUp() {
@@ -1763,10 +1763,10 @@
                 
                 updateDisplay();
                 saveGameState(); // Speichere nach Level-Up
-            }
+        }
 
-            // Display aktualisieren
-            function updateDisplay() {
+        // Display aktualisieren
+        function updateDisplay() {
                 // Berechne die Anzahl der benötigten Monster für das aktuelle Level
                 const monstersNeeded = gameState.level <= 3 ? 4 : 10;
                 
@@ -1788,16 +1788,16 @@
                 
                 // Speichern nach jeder Aktualisierung
                 saveGameState();
-            }
+        }
 
-            // Debug-Hilfsfunktion
-            function debugLog(message) {
-                console.log(message);
-                const debugContent = document.getElementById('debugContent');
-                const timestamp = new Date().toLocaleTimeString();
-                debugContent.innerHTML += `[${timestamp}] ${message}<br>`;
-                debugContent.scrollTop = debugContent.scrollHeight;
-            }
+        // Debug-Hilfsfunktion
+        function debugLog(message) {
+            console.log(message);
+            const debugContent = document.getElementById('debugContent');
+            const timestamp = new Date().toLocaleTimeString();
+            debugContent.innerHTML += `[${timestamp}] ${message}<br>`;
+            debugContent.scrollTop = debugContent.scrollHeight;
+        }
 
             // Funktion zum Umschalten des Debug-Modus
             function toggleDebugMode() {
@@ -1861,52 +1861,52 @@
                     </div>
                 `;
                 inputContainer.appendChild(newKeyboard);
-            }
+        }
 
-            // Menü-Handling aktualisieren
-            function handleMenuInput(typed) {
-                debugLog(`handleMenuInput called with: "${typed}"`);
-                typed = typed.toLowerCase();
+        // Menü-Handling aktualisieren
+        function handleMenuInput(typed) {
+            debugLog(`handleMenuInput called with: "${typed}"`);
+            typed = typed.toLowerCase();
                 const menuOptions = ['enter dungeon', 'practice mode', 'inventory', 'shop', 'menu', 'new game'];
-                
-                debugLog(`Current menu options: ${menuOptions.join(', ')}`);
-                
-                // Finde die erste Menüoption, die mit der Eingabe beginnt
-                const matchingOption = menuOptions.find(option => option.startsWith(typed));
-                debugLog(`Matching option found: ${matchingOption || 'none'}`);
-                
-                // Setze alle Menüoptionen zurück und markiere korrekte Buchstaben
+            
+            debugLog(`Current menu options: ${menuOptions.join(', ')}`);
+            
+            // Finde die erste Menüoption, die mit der Eingabe beginnt
+            const matchingOption = menuOptions.find(option => option.startsWith(typed));
+            debugLog(`Matching option found: ${matchingOption || 'none'}`);
+            
+            // Setze alle Menüoptionen zurück und markiere korrekte Buchstaben
                 const menuElements = document.querySelectorAll('.menu-container > .menu-option');
-                debugLog(`Found ${menuElements.length} menu elements`);
+            debugLog(`Found ${menuElements.length} menu elements`);
+            
+            menuElements.forEach(option => {
+                const text = option.textContent.toLowerCase();
+                debugLog(`Processing menu option: "${text}"`);
                 
-                menuElements.forEach(option => {
-                    const text = option.textContent.toLowerCase();
-                    debugLog(`Processing menu option: "${text}"`);
-                    
                     // Prüfe, ob es sich um eine Hauptmenüoption handelt
                     if (menuOptions.includes(text)) {
-                        let html = '';
-                        for(let i = 0; i < text.length; i++) {
-                            if(text.startsWith(typed) && i < typed.length) {
-                                html += `<span class="correct">${text[i]}</span>`;
-                            } else {
-                                html += text[i];
-                            }
+                    let html = '';
+                    for(let i = 0; i < text.length; i++) {
+                        if(text.startsWith(typed) && i < typed.length) {
+                            html += `<span class="correct">${text[i]}</span>`;
+                        } else {
+                            html += text[i];
                         }
-                        debugLog(`Setting innerHTML for "${text}" to: ${html}`);
-                        option.innerHTML = html;
                     }
-                });
+                    debugLog(`Setting innerHTML for "${text}" to: ${html}`);
+                    option.innerHTML = html;
+                }
+            });
 
-                if (matchingOption && typed === matchingOption) {
-                    debugLog(`Complete match found: ${matchingOption}`);
-                    // Vollständiges Wort eingegeben
-                    switch(matchingOption) {
-                        case 'enter dungeon':
-                            gameState.currentScreen = 'game';
-                            mainMenu.classList.add('hidden');
-                            gameContainer.style.display = 'block';
-                            initGame();
+            if (matchingOption && typed === matchingOption) {
+                debugLog(`Complete match found: ${matchingOption}`);
+                // Vollständiges Wort eingegeben
+                switch(matchingOption) {
+                    case 'enter dungeon':
+                        gameState.currentScreen = 'game';
+                        mainMenu.classList.add('hidden');
+                        gameContainer.style.display = 'block';
+                        initGame();
                             refreshVirtualKeyboard();
                             break;
                             
@@ -1916,23 +1916,23 @@
                             gameContainer.style.display = 'block';
                             initPracticeMode();
                             refreshVirtualKeyboard();
-                            break;
-                            
-                        case 'inventory':
-                            gameState.currentScreen = 'inventory';
-                            showInventory();
+                        break;
+                        
+                    case 'inventory':
+                        gameState.currentScreen = 'inventory';
+                        showInventory();
                             refreshVirtualKeyboard();
-                            break;
-                            
-                        case 'shop':
-                            gameState.currentScreen = 'shop';
-                            showShop();
+                        break;
+                        
+                    case 'shop':
+                        gameState.currentScreen = 'shop';
+                        showShop();
                             refreshVirtualKeyboard();
-                            break;
-                            
-                        case 'menu':
-                            if (gameState.currentScreen !== 'menu') {
-                                returnToMenu();
+                        break;
+                        
+                    case 'menu':
+                        if (gameState.currentScreen !== 'menu') {
+                            returnToMenu();
                                 refreshVirtualKeyboard();
                             }
                             break;
@@ -1943,13 +1943,13 @@
                                 returnToMenu();
                                 refreshVirtualKeyboard();
                                 alert('New game started!');
-                            }
-                            break;
-                    }
-                    return true;
+                        }
+                        break;
                 }
-                return false;
+                return true;
             }
+            return false;
+        }
 
             // Inventory-Handler aktualisieren
             function showInventory() {
@@ -1990,7 +1990,7 @@
                                                     ${!item.equipped ? `<span class="item-action">use ${item.name}</span>` : ''}
                                                     <span class="item-effect">+5 Defense</span>
                                                 </div>`;
-                                } else {
+                            } else {
                                                 itemDisplay = `<div class="menu-option">${item.name}${status}</div>`;
                                             }
                                             
@@ -2046,7 +2046,7 @@
                 'sell all materials': () => {
                     debugLog('Befehl "sell all materials" erkannt');
                     sellAllMaterials();
-                    return true;
+                        return true;
                 },
                 'drink small': () => {
                     if (gameState.playerHealth >= 1000) {
@@ -2071,8 +2071,8 @@
                 'drink medium': () => {
                     if (gameState.playerHealth >= 1000) {
                         alert('You already have full health!');
-                        return false;
-                    }
+                return false;
+            }
                     const mediumPotion = gameState.inventory.findIndex(item => 
                         item.name === 'medium' && item.type === 'potion'
                     );
@@ -2109,25 +2109,25 @@
                     return false;
                 },
                 'use shield': () => {
-                            const shield = gameState.inventory.find(item => 
+                    const shield = gameState.inventory.find(item => 
                         item.name === 'shield' && item.type === 'equipment' && !item.equipped
-                            );
-                            if (shield) {
-                                shield.equipped = true;
+                    );
+                    if (shield) {
+                        shield.equipped = true;
                         gameState.defense += 5; // Direkt Defense erhöhen
-                                updateDisplay();
+                        updateDisplay();
                         addCombatLogEntry('info', 'You equipped a shield and increased your defense by 5!');
                         alert('Shield equipped! Defense increased by 5');
                         showInventory(); // Aktualisiere die Anzeige
-                                return true;
-                            }
+                        return true;
+                    }
                     alert('No shield available to equip!');
-                        return false;
+                return false;
                 },
                 'menu': () => {
-                            returnToMenu();
-                            return true;
-                        }
+                    returnToMenu();
+                    return true;
+                }
             };
             
             // Finde den passenden Befehl
@@ -2169,12 +2169,12 @@
 
         // Shop anzeigen aktualisieren
         function showShop() {
-                    mainMenu.classList.add('hidden');
-                    gameContainer.style.display = 'block';
-                    
+            mainMenu.classList.add('hidden');
+            gameContainer.style.display = 'block';
+            
         const gameScene = document.getElementById('gameScene');
         gameScene.innerHTML = `
-                    <div class="menu-container">
+                <div class="menu-container">
                 <h2>Shop</h2>
                 ${shopItems.map(item => {
                     let description = '';
@@ -2194,17 +2194,17 @@
                     }
                     return `<div class="menu-option">${description} - ${item.cost} gold</div>`;
                 }).join('')}
-                        <div class="menu-option">menu</div>
-                    </div>
-                `;
-                
+                    <div class="menu-option">menu</div>
+                </div>
+            `;
+            
         updateDisplay();
-            }
+        }
 
         // Shop-Input-Handler aktualisieren
-                function handleShopInput(typed) {
-                    debugLog(`Processing shop input: "${typed}"`);
-                    
+        function handleShopInput(typed) {
+            debugLog(`Processing shop input: "${typed}"`);
+            
         // Markiere die Shop-Items entsprechend der Eingabe
         const menuOptions = document.querySelectorAll('.menu-option');
         menuOptions.forEach(option => {
@@ -2248,62 +2248,62 @@
         const item = shopItems.find(item => item.name === typed);
 
         if (item) {
-                        if (gameState.gold >= item.cost) {
-                            gameState.gold -= item.cost;
-                            const message = item.effect();
-                            debugLog(`Purchased ${item.name}: ${message}`);
+                if (gameState.gold >= item.cost) {
+                    gameState.gold -= item.cost;
+                    const message = item.effect();
+                    debugLog(`Purchased ${item.name}: ${message}`);
             addCombatLogEntry('info', `You bought ${item.name} for ${item.cost} gold!`);
-                            alert(`Purchased ${item.name}! ${message}`);
+                    alert(`Purchased ${item.name}! ${message}`);
             saveGameState();
             showShop();
             updateDisplay();
-                            return true;
-                        } else {
-                            alert('Not enough gold!');
-                            return false;
-                        }
+                    return true;
+                } else {
+                    alert('Not enough gold!');
+                    return false;
+                }
         } else if (typed === 'menu') {
             returnToMenu();
             return true;
-                }
-                return false;
             }
+            return false;
+        }
 
-            function returnToMenu() {
+        function returnToMenu() {
         if (gameState.currentScreen === 'game' && !confirm('Do you really want to return to the main menu? Your progress will be saved.')) {
             return;
         }
         saveGameState();
-                gameState.currentScreen = 'menu';
-                mainMenu.classList.remove('hidden');
-                gameContainer.style.display = 'none';
-                if (gameState.gameLoop) {
-                    cancelAnimationFrame(gameState.gameLoop);
-                }
+            gameState.currentScreen = 'menu';
+            mainMenu.classList.remove('hidden');
+            gameContainer.style.display = 'none';
+            if (gameState.gameLoop) {
+                cancelAnimationFrame(gameState.gameLoop);
+            }
         // Setze Eingabefeld zurück
         document.getElementById('typingInput').value = '';
         
         // Aktualisiere die Sidebar
         updateDisplay();
-            }
+        }
 
         // Game Over Funktion aktualisieren
-                function gameOver() {
+        function gameOver() {
         const goldEarned = Math.floor(gameState.score / 20);
         alert(`Game Over!\n\nScore: ${gameState.score}\nGold earned: ${goldEarned}\nLevel reached: ${gameState.level}\nMonsters killed: ${gameState.monstersKilled}`);
         gameState.gold += goldEarned;
         saveGameState();
-                returnToMenu();
+            returnToMenu();
             }
 
         // Input Validierung hinzufügen
         function validateInput(input) {
             // Entferne unerwünschte Zeichen
             return input.replace(/[^a-zA-Z0-9\s]/g, '').toLowerCase();
-                }
+        }
 
-                // Input Handler aktualisieren
-                document.getElementById('typingInput').addEventListener('input', function(e) {
+        // Input Handler aktualisieren
+        document.getElementById('typingInput').addEventListener('input', function(e) {
         const typed = validateInput(e.target.value);
         if (typed !== e.target.value) {
             e.target.value = typed;
@@ -2316,21 +2316,21 @@
                     return;
                 }
                 
-                debugLog(`Input event fired. Value: "${typed}"`);
-                debugLog(`Current screen: ${gameState.currentScreen}`);
-                
-                if (gameState.currentScreen === 'menu') {
-                    if (handleMenuInput(typed)) {
-                        e.target.value = '';
-                    }
-                } else if (gameState.currentScreen === 'shop') {
-                    if (handleShopInput(typed)) {
-                        e.target.value = '';
-                    }
-                } else if (gameState.currentScreen === 'inventory') {
-                    if (handleInventoryInput(typed)) {
-                        e.target.value = '';
-                    }
+            debugLog(`Input event fired. Value: "${typed}"`);
+            debugLog(`Current screen: ${gameState.currentScreen}`);
+            
+            if (gameState.currentScreen === 'menu') {
+                if (handleMenuInput(typed)) {
+                    e.target.value = '';
+                }
+            } else if (gameState.currentScreen === 'shop') {
+                if (handleShopInput(typed)) {
+                    e.target.value = '';
+                }
+            } else if (gameState.currentScreen === 'inventory') {
+                if (handleInventoryInput(typed)) {
+                    e.target.value = '';
+                }
                 } else if (gameState.currentScreen === 'practice') {
                     // Übungsmodus-Logik
                     if ('menu'.startsWith(typed)) {
@@ -2378,23 +2378,23 @@
                         const wrongCharsElement = document.querySelector('.wrong-chars');
                         wrongCharsElement.textContent = `Falsche Buchstaben: ${gameState.wrongChars}`;
                         
+                    e.target.value = '';
+                }
+            } else if (gameState.currentScreen === 'game') {
+                debugLog('Processing game input');
+                
+                // Prüfe ob die Eingabe mit "menu" beginnt
+                if ('menu'.startsWith(typed)) {
+                    debugLog('Potential menu command');
+                    if (typed === 'menu') {
+                        debugLog('Returning to menu from game');
+                        returnToMenu();
                         e.target.value = '';
+                        return;
                     }
-                } else if (gameState.currentScreen === 'game') {
-                    debugLog('Processing game input');
-                    
-                    // Prüfe ob die Eingabe mit "menu" beginnt
-                    if ('menu'.startsWith(typed)) {
-                        debugLog('Potential menu command');
-                        if (typed === 'menu') {
-                            debugLog('Returning to menu from game');
-                            returnToMenu();
-                            e.target.value = '';
-                            return;
-                        }
-                        return; // Keine weitere Verarbeitung wenn es ein potentielles Menü-Kommando ist
-                    }
-                    
+                    return; // Keine weitere Verarbeitung wenn es ein potentielles Menü-Kommando ist
+                }
+                
                     // Level 10 Boss-Logik
                     if (gameState.level10BossActive) {
                         // Suche nach passenden Boss-Worten
@@ -2448,34 +2448,34 @@
                         }
                     } else {
                         // Normale Gegner-Logik
-                    const targetEnemyIndex = gameState.enemies.findIndex(
-                        enemy => enemy.word.startsWith(typed)
-                    );
+                const targetEnemyIndex = gameState.enemies.findIndex(
+                    enemy => enemy.word.startsWith(typed)
+                );
 
-                    if (targetEnemyIndex !== -1) {
-                        const targetEnemy = gameState.enemies[targetEnemyIndex];
-                        debugLog(`Found target enemy: ${targetEnemy.word}`);
-                        
-                        // Aktualisiere die Wortanzeige mit farbiger Markierung
-                        const wordElement = targetEnemy.element.querySelector('.enemy-word');
-                        let wordDisplay = '';
-                        for(let i = 0; i < targetEnemy.word.length; i++) {
-                            if(i < typed.length) {
-                                wordDisplay += `<span class="correct">${targetEnemy.word[i]}</span>`;
-                            } else {
-                                wordDisplay += targetEnemy.word[i];
-                            }
+                if (targetEnemyIndex !== -1) {
+                    const targetEnemy = gameState.enemies[targetEnemyIndex];
+                    debugLog(`Found target enemy: ${targetEnemy.word}`);
+                    
+                    // Aktualisiere die Wortanzeige mit farbiger Markierung
+                    const wordElement = targetEnemy.element.querySelector('.enemy-word');
+                    let wordDisplay = '';
+                    for(let i = 0; i < targetEnemy.word.length; i++) {
+                        if(i < typed.length) {
+                            wordDisplay += `<span class="correct">${targetEnemy.word[i]}</span>`;
+                        } else {
+                            wordDisplay += targetEnemy.word[i];
                         }
-                        wordElement.innerHTML = wordDisplay;
+                    }
+                    wordElement.innerHTML = wordDisplay;
 
-                        // Wenn das Wort komplett ist
-                        if (typed === targetEnemy.word) {
-                            debugLog('Enemy defeated!');
-                            gameState.score += targetEnemy.word.length;
-                            if (targetEnemy.goldReward > 0) {
-                                gameState.gold += targetEnemy.goldReward;
-                                debugLog(`Earned ${targetEnemy.goldReward} gold!`);
-                            }
+                    // Wenn das Wort komplett ist
+                    if (typed === targetEnemy.word) {
+                        debugLog('Enemy defeated!');
+                        gameState.score += targetEnemy.word.length;
+                        if (targetEnemy.goldReward > 0) {
+                            gameState.gold += targetEnemy.goldReward;
+                            debugLog(`Earned ${targetEnemy.goldReward} gold!`);
+                        }
                         
                                 // Füge Materialien-Drop hinzu
                                 const droppedItem = targetEnemy.dropLoot();
@@ -2492,21 +2492,21 @@
                                     gameState.bossActive = false;
                                 }
                                 
-                            removeEnemy(targetEnemyIndex);
-                            e.target.value = '';
-                        } else {
+                        removeEnemy(targetEnemyIndex);
+                        e.target.value = '';
+                    } else {
                                 // Schussanimation für jeden korrekten Buchstaben
                                 createProjectile(targetEnemy);
                                 
                                 // Wenn der Gegner durch den Schaden stirbt
                                 const isDead = targetEnemy.health <= 1;
-                            if (isDead) {
-                                debugLog('Enemy killed by damage!');
-                                gameState.score += targetEnemy.word.length;
-                                if (targetEnemy.goldReward > 0) {
-                                    gameState.gold += targetEnemy.goldReward;
-                                    debugLog(`Earned ${targetEnemy.goldReward} gold!`);
-                                }
+                        if (isDead) {
+                            debugLog('Enemy killed by damage!');
+                            gameState.score += targetEnemy.word.length;
+                            if (targetEnemy.goldReward > 0) {
+                                gameState.gold += targetEnemy.goldReward;
+                                debugLog(`Earned ${targetEnemy.goldReward} gold!`);
+                            }
                             
                                     // Füge Materialien-Drop hinzu
                                     const droppedItem = targetEnemy.dropLoot();
@@ -2525,46 +2525,46 @@
                                     
                                     // Kurze Verzögerung vor dem Entfernen des Gegners für bessere visuelle Wirkung
                                     setTimeout(() => {
-                                removeEnemy(targetEnemyIndex);
-                                e.target.value = '';
+                            removeEnemy(targetEnemyIndex);
+                            e.target.value = '';
                                     }, 300);
-                            }
                         }
-                        updateDisplay();
-                    } else if (typed.length > 0) {
-                        debugLog('No matching enemy or command found, resetting input');
+                    }
+                    updateDisplay();
+                } else if (typed.length > 0) {
+                    debugLog('No matching enemy or command found, resetting input');
                             // Falsche Eingabe - Schaden direkt mit Verteidigung reduzieren
                             const baseDamage = 10; // Basis-Schaden bei Tippfehler
                             const damage = Math.max(1, baseDamage - gameState.defense); // Verteidigung reduziert den Schaden direkt, mindestens 1 Schaden
-                        gameState.playerHealth -= damage;
-                        debugLog(`Taking ${damage} damage (Reduced by defense: ${gameState.defense})`);
-                        e.target.value = '';
-                        
-                        // Setze alle Wortanzeigen zurück
-                        gameState.enemies.forEach(enemy => {
-                            const wordElement = enemy.element.querySelector('.enemy-word');
-                            wordElement.textContent = enemy.word;
-                        });
-                        
-                        if (gameState.playerHealth <= 0) {
-                            gameOver();
-                        }
-                        updateDisplay();
-                        }
+                    gameState.playerHealth -= damage;
+                    debugLog(`Taking ${damage} damage (Reduced by defense: ${gameState.defense})`);
+                    e.target.value = '';
+                    
+                    // Setze alle Wortanzeigen zurück
+                    gameState.enemies.forEach(enemy => {
+                        const wordElement = enemy.element.querySelector('.enemy-word');
+                        wordElement.textContent = enemy.word;
+                    });
+                    
+                    if (gameState.playerHealth <= 0) {
+                        gameOver();
                     }
+                    updateDisplay();
+                        }
                 }
-            });
-
-            // Fokus-Handler verbessern
-            function focusInput() {
-                const input = document.getElementById('typingInput');
-                input.focus();
-                debugLog('Input field focused');
             }
+        });
 
-            // Event Listener für Klicks
-            document.addEventListener('click', focusInput);
-            document.addEventListener('keydown', focusInput);
+        // Fokus-Handler verbessern
+        function focusInput() {
+            const input = document.getElementById('typingInput');
+            input.focus();
+            debugLog('Input field focused');
+        }
+
+        // Event Listener für Klicks
+        document.addEventListener('click', focusInput);
+        document.addEventListener('keydown', focusInput);
 
         // Funktion zum Hinzufügen von Material
         function addMaterial(material) {
@@ -2713,8 +2713,8 @@
         }
 
         // Initialisierung aktualisieren
-                window.addEventListener('load', function() {
-                    debugLog('Page loaded');
+        window.addEventListener('load', function() {
+            debugLog('Page loaded');
                     
                     // Lade die Datenbankerweiterung
                     if (typeof loadDatabaseExtender === 'function') {
@@ -2723,8 +2723,8 @@
                     
                     loadGameState(); // Lade Spielstand beim Start
                     updateDisplay(); // Aktualisiere die Sidebar
-                    focusInput();
-                    returnToMenu();
+            focusInput();
+            returnToMenu();
                     refreshVirtualKeyboard(); // Initiale Tastatur anzeigen
         
                     // Stelle sicher, dass die Sidebar immer sichtbar ist
@@ -2997,7 +2997,20 @@
                     // Aktualisiere das Inventar
                     showInventory();
                 }
-        </script>
+
+        // Lade die Datenbankerweiterung
+        document.addEventListener('DOMContentLoaded', function() {
+            // Lade die Datenbankerweiterung
+            if (typeof loadDatabaseExtender === 'function') {
+                loadDatabaseExtender();
+                console.log('Datenbankerweiterung geladen!');
+                debugLog('Datenbankerweiterung geladen!');
+            } else {
+                console.error('loadDatabaseExtender ist nicht definiert!');
+                debugLog('Fehler: loadDatabaseExtender ist nicht definiert!');
+            }
+        });
+    </script>
     </div>
 </body>
 </html> 
