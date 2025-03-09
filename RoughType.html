@@ -2298,8 +2298,8 @@
 
         // Input Validierung hinzufügen
         function validateInput(input) {
-            // Entferne unerwünschte Zeichen
-            return input.replace(/[^a-zA-Z0-9\s]/g, '').toLowerCase();
+            // Erlaube Buchstaben, Zahlen, Leerzeichen und Unterstriche
+            return input.replace(/[^a-zA-Z0-9\s_]/g, '').toLowerCase();
         }
 
         // Input Handler aktualisieren
