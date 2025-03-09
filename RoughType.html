@@ -852,7 +852,7 @@
                 <span class="stat-value" id="sidebarHealth">1000/1000</span>
             </div>
             <div class="stat-item">
-                <span>ðŸ’° Gold:</span>
+                <span>ðŸ'° Gold:</span>
                 <span class="stat-value" id="sidebarGold">0</span>
             </div>
             <div class="stat-item">
@@ -868,7 +868,7 @@
                 <span class="stat-value" id="sidebarScore">0</span>
             </div>
             <div class="stat-item">
-                <span>ðŸ“¦ Inventory:</span>
+                <span>ðŸ"¦ Inventory:</span>
                 <span class="stat-value" id="sidebarInventory">0</span>
             </div>
             <div class="stat-item">
@@ -886,11 +886,6 @@
             <div class="menu-option">inventory</div>
             <div class="menu-option">shop</div>
                 <div class="menu-option">new game</div>
-                
-                <!-- Eingabefeld fÃ¼r Befehle im HauptmenÃ¼ -->
-                <div class="command-input-container" style="margin-top: 20px; margin-bottom: 20px;">
-                    <input type="text" id="menuInput" placeholder="Befehl eingeben (z.B. load_level20)" style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid var(--debug-border); background: var(--debug-content-bg); color: var(--text-color);" onkeydown="if(event.key === 'Enter') { const command = this.value.trim(); if(processMenuCommand(command)) { this.value = ''; event.preventDefault(); } }">
-                </div>
                 
                 <!-- Tutorial-Bereich -->
                 <div class="tutorial-container">
@@ -1096,15 +1091,15 @@
             // Liste mÃ¶glicher Gegner nach Level mit Icons
             const enemyTypes = {
                 1: [
-                    { name: 'I', health: 3, goldReward: 1, icon: 'ðŸ”¤' },
-                    { name: 'A', health: 3, goldReward: 1, icon: 'ðŸ”¤' },
-                    { name: 'O', health: 3, goldReward: 1, icon: 'ðŸ”¤' }
+                    { name: 'I', health: 3, goldReward: 1, icon: 'ðŸ"¤' },
+                    { name: 'A', health: 3, goldReward: 1, icon: 'ðŸ"¤' },
+                    { name: 'O', health: 3, goldReward: 1, icon: 'ðŸ"¤' }
                 ],
                 2: [
                     { name: 'Up', health: 4, goldReward: 1, icon: 'â¬†ï¸' },
                     { name: 'On', health: 4, goldReward: 1, icon: 'â­•' },
-                    { name: 'At', health: 4, goldReward: 1, icon: 'ðŸ“' },
-                    { name: 'In', health: 4, goldReward: 1, icon: 'ðŸ“¥' },
+                    { name: 'At', health: 4, goldReward: 1, icon: 'ðŸ"' },
+                    { name: 'In', health: 4, goldReward: 1, icon: 'ðŸ"¥' },
                     { name: 'To', health: 4, goldReward: 1, icon: 'âž¡ï¸' }
                 ],
                 3: [
@@ -1123,27 +1118,27 @@
                 ],
                 5: [
                     { name: 'Snake', health: 10, goldReward: 3, icon: 'ðŸ' },
-                    { name: 'Ghost', health: 10, goldReward: 3, icon: 'ðŸ‘»' },
+                    { name: 'Ghost', health: 10, goldReward: 3, icon: 'ðŸ'»' },
                     { name: 'Slime', health: 10, goldReward: 3, icon: 'ðŸ«§' },
                     { name: 'Witch', health: 10, goldReward: 3, icon: 'ðŸ§™â€â™€ï¸' },
-                    { name: 'Demon', health: 10, goldReward: 3, icon: 'ðŸ‘¿' }
+                    { name: 'Demon', health: 10, goldReward: 3, icon: 'ðŸ'¿' }
                 ],
                 6: [
                     { name: 'Spider', health: 12, goldReward: 3, icon: 'ðŸ•·ï¸' },
                     { name: 'Dragon', health: 12, goldReward: 3, icon: 'ðŸ²' },
                     { name: 'Zombie', health: 12, goldReward: 3, icon: 'ðŸ§Ÿ' },
                     { name: 'Knight', health: 12, goldReward: 3, icon: 'ðŸ›¡ï¸' },
-                    { name: 'Goblin', health: 12, goldReward: 3, icon: 'ðŸ‘º' }
+                    { name: 'Goblin', health: 12, goldReward: 3, icon: 'ðŸ'º' }
                 ],
                 7: [
                     { name: 'Vampire', health: 14, goldReward: 4, icon: 'ðŸ§›' },
-                    { name: 'Phantom', health: 14, goldReward: 4, icon: 'ðŸ‘»' },
-                    { name: 'Warrior', health: 14, goldReward: 4, icon: 'âš”ï¸' },
+                    { name: 'Phantom', health: 14, goldReward: 4, icon: 'ðŸ'»' },
+                    { name: 'Warrior', health: 14, goldReward: 4, icon: 'âš"ï¸' },
                     { name: 'Mermaid', health: 14, goldReward: 4, icon: 'ðŸ§œâ€â™€ï¸' },
                     { name: 'Griffin', health: 14, goldReward: 4, icon: 'ðŸ¦…' }
                 ],
                 8: [
-                    { name: 'Skeleton', health: 16, goldReward: 4, icon: 'ðŸ’€' },
+                    { name: 'Skeleton', health: 16, goldReward: 4, icon: 'ðŸ'€' },
                     { name: 'Werewolf', health: 16, goldReward: 4, icon: 'ðŸº' },
                     { name: 'Basilisk', health: 16, goldReward: 4, icon: 'ðŸ' },
                     { name: 'Scorpion', health: 16, goldReward: 4, icon: 'ðŸ¦‚' },
@@ -1154,14 +1149,14 @@
                     { name: 'Behemoth', health: 18, goldReward: 5, icon: 'ðŸ¦•' },
                     { name: 'Leviathan', health: 18, goldReward: 5, icon: 'ðŸ‹' },
                     { name: 'Hellspawn', health: 18, goldReward: 5, icon: 'ðŸ˜ˆ' },
-                    { name: 'Dreadlord', health: 18, goldReward: 5, icon: 'ðŸ‘‘' }
+                    { name: 'Dreadlord', health: 18, goldReward: 5, icon: 'ðŸ''' }
                 ],
                 10: [
                     { name: 'Dragonlord', health: 20, goldReward: 5, icon: 'ðŸ²' },
-                    { name: 'Shadowking', health: 20, goldReward: 5, icon: 'ðŸŒ‘' },
-                    { name: 'Deathblade', health: 20, goldReward: 5, icon: 'âš”ï¸' },
-                    { name: 'Soulreaper', health: 20, goldReward: 5, icon: 'ðŸ’€' },
-                    { name: 'Doomslayer', health: 20, goldReward: 5, icon: 'ðŸ”¥' }
+                    { name: 'Shadowking', health: 20, goldReward: 5, icon: 'ðŸŒ' } },
+                    { name: 'Deathblade', health: 20, goldReward: 5, icon: 'âš"ï¸' },
+                    { name: 'Soulreaper', health: 20, goldReward: 5, icon: 'ðŸ'€' },
+                    { name: 'Doomslayer', health: 20, goldReward: 5, icon: 'ðŸ"¥' }
                 ]
             };
 
@@ -1729,7 +1724,7 @@
                     if (bosses[bossLevel]) {
                         const boss = bosses[bossLevel];
                         gameState.bossActive = true;
-                        const enemy = new Enemy(boss.name, boss.health, boss.goldReward, 'ðŸ‘‘', boss.special);
+                        const enemy = new Enemy(boss.name, boss.health, boss.goldReward, 'ðŸ', boss.special);
             const element = enemy.createDOMElement();
                         document.getElementById('gameScene').appendChild(element);
                         enemy.element = element;
@@ -1872,24 +1867,60 @@
         function handleMenuInput(typed) {
             debugLog(`handleMenuInput called with: "${typed}"`);
             typed = typed.toLowerCase();
-                const menuOptions = ['enter dungeon', 'practice mode', 'inventory', 'shop', 'menu', 'new game'];
-            
+            const menuOptions = ['enter dungeon', 'practice mode', 'inventory', 'shop', 'menu', 'new game'];
+
             debugLog(`Current menu options: ${menuOptions.join(', ')}`);
             
-            // Finde die erste MenÃ¼option, die mit der Eingabe beginnt
+            // Prüfe, ob es ein Level-Lade-Befehl ist
+            if (typed.startsWith('load_level')) {
+                debugLog(`Level-Lade-Befehl erkannt: ${typed}`);
+                const levelMatch = typed.match(/load_level(\d+)/);
+                if (levelMatch && levelMatch[1]) {
+                    const targetLevel = parseInt(levelMatch[1]);
+                    debugLog(`Ziel-Level: ${targetLevel}`);
+                    if (targetLevel >= 1 && targetLevel <= 30) { // Begrenze auf sinnvolle Level
+                        // Setze den Spielstand auf das gewünschte Level
+                        gameState.level = targetLevel;
+                        gameState.maxLevel = Math.max(gameState.maxLevel, targetLevel);
+                        gameState.monstersKilled = 0;
+                        
+                        // Aktualisiere die Anzeige
+                        updateDisplay();
+                        
+                        // Starte das Spiel
+                        gameState.currentScreen = 'game';
+                        mainMenu.classList.add('hidden');
+                        gameContainer.style.display = 'block';
+                        initGame();
+                        refreshVirtualKeyboard();
+                        
+                        // Füge eine Nachricht zum Combat Log hinzu
+                        addCombatLogEntry('info', `Level ${targetLevel} geladen!`);
+                        debugLog(`Level ${targetLevel} durch Befehl geladen`);
+                        
+                        return true;
+                    } else {
+                        alert('Ungültiges Level! Bitte wähle ein Level zwischen 1 und 30.');
+                        debugLog(`Ungültiges Level: ${targetLevel}`);
+                        return false;
+                    }
+                }
+            }
+
+            // Finde die erste Menüoption, die mit der Eingabe beginnt
             const matchingOption = menuOptions.find(option => option.startsWith(typed));
             debugLog(`Matching option found: ${matchingOption || 'none'}`);
-            
-            // Setze alle MenÃ¼optionen zurÃ¼ck und markiere korrekte Buchstaben
-                const menuElements = document.querySelectorAll('.menu-container > .menu-option');
+
+            // Setze alle Menüoptionen zurück und markiere korrekte Buchstaben
+            const menuElements = document.querySelectorAll('.menu-container > .menu-option');
             debugLog(`Found ${menuElements.length} menu elements`);
-            
+
             menuElements.forEach(option => {
                 const text = option.textContent.toLowerCase();
                 debugLog(`Processing menu option: "${text}"`);
-                
-                    // PrÃ¼fe, ob es sich um eine HauptmenÃ¼option handelt
-                    if (menuOptions.includes(text)) {
+
+                // Prüfe, ob es sich um eine Hauptmenüoption handelt
+                if (menuOptions.includes(text)) {
                     let html = '';
                     for(let i = 0; i < text.length; i++) {
                         if(text.startsWith(typed) && i < typed.length) {
@@ -1905,49 +1936,49 @@
 
             if (matchingOption && typed === matchingOption) {
                 debugLog(`Complete match found: ${matchingOption}`);
-                // VollstÃ¤ndiges Wort eingegeben
+                // Vollständiges Wort eingegeben
                 switch(matchingOption) {
                     case 'enter dungeon':
                         gameState.currentScreen = 'game';
                         mainMenu.classList.add('hidden');
                         gameContainer.style.display = 'block';
                         initGame();
-                            refreshVirtualKeyboard();
-                            break;
-                            
-                        case 'practice mode':
-                            gameState.currentScreen = 'practice';
-                            mainMenu.classList.add('hidden');
-                            gameContainer.style.display = 'block';
-                            initPracticeMode();
-                            refreshVirtualKeyboard();
+                        refreshVirtualKeyboard();
                         break;
                         
+                    case 'practice mode':
+                        gameState.currentScreen = 'practice';
+                        mainMenu.classList.add('hidden');
+                        gameContainer.style.display = 'block';
+                        initPracticeMode();
+                        refreshVirtualKeyboard();
+                    break;
+                    
                     case 'inventory':
                         gameState.currentScreen = 'inventory';
                         showInventory();
-                            refreshVirtualKeyboard();
-                        break;
-                        
+                        refreshVirtualKeyboard();
+                    break;
+                    
                     case 'shop':
                         gameState.currentScreen = 'shop';
                         showShop();
-                            refreshVirtualKeyboard();
-                        break;
-                        
+                        refreshVirtualKeyboard();
+                    break;
+                    
                     case 'menu':
                         if (gameState.currentScreen !== 'menu') {
                             returnToMenu();
-                                refreshVirtualKeyboard();
-                            }
-                            break;
+                            refreshVirtualKeyboard();
+                        }
+                        break;
 
-                        case 'new game':
-                            if (confirm('Do you really want to start a new game? The current progress will be lost!')) {
-                                resetGameState();
-                                returnToMenu();
-                                refreshVirtualKeyboard();
-                                alert('New game started!');
+                    case 'new game':
+                        if (confirm('Do you really want to start a new game? The current progress will be lost!')) {
+                            resetGameState();
+                            returnToMenu();
+                            refreshVirtualKeyboard();
+                            alert('New game started!');
                         }
                         break;
                 }
@@ -2016,7 +2047,7 @@
                             
                             <!-- Deutlicher Hinweis direkt im Materials-Container -->
                             <div style="background-color: #4CAF50; color: white; padding: 10px; margin-top: 15px; border-radius: 5px; text-align: center; font-weight: bold; font-size: 16px;">
-                                ðŸ’° Type "sell all materials" to sell all materials (5 gold each) ðŸ’°
+                                ðŸ'° Type "sell all materials" to sell all materials (5 gold each) ðŸ'°
                             </div>
                         </div>
                     </div>
@@ -2873,7 +2904,7 @@
             Object.values(bosses).forEach(boss => {
                 allMonsterWords.push({
                     word: boss.name.toLowerCase(),
-                    icon: 'ðŸ‘‘'
+                    icon: 'ðŸ'¿'
                 });
                 
                 // FÃ¼ge auch Split-WÃ¶rter hinzu, falls vorhanden
@@ -2881,7 +2912,7 @@
                     boss.splitWords.forEach(word => {
                         allMonsterWords.push({
                             word: word.toLowerCase(),
-                            icon: 'ðŸ”¥'
+                            icon: 'ðŸ"¥'
                         });
                     });
                 }
@@ -3101,22 +3132,11 @@
         };
 
         // Erweitere die Eingabeverarbeitung im HauptmenÃ¼
-        document.getElementById('menuInput').addEventListener('keydown', function(e) {
-            if (e.key === 'Enter') {
-                const command = this.value.trim();
-                
-                // Verarbeite spezielle Befehle
-                if (processMenuCommand(command)) {
-                    // Befehl wurde verarbeitet, leere das Eingabefeld
-                    this.value = '';
-                    e.preventDefault();
-                    return;
-                }
-                
-                // Normale Verarbeitung fortsetzen
-            }
-        });
+        
     </script>
     </div>
 </body>
 </html> 
+
+
+
