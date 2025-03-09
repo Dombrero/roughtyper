@@ -1,5 +1,5 @@
 // Database_extender/mechanics.js
-// Erweiterte Spielmechaniken für Level 11-19
+// Erweiterte Spielmechaniken für Level 11-20
 
 // Funktion zum Initialisieren des Level 15 Bosses (CHRONOS)
 function initLevel15Boss() {
@@ -551,7 +551,7 @@ function updateLevel19Boss(timestamp) {
     }
 }
 
-// Funktion zum Initialisieren des Level 20 Bosses (SCRIPTUM)
+// Funktion zum Initialisieren des Level 20 Bosses (CHRONOS)
 function initLevel20Boss() {
     console.log('Initialisiere Level 20 Boss...');
     
@@ -561,17 +561,21 @@ function initLevel20Boss() {
     
     // Initialisiere den Boss
     window.level20Boss = {
-        health: 100, // Entspricht der Anzahl der Wörter im Text
-        maxHealth: 100,
-        gold: 1000,
-        text: `In einer Welt voller Tasten und Zeichen, wo Buchstaben tanzen und Wörter sich formen, begann die Reise eines Helden. Mit flinken Fingern und scharfem Verstand kämpfte er gegen die Mächte der Ungenauigkeit und Langsamkeit. Jeder Tastendruck ein Schlag, jedes Wort ein Sieg. Die Dunkelheit der Fehler versuchte ihn zu umhüllen, doch sein Wille war stärker. Durch Level um Level, Gegner um Gegner, stieg er auf, immer höher, immer schneller. Nun steht er vor der letzten Prüfung, dem ultimativen Test seiner Fähigkeiten. Kann er den Text bezwingen, bevor die Zeit abläuft? Kann er die Worte meistern, bevor sie ihn verschlingen? Das Schicksal der digitalen Welt liegt in seinen Händen, in jedem Buchstaben, den er tippt, in jedem Wort, das er vollendet. Die Zeit läuft, die Herausforderung wartet. Tippe, Held, tippe für dein Leben!`,
-        typedText: '',
-        currentPosition: 0,
+        health: 10,
+        maxHealth: 10,
+        gold: 500,
+        activeWords: [],
+        maxProjectiles: 5,
+        wordPool: [
+            'ZEIT', 'PORTAL', 'CHRONOS', 'STUNDE', 'MINUTE', 'SEKUNDE', 'UHRWERK', 'PENDEL', 'SANDUHR', 'EWIGKEIT', 'MOMENT', 'PRESENT', 'PAST', 'FUTURE', 'RIFT'
+        ],
         element: null,
-        textElement: null,
-        startTime: Date.now(),
-        speed: 0.5, // Pixel pro Frame
-        position: 0 // Aktuelle Y-Position des Textes
+        lastSpawnTime: 0,
+        spawnInterval: 2000, // 2 Sekunden zwischen Wortspawns
+        timeshiftActive: false,
+        timeshiftRemaining: 0,
+        timeshiftCooldown: 0,
+        timeshiftInterval: 15000 // 15 Sekunden zwischen Timeshift-Aktivierungen
     };
     
     // Erstelle das Boss-Element
@@ -580,7 +584,7 @@ function initLevel20Boss() {
     bossElement.id = 'level20Boss';
     bossElement.className = 'boss';
     bossElement.innerHTML = `
-        <div class="boss-name">SCRIPTUM</div>
+        <div class="boss-name">CHRONOS</div>
         <div class="boss-health-bar">
             <div class="boss-health-fill" style="width: 100%"></div>
         </div>
@@ -588,59 +592,28 @@ function initLevel20Boss() {
     
     // Positioniere den Boss
     bossElement.style.position = 'absolute';
-    bossElement.style.top = '20px';
+    bossElement.style.top = '50px';
     bossElement.style.left = '50%';
     bossElement.style.transform = 'translateX(-50%)';
     bossElement.style.width = '200px';
-    bossElement.style.height = '80px';
-    bossElement.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+    bossElement.style.height = '100px';
+    bossElement.style.backgroundColor = 'rgba(148, 0, 211, 0.7)'; // Lila Farbe
     bossElement.style.color = 'white';
     bossElement.style.fontWeight = 'bold';
     bossElement.style.textAlign = 'center';
     bossElement.style.padding = '10px';
     bossElement.style.borderRadius = '10px';
-    bossElement.style.boxShadow = '0 0 20px #000';
+    bossElement.style.boxShadow = '0 0 20px #9400d3';
     bossElement.style.zIndex = '100';
     
     // Füge den Boss zum Spielcontainer hinzu
     gameContainer.appendChild(bossElement);
     
-    // Erstelle das Text-Element
-    const textElement = document.createElement('div');
-    textElement.id = 'level20BossText';
-    textElement.className = 'boss-text';
-    
-    // Positioniere den Text
-    textElement.style.position = 'absolute';
-    textElement.style.top = '120px';
-    textElement.style.left = '50%';
-    textElement.style.transform = 'translateX(-50%)';
-    textElement.style.width = '80%';
-    textElement.style.maxWidth = '800px';
-    textElement.style.padding = '20px';
-    textElement.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
-    textElement.style.color = 'white';
-    textElement.style.fontFamily = 'monospace';
-    textElement.style.fontSize = '18px';
-    textElement.style.lineHeight = '1.5';
-    textElement.style.borderRadius = '10px';
-    textElement.style.boxShadow = '0 0 20px #000';
-    textElement.style.zIndex = '99';
-    textElement.style.textAlign = 'left';
-    
-    // Füge den Text zum Spielcontainer hinzu
-    gameContainer.appendChild(textElement);
-    
-    // Speichere die Elemente
+    // Speichere das Boss-Element
     level20Boss.element = bossElement;
-    level20Boss.textElement = textElement;
-    
-    // Aktualisiere den Text mit Hervorhebung
-    updateLevel20BossText();
     
     // Füge einen Eintrag zum Kampflog hinzu
-    addCombatLogEntry('boss', 'SCRIPTUM erscheint! "BEWEISE DEINE SCHREIBKÜNSTE!"');
-    addCombatLogEntry('info', 'Tippe den Text, bevor er dich erreicht! Bei Fehlern musst du nur ab der Fehlerposition weiterschreiben.');
+    addCombatLogEntry('boss', 'CHRONOS erscheint! "ICH BIN DER HERR DER ZEIT!"');
     
     // Aktualisiere die Gesundheitsanzeige
     updateLevel20BossHealth();
@@ -648,32 +621,107 @@ function initLevel20Boss() {
     console.log('Level 20 Boss erfolgreich initialisiert!');
 }
 
-// Funktion zum Aktualisieren des Textes des Level 20 Bosses
-function updateLevel20BossText() {
-    if (!gameState.level20BossActive || !level20Boss.textElement) {
+// Funktion zum Erstellen eines Wortes für den Level 20 Boss
+function spawnLevel20BossWord() {
+    // Wenn der Boss nicht aktiv ist oder bereits genug Projektile hat, beende die Funktion
+    if (!gameState.level20BossActive || level20Boss.activeWords.length >= level20Boss.maxProjectiles) {
         return;
     }
     
-    const text = level20Boss.text;
-    const typedText = level20Boss.typedText;
-    const currentPosition = level20Boss.currentPosition;
+    // Wähle ein zufälliges Wort aus dem Wortpool
+    const wordIndex = Math.floor(Math.random() * level20Boss.wordPool.length);
+    const word = level20Boss.wordPool[wordIndex];
     
-    // Erstelle HTML für die Hervorhebung
-    let html = '';
+    console.log('Erstelle neues Wort für Level 20 Boss:', word);
     
-    // Bereits getippter Text (grün)
-    html += `<span style="color: #00ff00;">${text.substring(0, currentPosition)}</span>`;
+    // Erstelle ein DOM-Element für das Wort
+    const wordElement = document.createElement('div');
+    wordElement.textContent = word;
+    wordElement.className = 'level20-boss-word';
+    wordElement.id = 'level20-boss-word-' + Date.now();
     
-    // Aktueller Buchstabe (gelb hinterlegt)
-    if (currentPosition < text.length) {
-        html += `<span style="background-color: #ffff00; color: #000000;">${text.charAt(currentPosition)}</span>`;
+    // Stelle sicher, dass das Wort vollständig im Container sichtbar ist
+    const gameContainer = document.getElementById('gameContainer');
+    const containerWidth = gameContainer.offsetWidth;
+    const containerHeight = gameContainer.offsetHeight;
+    
+    // Positioniere das Wort zufällig im oberen Bereich des Spielfelds
+    const x = Math.random() * (containerWidth - 100) + 50;
+    const y = Math.random() * 100 + 100;
+    
+    // Setze die CSS-Eigenschaften für das Wort
+    wordElement.style.position = 'absolute';
+    wordElement.style.left = x + 'px';
+    wordElement.style.top = y + 'px';
+    wordElement.style.color = '#9932CC'; // Lila Farbe
+    wordElement.style.fontWeight = 'bold';
+    wordElement.style.fontSize = '24px';
+    wordElement.style.textShadow = '0 0 5px #fff, 0 0 10px #fff';
+    wordElement.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+    wordElement.style.padding = '5px 10px';
+    wordElement.style.borderRadius = '5px';
+    wordElement.style.zIndex = '1000'; // Hoher z-index, um sicherzustellen, dass es über anderen Elementen liegt
+    wordElement.style.pointerEvents = 'none'; // Verhindert, dass das Wort Mausklicks blockiert
+    
+    // Füge das Wort zum Spielcontainer hinzu
+    gameContainer.appendChild(wordElement);
+    
+    // Berechne die Richtung und Geschwindigkeit des Wortes zum Spieler
+    const playerElement = document.getElementById('player');
+    let playerX = containerWidth / 2;
+    let playerY = containerHeight - 100;
+    
+    if (playerElement) {
+        const playerRect = playerElement.getBoundingClientRect();
+        const containerRect = gameContainer.getBoundingClientRect();
+        playerX = playerRect.left - containerRect.left + playerRect.width / 2;
+        playerY = playerRect.top - containerRect.top + playerRect.height / 2;
     }
     
-    // Noch zu tippender Text (weiß)
-    html += `<span style="color: #ffffff;">${text.substring(currentPosition + 1)}</span>`;
+    // Berechne den Richtungsvektor zum Spieler
+    const dx = playerX - x;
+    const dy = playerY - y;
+    const distance = Math.sqrt(dx * dx + dy * dy);
     
-    // Aktualisiere das Text-Element
-    level20Boss.textElement.innerHTML = html;
+    // Normalisiere den Richtungsvektor und multipliziere mit der Geschwindigkeit
+    const speed = 1.0;
+    const vx = (dx / distance) * speed;
+    const vy = (dy / distance) * speed;
+    
+    // Erstelle ein Wortobjekt und füge es zur Liste der aktiven Wörter hinzu
+    const wordObj = {
+        word: word,
+        element: wordElement,
+        x: x,
+        y: y,
+        vx: vx,
+        vy: vy
+    };
+    
+    level20Boss.activeWords.push(wordObj);
+    level20Boss.lastSpawnTime = Date.now();
+}
+
+// Funktion zum Entfernen eines Wortes des Level 20 Bosses
+function removeLevel20BossWord(index) {
+    // Stelle sicher, dass der Index gültig ist
+    if (index < 0 || index >= level20Boss.activeWords.length) {
+        console.error('Ungültiger Index für removeLevel20BossWord:', index);
+        return;
+    }
+    
+    // Hole das Wortobjekt
+    const wordObj = level20Boss.activeWords[index];
+    
+    console.log('Entferne Wort:', wordObj.word);
+    
+    // Entferne das DOM-Element, wenn es existiert
+    if (wordObj.element && wordObj.element.parentNode) {
+        wordObj.element.parentNode.removeChild(wordObj.element);
+    }
+    
+    // Entferne das Wortobjekt aus dem Array
+    level20Boss.activeWords.splice(index, 1);
 }
 
 // Funktion zum Aktualisieren der Gesundheitsanzeige des Level 20 Bosses
@@ -714,7 +762,7 @@ function updateLevel20BossHealth() {
     // Aktualisiere den Text der Boss-Anzeige
     const bossName = level20Boss.element.querySelector('.boss-name');
     if (bossName) {
-        bossName.textContent = `SCRIPTUM (${level20Boss.health}/${level20Boss.maxHealth})`;
+        bossName.textContent = `CHRONOS (${level20Boss.health}/${level20Boss.maxHealth})`;
     }
 }
 
@@ -732,21 +780,21 @@ function defeatLevel20Boss() {
     gameState.level20BossActive = false;
     gameState.bossActive = false;
     
+    // Entferne alle aktiven Wörter
+    while (level20Boss.activeWords.length > 0) {
+        removeLevel20BossWord(0);
+    }
+    
     // Entferne das Boss-Element
     if (level20Boss.element && level20Boss.element.parentNode) {
         level20Boss.element.parentNode.removeChild(level20Boss.element);
-    }
-    
-    // Entferne das Text-Element
-    if (level20Boss.textElement && level20Boss.textElement.parentNode) {
-        level20Boss.textElement.parentNode.removeChild(level20Boss.textElement);
     }
     
     // Füge Gold hinzu
     gameState.gold += level20Boss.gold;
     
     // Füge einen Eintrag zum Kampflog hinzu
-    addCombatLogEntry('victory', `Du hast SCRIPTUM besiegt! +${level20Boss.gold} Gold!`);
+    addCombatLogEntry('victory', `Du hast CHRONOS besiegt! +${level20Boss.gold} Gold!`);
     
     // Aktualisiere die Anzeige
     updateDisplay();
@@ -761,8 +809,8 @@ function defeatLevel20Boss() {
     }
 }
 
-// Funktion zum Aktualisieren der Level 20 Boss Mechanik im Game Loop
-function updateLevel20Boss() {
+// Funktion zum Aktualisieren der Wörter des Level 20 Bosses
+function updateLevel20BossWords() {
     // Wenn der Boss nicht aktiv ist, beende die Funktion
     if (!gameState.level20BossActive) {
         return;
@@ -770,64 +818,159 @@ function updateLevel20Boss() {
     
     // Hole die Dimensionen des Spielcontainers
     const gameContainer = document.getElementById('gameContainer');
+    const containerWidth = gameContainer.offsetWidth;
     const containerHeight = gameContainer.offsetHeight;
     
-    // Bewege den Text nach unten
-    level20Boss.position += level20Boss.speed;
+    // Hole die Position des Spielers
+    const playerElement = document.getElementById('player');
+    let playerX = containerWidth / 2;
+    let playerY = containerHeight - 100;
     
-    // Aktualisiere die Position des Text-Elements
-    if (level20Boss.textElement) {
-        level20Boss.textElement.style.top = (120 + level20Boss.position) + 'px';
+    if (playerElement) {
+        const playerRect = playerElement.getBoundingClientRect();
+        const containerRect = gameContainer.getBoundingClientRect();
+        playerX = playerRect.left - containerRect.left + playerRect.width / 2;
+        playerY = playerRect.top - containerRect.top + playerRect.height / 2;
     }
     
-    // Prüfe, ob der Text den Spieler erreicht hat
-    const textElementHeight = level20Boss.textElement ? level20Boss.textElement.offsetHeight : 0;
-    const textBottom = 120 + level20Boss.position + textElementHeight;
+    // Durchlaufe alle aktiven Wörter rückwärts, um sie sicher entfernen zu können
+    for (let i = level20Boss.activeWords.length - 1; i >= 0; i--) {
+        const wordObj = level20Boss.activeWords[i];
+        
+        // Aktualisiere die Position des Wortes
+        wordObj.x += wordObj.vx;
+        wordObj.y += wordObj.vy;
+        
+        // Aktualisiere die Position des DOM-Elements
+        wordObj.element.style.left = wordObj.x + 'px';
+        wordObj.element.style.top = wordObj.y + 'px';
+        
+        // Überprüfe, ob das Wort den Spieler getroffen hat
+        const wordWidth = wordObj.element.offsetWidth;
+        const wordHeight = wordObj.element.offsetHeight;
+        const wordCenterX = wordObj.x + wordWidth / 2;
+        const wordCenterY = wordObj.y + wordHeight / 2;
+        
+        // Berechne den Abstand zwischen dem Wort und dem Spieler
+        const dx = wordCenterX - playerX;
+        const dy = wordCenterY - playerY;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        
+        // Wenn das Wort den Spieler getroffen hat
+        if (distance < 30) { // Angenommener Kollisionsradius
+            console.log('Spieler wurde von Wort getroffen:', wordObj.word);
+            
+            // Füge einen Eintrag zum Kampflog hinzu
+            addCombatLogEntry('damage', `Du wurdest von "${wordObj.word}" getroffen!`);
+            
+            // Füge Schaden hinzu
+            takeDamage(10);
+            
+            // Entferne das Wort
+            removeLevel20BossWord(i);
+            continue;
+        }
+        
+        // Überprüfe, ob das Wort außerhalb des Spielbereichs ist
+        if (wordObj.x < -wordWidth || wordObj.x > containerWidth || 
+            wordObj.y < -wordHeight || wordObj.y > containerHeight) {
+            console.log('Wort außerhalb des Spielbereichs:', wordObj.word);
+            
+            // Entferne das Wort
+            removeLevel20BossWord(i);
+            continue;
+        }
+    }
     
-    if (textBottom >= containerHeight - 100) {
-        // Game Over
-        addCombatLogEntry('damage', 'Der Text hat dich erreicht! Game Over!');
-        gameOver();
+    // Wenn der Boss aktiv ist und nicht genug Wörter hat, erstelle ein neues Wort
+    if (gameState.level20BossActive && level20Boss.activeWords.length < level20Boss.maxProjectiles) {
+        const currentTime = Date.now();
+        if (currentTime - level20Boss.lastSpawnTime > level20Boss.spawnInterval) {
+            spawnLevel20BossWord();
+        }
+    }
+}
+
+// Funktion zum Aktualisieren der Level 20 Boss Mechanik im Game Loop
+function updateLevel20Boss() {
+    // Wenn der Boss nicht aktiv ist, beende die Funktion
+    if (!gameState.level20BossActive) {
         return;
     }
     
-    // Aktualisiere die Gesundheitsanzeige
-    updateLevel20BossHealth();
-}
-
-// Funktion zum Verarbeiten der Eingabe für den Level 20 Boss
-function processLevel20BossInput(typed) {
-    if (!gameState.level20BossActive) {
-        return false;
-    }
+    // Aktualisiere die Wörter des Bosses
+    updateLevel20BossWords();
     
-    const text = level20Boss.text;
-    const currentPosition = level20Boss.currentPosition;
-    
-    // Prüfe, ob die Eingabe korrekt ist
-    if (typed === text.charAt(currentPosition)) {
-        // Korrekte Eingabe
-        level20Boss.typedText += typed;
-        level20Boss.currentPosition++;
-        
-        // Aktualisiere den Text
-        updateLevel20BossText();
-        
-        // Prüfe, ob der gesamte Text getippt wurde
-        if (level20Boss.currentPosition >= text.length) {
-            // Boss besiegt
-            defeatLevel20Boss();
-        } else {
-            // Reduziere die Boss-Gesundheit
-            level20Boss.health = level20Boss.maxHealth - Math.floor((level20Boss.currentPosition / text.length) * level20Boss.maxHealth);
-            updateLevel20BossHealth();
+    // Timeshift-Mechanik
+    if (level20Boss.timeshiftActive) {
+        // Wenn Timeshift aktiv ist, verlangsame die Wörter
+        for (let i = 0; i < level20Boss.activeWords.length; i++) {
+            const word = level20Boss.activeWords[i];
+            if (word) {
+                // Reduziere die Geschwindigkeit der Wörter
+                word.vx *= 0.95;
+                word.vy *= 0.95;
+            }
         }
         
-        return true;
+        // Reduziere die verbleibende Timeshift-Zeit
+        level20Boss.timeshiftRemaining--;
+        
+        // Wenn die Timeshift-Zeit abgelaufen ist, deaktiviere Timeshift
+        if (level20Boss.timeshiftRemaining <= 0) {
+            level20Boss.timeshiftActive = false;
+            level20Boss.timeshiftCooldown = level20Boss.timeshiftInterval;
+            
+            // Setze die Geschwindigkeit der Wörter zurück
+            for (let i = 0; i < level20Boss.activeWords.length; i++) {
+                const word = level20Boss.activeWords[i];
+                if (word) {
+                    // Berechne die Richtung und Geschwindigkeit des Wortes neu
+                    const gameContainer = document.getElementById('gameContainer');
+                    const containerWidth = gameContainer.offsetWidth;
+                    const containerHeight = gameContainer.offsetHeight;
+                    
+                    // Hole die Position des Spielers
+                    const playerElement = document.getElementById('player');
+                    let playerX = containerWidth / 2;
+                    let playerY = containerHeight - 100;
+                    
+                    if (playerElement) {
+                        const playerRect = playerElement.getBoundingClientRect();
+                        const containerRect = gameContainer.getBoundingClientRect();
+                        playerX = playerRect.left - containerRect.left + playerRect.width / 2;
+                        playerY = playerRect.top - containerRect.top + playerRect.height / 2;
+                    }
+                    
+                    // Berechne den Richtungsvektor zum Spieler
+                    const dx = playerX - word.x;
+                    const dy = playerY - word.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    // Normalisiere den Richtungsvektor und multipliziere mit der Geschwindigkeit
+                    const speed = 1.0;
+                    word.vx = (dx / distance) * speed;
+                    word.vy = (dy / distance) * speed;
+                }
+            }
+            
+            // Benachrichtige den Spieler
+            addCombatLogEntry('info', 'CHRONOS: "Die Zeit fließt wieder normal!"');
+        }
     } else {
-        // Falsche Eingabe
-        addCombatLogEntry('damage', 'Falscher Buchstabe! Versuche es erneut.');
-        return true;
+        // Wenn Timeshift nicht aktiv ist, reduziere den Cooldown
+        if (level20Boss.timeshiftCooldown > 0) {
+            level20Boss.timeshiftCooldown--;
+        } else {
+            // Wenn der Cooldown abgelaufen ist, aktiviere Timeshift
+            if (Math.random() < 0.01) { // 1% Chance pro Frame, Timeshift zu aktivieren
+                level20Boss.timeshiftActive = true;
+                level20Boss.timeshiftRemaining = 300; // 5 Sekunden bei 60 FPS
+                
+                // Benachrichtige den Spieler
+                addCombatLogEntry('info', 'CHRONOS: "ZEIT, STEHE STILL!"');
+            }
+        }
     }
 }
 
@@ -842,11 +985,12 @@ if (typeof module !== 'undefined' && module.exports) {
         updateLevel15Boss,
         updateLevel15BossWords,
         initLevel20Boss,
-        updateLevel20BossText,
+        spawnLevel20BossWord,
+        removeLevel20BossWord,
         updateLevel20BossHealth,
         defeatLevel20Boss,
         updateLevel20Boss,
-        processLevel20BossInput
+        updateLevel20BossWords
     };
 } else {
     // Exportiere die Funktionen für den Browser
@@ -858,9 +1002,10 @@ if (typeof module !== 'undefined' && module.exports) {
     window.updateLevel15Boss = updateLevel15Boss;
     window.updateLevel15BossWords = updateLevel15BossWords;
     window.initLevel20Boss = initLevel20Boss;
-    window.updateLevel20BossText = updateLevel20BossText;
+    window.spawnLevel20BossWord = spawnLevel20BossWord;
+    window.removeLevel20BossWord = removeLevel20BossWord;
     window.updateLevel20BossHealth = updateLevel20BossHealth;
     window.defeatLevel20Boss = defeatLevel20Boss;
     window.updateLevel20Boss = updateLevel20Boss;
-    window.processLevel20BossInput = processLevel20BossInput;
+    window.updateLevel20BossWords = updateLevel20BossWords;
 } 

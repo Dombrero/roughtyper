@@ -16,7 +16,6 @@ function loadExtendedLevels() {
     });
     
     // Füge die speziellen Bosse zum gameState hinzu
-    gameState.level15BossActive = false;
     gameState.level20BossActive = false;
     
     console.log('Erweiterte Level-Daten erfolgreich geladen!');
@@ -29,8 +28,8 @@ function loadExtendedStyles() {
     // Erstelle ein neues Style-Element
     const styleElement = document.createElement('style');
     styleElement.textContent = `
-        /* Stile für Level 15 Boss (CHRONOS) */
-        .enemy-entity.level15boss {
+        /* Stile für Level 20 Boss (CHRONOS) */
+        .enemy-entity.level20boss {
             width: 120px;
             height: 120px;
             background: linear-gradient(135deg, #4b0082, #9400d3);
@@ -43,62 +42,23 @@ function loadExtendedStyles() {
             animation: pulse 2s infinite alternate;
         }
 
-        .level15boss .boss-icon {
+        .level20boss .boss-icon {
             font-size: 40px;
             margin-bottom: 5px;
         }
 
-        .level15boss .boss-name {
+        .level20boss .boss-name {
             font-size: 16px;
             font-weight: bold;
             color: white;
         }
 
-        .enemy-word.level15boss-word {
+        .enemy-word.level20boss-word {
             color: #9400d3;
             font-weight: bold;
             text-shadow: 0 0 3px #4b0082;
             font-size: 18px;
             transition: color 0.3s, text-shadow 0.3s;
-        }
-
-        /* Stile für Level 19 Boss (NEMESIS) */
-        .enemy-entity.level19boss {
-            width: 120px;
-            height: 120px;
-            background: linear-gradient(135deg, #800000, #ff0000);
-            border-radius: 50%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            box-shadow: 0 0 20px #ff0000;
-            animation: float 3s infinite alternate;
-        }
-
-        .level19boss .boss-icon {
-            font-size: 40px;
-            margin-bottom: 5px;
-        }
-
-        .level19boss .boss-name {
-            font-size: 16px;
-            font-weight: bold;
-            color: white;
-        }
-
-        .enemy-word.level19boss-word {
-            color: #ff0000;
-            font-weight: bold;
-            text-shadow: 0 0 3px #800000;
-            font-size: 18px;
-        }
-
-        .enemy-word.level19boss-word.mirrored {
-            color: #ff6600;
-            text-shadow: 0 0 5px #ff6600;
-            transform: scaleX(-1);
-            display: inline-block;
         }
 
         /* Animationen */
@@ -132,7 +92,8 @@ function loadExtendedStyles() {
         .enemy-entity[data-level="16"],
         .enemy-entity[data-level="17"],
         .enemy-entity[data-level="18"],
-        .enemy-entity[data-level="19"] {
+        .enemy-entity[data-level="19"],
+        .enemy-entity[data-level="20"] {
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
             transition: transform 0.3s;
@@ -173,6 +134,10 @@ function loadExtendedStyles() {
         .enemy-entity[data-level="19"] {
             background: linear-gradient(135deg, #000000, #696969);
         }
+
+        .enemy-entity[data-level="20"] {
+            background: linear-gradient(135deg, #4b0082, #9400d3);
+        }
     `;
     
     // Füge das Style-Element zum Dokument hinzu
@@ -192,11 +157,6 @@ function extendGameLoop() {
     window.gameLoop = function(timestamp) {
         // Rufe die ursprüngliche gameLoop-Funktion auf
         originalGameLoop(timestamp);
-        
-        // Aktualisiere den Level 15 Boss, wenn er aktiv ist
-        if (gameState.level15BossActive) {
-            updateLevel15Boss();
-        }
         
         // Aktualisiere den Level 20 Boss, wenn er aktiv ist
         if (gameState.level20BossActive) {
@@ -219,10 +179,8 @@ function extendInitGame() {
         // Rufe die ursprüngliche initGame-Funktion auf
         originalInitGame();
         
-        // Prüfe, ob Level 15 oder 20 erreicht ist
-        if (gameState.level === 15) {
-            initLevel15Boss();
-        } else if (gameState.level === 20) {
+        // Prüfe, ob Level 20 erreicht ist
+        if (gameState.level === 20) {
             initLevel20Boss();
         }
     };
@@ -263,33 +221,12 @@ function extendInputHandling() {
         if (gameState.level20BossActive && window.level20Boss) {
             console.log('Level 20 Boss aktiv, prüfe Eingabe:', typed);
             
-            // Verarbeite die Eingabe für den Level 20 Boss
-            // Hier verarbeiten wir jeden einzelnen Buchstaben
-            if (typed.length === 1) {
-                const handled = processLevel20BossInput(typed);
-                if (handled) {
-                    // Leere das Eingabefeld
-                    e.target.value = '';
-                    return; // Beende die Funktion, um doppelte Verarbeitung zu vermeiden
-                }
-            }
-            
-            // Wenn wir hier ankommen, wurde die Eingabe nicht verarbeitet
-            // Rufe den ursprünglichen Handler nicht auf, um doppelte Verarbeitung zu vermeiden
-            e.target.value = '';
-            return;
-        }
-        
-        // Prüfe auf Level 15 Boss
-        if (gameState.level15BossActive && window.level15Boss) {
-            console.log('Level 15 Boss aktiv, prüfe Eingabe:', typed);
-            
-            // Prüfe, ob ein Wort des Level 15 Bosses getroffen wurde
+            // Prüfe, ob ein Wort des Level 20 Bosses getroffen wurde
             let targetWordIndex = -1;
             
             // Durchlaufe alle aktiven Wörter und prüfe auf exakte Übereinstimmung
-            for (let i = 0; i < level15Boss.activeWords.length; i++) {
-                const word = level15Boss.activeWords[i];
+            for (let i = 0; i < level20Boss.activeWords.length; i++) {
+                const word = level20Boss.activeWords[i];
                 if (word && word.word && word.word.toLowerCase() === typed.toLowerCase()) {
                     targetWordIndex = i;
                     break;
@@ -298,20 +235,20 @@ function extendInputHandling() {
             
             if (targetWordIndex !== -1) {
                 // Wort getroffen
-                const targetWord = level15Boss.activeWords[targetWordIndex];
+                const targetWord = level20Boss.activeWords[targetWordIndex];
                 console.log('Wort getroffen:', targetWord.word);
                 addCombatLogEntry('hit', `Du hast "${targetWord.word}" getroffen!`);
                 
                 // Entferne das Wort
-                removeLevel15BossWord(targetWordIndex);
+                removeLevel20BossWord(targetWordIndex);
                 
                 // Reduziere die Boss-Gesundheit
-                level15Boss.health--;
-                updateLevel15BossHealth();
+                level20Boss.health--;
+                updateLevel20BossHealth();
                 
                 // Prüfe, ob der Boss besiegt ist
-                if (level15Boss.health <= 0) {
-                    defeatLevel15Boss();
+                if (level20Boss.health <= 0) {
+                    defeatLevel20Boss();
                 }
                 
                 // Leere das Eingabefeld
@@ -320,8 +257,8 @@ function extendInputHandling() {
             }
             
             // Prüfe auch, ob das Wort mit einem der aktiven Wörter beginnt (für Teilübereinstimmungen)
-            for (let i = 0; i < level15Boss.activeWords.length; i++) {
-                const word = level15Boss.activeWords[i];
+            for (let i = 0; i < level20Boss.activeWords.length; i++) {
+                const word = level20Boss.activeWords[i];
                 if (word && word.word && word.word.toLowerCase().startsWith(typed.toLowerCase()) && typed.length > 0) {
                     console.log('Teilübereinstimmung gefunden:', typed, 'für Wort:', word.word);
                     
@@ -344,15 +281,15 @@ function extendInputHandling() {
                         console.log('Vollständige Übereinstimmung mit unterschiedlicher Groß-/Kleinschreibung:', typed, 'für Wort:', word.word);
                         
                         // Entferne das Wort
-                        removeLevel15BossWord(i);
+                        removeLevel20BossWord(i);
                         
                         // Reduziere die Boss-Gesundheit
-                        level15Boss.health--;
-                        updateLevel15BossHealth();
+                        level20Boss.health--;
+                        updateLevel20BossHealth();
                         
                         // Prüfe, ob der Boss besiegt ist
-                        if (level15Boss.health <= 0) {
-                            defeatLevel15Boss();
+                        if (level20Boss.health <= 0) {
+                            defeatLevel20Boss();
                         }
                         
                         // Leere das Eingabefeld
@@ -381,24 +318,24 @@ function extendInputHandling() {
             const typed = validateInput(this.value);
             console.log('Enter-Taste gedrückt mit Eingabe:', typed);
             
-            // Prüfe auf Level 15 Boss
-            if (gameState.level15BossActive && level15Boss && level15Boss.activeWords && level15Boss.activeWords.length > 0) {
-                // Prüfe, ob ein Wort des Level 15 Bosses getroffen wurde
-                for (let i = 0; i < level15Boss.activeWords.length; i++) {
-                    const word = level15Boss.activeWords[i];
+            // Prüfe auf Level 20 Boss
+            if (gameState.level20BossActive && level20Boss && level20Boss.activeWords && level20Boss.activeWords.length > 0) {
+                // Prüfe, ob ein Wort des Level 20 Bosses getroffen wurde
+                for (let i = 0; i < level20Boss.activeWords.length; i++) {
+                    const word = level20Boss.activeWords[i];
                     if (word && word.word && word.word.toLowerCase() === typed.toLowerCase()) {
                         console.log('Wort getroffen durch Enter-Taste:', word.word);
                         
                         // Entferne das Wort
-                        removeLevel15BossWord(i);
+                        removeLevel20BossWord(i);
                         
                         // Reduziere die Boss-Gesundheit
-                        level15Boss.health--;
-                        updateLevel15BossHealth();
+                        level20Boss.health--;
+                        updateLevel20BossHealth();
                         
                         // Prüfe, ob der Boss besiegt ist
-                        if (level15Boss.health <= 0) {
-                            defeatLevel15Boss();
+                        if (level20Boss.health <= 0) {
+                            defeatLevel20Boss();
                         }
                         
                         // Leere das Eingabefeld
@@ -426,10 +363,8 @@ function extendLevelUp() {
         // Rufe die ursprüngliche levelUp-Funktion auf
         originalLevelUp();
         
-        // Prüfe, ob Level 15 oder 20 erreicht ist
-        if (gameState.level === 15) {
-            initLevel15Boss();
-        } else if (gameState.level === 20) {
+        // Prüfe, ob Level 20 erreicht ist
+        if (gameState.level === 20) {
             initLevel20Boss();
         }
     };
@@ -446,12 +381,6 @@ function extendGameMechanics() {
     window.checkLevelUp = function() {
         // Rufe die ursprüngliche Funktion auf
         originalCheckLevelUp();
-        
-        // Prüfe, ob der Spieler Level 15 erreicht hat
-        if (gameState.level === 15 && gameState.monstersKilled >= 10 && !gameState.level15BossActive && !gameState.bossActive) {
-            console.log('Level 15 Boss wird aktiviert...');
-            initLevel15Boss();
-        }
         
         // Prüfe, ob der Spieler Level 20 erreicht hat
         if (gameState.level === 20 && gameState.monstersKilled >= 10 && !gameState.level20BossActive && !gameState.bossActive) {
@@ -522,19 +451,11 @@ window.extendGameLoop = extendGameLoop;
 window.extendGameMechanics = extendGameMechanics;
 window.initExtensions = initExtensions;
 
-// Exportiere die Level 15 Boss-Funktionen
-window.initLevel15Boss = initLevel15Boss;
-window.updateLevel15Boss = updateLevel15Boss;
-window.updateLevel15BossWords = updateLevel15BossWords;
-window.spawnLevel15BossWord = spawnLevel15BossWord;
-window.removeLevel15BossWord = removeLevel15BossWord;
-window.updateLevel15BossHealth = updateLevel15BossHealth;
-window.defeatLevel15Boss = defeatLevel15Boss;
-
 // Exportiere die Level 20 Boss-Funktionen
 window.initLevel20Boss = initLevel20Boss;
 window.updateLevel20Boss = updateLevel20Boss;
-window.updateLevel20BossText = updateLevel20BossText;
+window.updateLevel20BossWords = updateLevel20BossWords;
+window.spawnLevel20BossWord = spawnLevel20BossWord;
+window.removeLevel20BossWord = removeLevel20BossWord;
 window.updateLevel20BossHealth = updateLevel20BossHealth;
-window.defeatLevel20Boss = defeatLevel20Boss;
-window.processLevel20BossInput = processLevel20BossInput; 
+window.defeatLevel20Boss = defeatLevel20Boss; 
