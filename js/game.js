@@ -261,59 +261,79 @@ function removeEnemy(index) {
  * @param {Event} e - Das Eingabe-Event
  */
 function handleGameInput(e) {
-    const typed = e.target.value.toLowerCase();
-    
-    // Wenn wir im Hauptmenü sind
-    if (gameState.currentScreen === 'menu') {
-        handleMenuInput(typed);
-    }
-    // Wenn wir im Inventar sind
-    else if (gameState.currentScreen === 'inventory') {
-        handleInventoryInput(typed);
-    }
-    // Wenn wir im Shop sind
-    else if (gameState.currentScreen === 'shop') {
-        handleShopInput(typed);
-    }
-    // Wenn wir in der Level-Auswahl sind
-    else if (gameState.currentScreen === 'levelSelect') {
-        handleLevelSelectInput(typed);
-    }
-    // Wenn wir im Übungsmodus sind
-    else if (gameState.currentScreen === 'practice') {
-        handlePracticeInput(typed);
-    }
-    // Wenn wir im Spiel sind
-    else if (gameState.currentScreen === 'game') {
-        // Prüfe zuerst auf "menu" Befehl
-        if (typed === 'menu') {
-            returnToMenu();
-            e.target.value = '';
+    try {
+        if (!e || !e.target) {
+            console.error('Ungültiges Event-Objekt in handleGameInput');
             return;
         }
         
-        // Prüfe auf Level 10 Boss
-        if (gameState.level10BossActive) {
-            handleLevel10BossInput(typed, e);
-            return;
-        }
+        const typed = e.target.value.toLowerCase();
+        debugLog(`Verarbeite Eingabe: "${typed}" im Bildschirm: ${gameState.currentScreen}`);
         
-        // Prüfe auf Level 15 Boss
-        if (gameState.level === 15 && typeof handleLevel15BossInput === 'function') {
-            if (handleLevel15BossInput(typed, e)) {
+        // Wenn wir im Hauptmenü sind
+        if (gameState.currentScreen === 'menu') {
+            handleMenuInput(typed);
+        }
+        // Wenn wir im Inventar sind
+        else if (gameState.currentScreen === 'inventory') {
+            handleInventoryInput(typed);
+        }
+        // Wenn wir im Shop sind
+        else if (gameState.currentScreen === 'shop') {
+            handleShopInput(typed);
+        }
+        // Wenn wir in der Level-Auswahl sind
+        else if (gameState.currentScreen === 'levelSelect') {
+            handleLevelSelectInput(typed);
+        }
+        // Wenn wir im Übungsmodus sind
+        else if (gameState.currentScreen === 'practice') {
+            handlePracticeInput(typed);
+        }
+        // Wenn wir im Spiel sind
+        else if (gameState.currentScreen === 'game') {
+            // Prüfe zuerst auf "menu" Befehl
+            if (typed === 'menu') {
+                returnToMenu();
+                e.target.value = '';
                 return;
             }
-        }
-        
-        // Prüfe auf Level 20 Boss
-        if (gameState.level === 20 && typeof handleLevel20BossInput === 'function') {
-            if (handleLevel20BossInput(typed, e)) {
+            
+            // Prüfe auf Level 10 Boss
+            if (gameState.level10BossActive) {
+                handleLevel10BossInput(typed, e);
                 return;
             }
+            
+            // Prüfe auf Level 15 Boss
+            if (gameState.level === 15 && typeof handleLevel15BossInput === 'function') {
+                try {
+                    if (handleLevel15BossInput(typed, e)) {
+                        return;
+                    }
+                } catch (error) {
+                    console.error('Fehler bei handleLevel15BossInput:', error);
+                }
+            }
+            
+            // Prüfe auf Level 20 Boss
+            if (gameState.level === 20 && typeof handleLevel20BossInput === 'function') {
+                try {
+                    if (handleLevel20BossInput(typed, e)) {
+                        return;
+                    }
+                } catch (error) {
+                    console.error('Fehler bei handleLevel20BossInput:', error);
+                }
+            }
+            
+            // Normale Spieleingabe verarbeiten
+            handleNormalGameInput(typed, e);
+        } else {
+            console.warn(`Unbekannter Bildschirm: ${gameState.currentScreen}`);
         }
-        
-        // Normale Spieleingabe verarbeiten
-        handleNormalGameInput(typed, e);
+    } catch (error) {
+        console.error('Fehler bei der Verarbeitung der Spieleingabe:', error);
     }
 }
 

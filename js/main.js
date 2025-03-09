@@ -43,6 +43,11 @@ document.addEventListener('DOMContentLoaded', function() {
     typingInput = document.getElementById('typingInput');
     statsSidebar = document.getElementById('statsSidebar');
     
+    if (!mainMenu || !gameContainer || !typingInput || !statsSidebar) {
+        console.error('Kritischer Fehler: Einige DOM-Elemente konnten nicht gefunden werden!');
+        return;
+    }
+    
     // Theme-Wechsel initialisieren
     initThemeToggle();
     
@@ -53,7 +58,9 @@ document.addEventListener('DOMContentLoaded', function() {
     loadGameState();
     
     // Event-Listener für Eingabe hinzufügen
-    typingInput.addEventListener('input', handleGameInput);
+    typingInput.addEventListener('input', function(e) {
+        handleGameInput(e);
+    });
     
     // Event-Listener für Fokus hinzufügen
     document.addEventListener('click', focusInput);
@@ -65,11 +72,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // Virtuelle Tastatur initialisieren
     refreshVirtualKeyboard();
     
-    // Erweiterungen laden, wenn verfügbar
-    if (typeof initExtensions === 'function') {
-        initExtensions();
-    }
-    
     console.log('RoughType wurde erfolgreich initialisiert!');
 });
 
@@ -78,6 +80,10 @@ document.addEventListener('DOMContentLoaded', function() {
  */
 function initThemeToggle() {
     const themeToggle = document.getElementById('themeToggle');
+    if (!themeToggle) {
+        console.error('Theme Toggle nicht gefunden!');
+        return;
+    }
     
     // Gespeichertes Theme laden
     const savedTheme = localStorage.getItem('roughTypeTheme');
@@ -104,6 +110,12 @@ function initThemeToggle() {
 function initDebugMode() {
     const debugContainer = document.getElementById('debugContainer');
     const debugToggle = document.getElementById('debugToggle');
+    
+    if (!debugContainer || !debugToggle) {
+        console.error('Debug-Container oder Toggle nicht gefunden!');
+        return;
+    }
+    
     const debugLog = document.getElementById('debugLog');
     
     if (debugToggle) {
@@ -120,6 +132,8 @@ function initDebugMode() {
  * @param {string} type - Der Typ der Nachricht (info, warning, error)
  */
 function debugLog(message, type = 'info') {
+    console.log(`[DEBUG] ${message}`);
+    
     if (!gameState.debugMode) return;
     
     const debugLog = document.getElementById('debugLog');
@@ -131,8 +145,6 @@ function debugLog(message, type = 'info') {
     
     debugLog.appendChild(entry);
     debugLog.scrollTop = debugLog.scrollHeight;
-    
-    console.log(`[DEBUG] ${message}`);
 }
 
 /**
@@ -149,12 +161,22 @@ function focusInput() {
  */
 function refreshVirtualKeyboard() {
     const keys = document.querySelectorAll('.key');
+    if (!keys.length) {
+        console.error('Virtuelle Tastatur nicht gefunden!');
+        return;
+    }
+    
     keys.forEach(key => {
         key.classList.remove('active');
         
-        key.addEventListener('click', function() {
+        // Entferne alte Event-Listener (falls vorhanden)
+        const newKey = key.cloneNode(true);
+        key.parentNode.replaceChild(newKey, key);
+        
+        // Füge neue Event-Listener hinzu
+        newKey.addEventListener('click', function() {
             const keyValue = this.getAttribute('data-key');
-            if (keyValue) {
+            if (keyValue && typingInput) {
                 typingInput.value += keyValue;
                 typingInput.dispatchEvent(new Event('input'));
                 typingInput.focus();
@@ -179,11 +201,11 @@ function returnToMenu() {
     gameState.enemies = [];
     
     // UI aktualisieren
-    mainMenu.classList.remove('hidden');
-    gameContainer.style.display = 'none';
+    if (mainMenu) mainMenu.classList.remove('hidden');
+    if (gameContainer) gameContainer.style.display = 'none';
     
     // Eingabefeld leeren
-    typingInput.value = '';
+    if (typingInput) typingInput.value = '';
     
     // Virtuelle Tastatur aktualisieren
     refreshVirtualKeyboard();
@@ -215,7 +237,7 @@ function saveGameState() {
         debugLog('Spielstand erfolgreich gespeichert');
     } catch (error) {
         debugLog('Fehler beim Speichern des Spielstands: ' + error.message, 'error');
-        alert('Fehler beim Speichern des Spielstands!');
+        console.error('Fehler beim Speichern des Spielstands:', error);
     }
 }
 
@@ -266,7 +288,7 @@ function loadGameState() {
         updateDisplay();
     } catch (error) {
         debugLog('Fehler beim Laden des Spielstands: ' + error.message, 'error');
-        alert('Fehler beim Laden des Spielstands!');
+        console.error('Fehler beim Laden des Spielstands:', error);
         
         // Setze auf Standardwerte zurück bei Fehler
         gameState.gold = 100;
@@ -297,6 +319,7 @@ function resetGameState() {
     gameState.inventory = [];
     gameState.materials = [];
     gameState.monstersKilled = 0;
+    gameState.enemies = [];
     
     // Speichere den zurückgesetzten Spielstand
     saveGameState();
@@ -308,36 +331,54 @@ function resetGameState() {
  * Aktualisiert die Anzeige
  */
 function updateDisplay() {
-    // Aktualisiere die Sidebar-Anzeige
-    document.getElementById('sidebarHealth').textContent = `${gameState.playerHealth}/1000`;
-    document.getElementById('sidebarGold').textContent = gameState.gold;
-    
-    // Berechne die Anzahl der Monster, die für ein Level-Up benötigt werden
-    const monstersNeeded = gameState.level <= 3 ? 4 : 10;
-    
-    // Aktualisiere die Level-Anzeige mit dem aktuellen Level und dem Fortschritt
-    document.getElementById('sidebarLevel').textContent = `${gameState.level} (${gameState.monstersKilled}/${monstersNeeded})`;
-    
-    // Zeige die Verteidigung an, wenn sie größer als 0 ist
-    if (gameState.defense > 0) {
-        document.getElementById('sidebarDefenseContainer').style.display = 'flex';
-        document.getElementById('sidebarDefense').textContent = gameState.defense;
-    } else {
-        document.getElementById('sidebarDefenseContainer').style.display = 'none';
+    try {
+        // Aktualisiere die Sidebar-Anzeige
+        const sidebarHealth = document.getElementById('sidebarHealth');
+        if (sidebarHealth) sidebarHealth.textContent = `${gameState.playerHealth}/1000`;
+        
+        const sidebarGold = document.getElementById('sidebarGold');
+        if (sidebarGold) sidebarGold.textContent = gameState.gold;
+        
+        // Berechne die Anzahl der Monster, die für ein Level-Up benötigt werden
+        const monstersNeeded = gameState.level <= 3 ? 4 : 10;
+        
+        // Aktualisiere die Level-Anzeige mit dem aktuellen Level und dem Fortschritt
+        const sidebarLevel = document.getElementById('sidebarLevel');
+        if (sidebarLevel) sidebarLevel.textContent = `${gameState.level} (${gameState.monstersKilled}/${monstersNeeded})`;
+        
+        // Zeige die Verteidigung an, wenn sie größer als 0 ist
+        const sidebarDefenseContainer = document.getElementById('sidebarDefenseContainer');
+        const sidebarDefense = document.getElementById('sidebarDefense');
+        
+        if (sidebarDefenseContainer && sidebarDefense) {
+            if (gameState.defense > 0) {
+                sidebarDefenseContainer.style.display = 'flex';
+                sidebarDefense.textContent = gameState.defense;
+            } else {
+                sidebarDefenseContainer.style.display = 'none';
+            }
+        }
+        
+        const sidebarScore = document.getElementById('sidebarScore');
+        if (sidebarScore) sidebarScore.textContent = gameState.score;
+        
+        const sidebarInventory = document.getElementById('sidebarInventory');
+        if (sidebarInventory) sidebarInventory.textContent = gameState.inventory.length;
+        
+        // Berechne die Gesamtzahl der Materialien
+        let totalMaterials = 0;
+        gameState.materials.forEach(material => {
+            totalMaterials += material.amount;
+        });
+        
+        const sidebarMaterials = document.getElementById('sidebarMaterials');
+        if (sidebarMaterials) sidebarMaterials.textContent = totalMaterials;
+        
+        // Speichere den Spielstand
+        saveGameState();
+    } catch (error) {
+        console.error('Fehler beim Aktualisieren der Anzeige:', error);
     }
-    
-    document.getElementById('sidebarScore').textContent = gameState.score;
-    document.getElementById('sidebarInventory').textContent = gameState.inventory.length;
-    
-    // Berechne die Gesamtzahl der Materialien
-    let totalMaterials = 0;
-    gameState.materials.forEach(material => {
-        totalMaterials += material.amount;
-    });
-    document.getElementById('sidebarMaterials').textContent = totalMaterials;
-    
-    // Speichere den Spielstand
-    saveGameState();
 }
 
 /**

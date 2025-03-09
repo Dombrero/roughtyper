@@ -13,11 +13,6 @@
     <link rel="stylesheet" href="css/bosses.css">
     <link rel="stylesheet" href="css/tutorial.css">
     <link rel="stylesheet" href="css/enemies.css">
-    
-    <!-- Lade die Datenbankerweiterung -->
-    <script src="Database_extender/levels.js"></script>
-    <script src="Database_extender/mechanics.js"></script>
-    <script src="Database_extender/loader.js"></script>
 </head>
 <body>
     <div id="mainContainer">
@@ -199,12 +194,23 @@
         </div>
     </div>
 
-    <!-- JavaScript-Dateien -->
+    <!-- JavaScript-Dateien in optimierter Ladereihenfolge -->
+    <!-- Zuerst Datendateien -->
     <script src="js/data.js"></script>
+    
+    <!-- Dann Kerndateien -->
     <script src="js/main.js"></script>
     <script src="js/game.js"></script>
     <script src="js/ui.js"></script>
     <script src="js/practice.js"></script>
     <script src="js/bosses.js"></script>
+    
+    <!-- Dann Kompatibilitätsschicht -->
+    <script src="js/compat.js"></script>
+    
+    <!-- Und schließlich die Datenbankerweiterungen -->
+    <script src="Database_extender/levels.js"></script>
+    <script src="Database_extender/mechanics.js"></script>
+    <script src="Database_extender/loader.js"></script>
 </body>
 </html> 
