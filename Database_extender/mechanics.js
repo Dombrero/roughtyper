@@ -679,6 +679,7 @@ function spawnLevel20BossWord() {
     wordElement.style.borderRadius = '5px';
     wordElement.style.boxShadow = '0 0 10px #9400d3';
     wordElement.style.zIndex = '99';
+    wordElement.style.transition = 'all 0.3s ease-in-out'; // Smooth transition
     
     // Positioniere das Wort beim Boss
     const bossRect = level20Boss.element.getBoundingClientRect();
@@ -712,7 +713,11 @@ function spawnLevel20BossWord() {
         word: word,
         element: wordElement,
         position: { x: startX, y: startY },
-        velocity: { x: vx, y: vy }
+        velocity: { x: vx, y: vy },
+        originalVelocity: { x: vx, y: vy }, // Speichere die ursprüngliche Geschwindigkeit
+        lastTimeReverse: 0, // Zeitpunkt der letzten Umkehrung
+        isReversing: false, // Flag für Umkehrung
+        reverseTime: 0 // Dauer der aktuellen Umkehrung
     });
     
     // Aktualisiere den Zeitpunkt des letzten Spawns
@@ -840,15 +845,50 @@ function updateLevel20Boss() {
         bossElement.style.left = level20Boss.position.x + 'px';
     }
     
+    const currentTime = Date.now();
+    
     // Bewege die aktiven Wörter
     for (let i = level20Boss.activeWords.length - 1; i >= 0; i--) {
         const word = level20Boss.activeWords[i];
+        
+        // Prüfe, ob es Zeit für eine Zeitumkehrung ist
+        if (!word.isReversing && currentTime - word.lastTimeReverse > 3000) { // Alle 3 Sekunden
+            // Starte die Zeitumkehrung
+            word.isReversing = true;
+            word.reverseTime = currentTime;
+            
+            // Kehre die Geschwindigkeit um
+            word.velocity.x = -word.originalVelocity.x * 0.7; // Etwas langsamer zurück
+            word.velocity.y = -word.originalVelocity.y * 0.7;
+            
+            // Visueller Effekt für die Umkehrung
+            word.element.style.backgroundColor = 'rgba(0, 255, 255, 0.7)'; // Cyan-Farbe während der Umkehrung
+            word.element.style.boxShadow = '0 0 15px cyan';
+            
+            // Füge einen Eintrag zum Kampflog hinzu
+            addCombatLogEntry('info', `CHRONOS: "Zeit, spule zurück!"`);
+        }
+        
+        // Prüfe, ob die Zeitumkehrung beendet werden soll
+        if (word.isReversing && currentTime - word.reverseTime > 1000) { // 1 Sekunde Umkehrung
+            // Beende die Zeitumkehrung
+            word.isReversing = false;
+            word.lastTimeReverse = currentTime;
+            
+            // Stelle die ursprüngliche Geschwindigkeit wieder her
+            word.velocity.x = word.originalVelocity.x;
+            word.velocity.y = word.originalVelocity.y;
+            
+            // Stelle das ursprüngliche Aussehen wieder her
+            word.element.style.backgroundColor = 'rgba(148, 0, 211, 0.7)';
+            word.element.style.boxShadow = '0 0 10px #9400d3';
+        }
         
         // Aktualisiere die Position
         word.position.x += word.velocity.x;
         word.position.y += word.velocity.y;
         
-        // Aktualisiere das DOM-Element
+        // Aktualisiere das DOM-Element mit einer sanften Übergangsanimation
         if (word.element) {
             word.element.style.left = word.position.x + 'px';
             word.element.style.top = word.position.y + 'px';
@@ -889,7 +929,6 @@ function updateLevel20Boss() {
     }
     
     // Spawne neue Wörter, wenn nötig
-    const currentTime = Date.now();
     if (level20Boss.activeWords.length < level20Boss.maxProjectiles &&
         currentTime - level20Boss.lastSpawnTime > 2000) { // Alle 2 Sekunden
         spawnLevel20BossWord();
