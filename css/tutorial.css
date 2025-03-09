@@ -1,12 +1,27 @@
 /* tutorial.css - Stile für das Tutorial des Spiels */
 
+/* Main-Content-Wrapper für Flexbox-Layout */
+.main-content-wrapper {
+    display: flex;
+    justify-content: space-between;
+    gap: 30px;
+    margin-bottom: 30px;
+}
+
+/* Menu-Container neu anpassen */
+.menu-container {
+    flex: 0 0 350px;
+}
+
 /* Tutorial-Container */
 .tutorial-container {
-    margin-top: 30px;
+    flex: 1;
     padding: 20px;
     background-color: var(--debug-content-bg);
     border-radius: 10px;
     border: 1px solid var(--debug-border);
+    max-width: 650px;
+    height: fit-content;
 }
 
 .tutorial-container h3 {
@@ -109,6 +124,25 @@
 }
 
 /* Responsive Design */
+@media (max-width: 1200px) {
+    .main-content-wrapper {
+        flex-direction: column;
+    }
+    
+    .menu-container {
+        flex: none;
+        width: 100%;
+        max-width: 100%;
+    }
+    
+    .tutorial-container {
+        flex: none;
+        width: 100%;
+        max-width: 100%;
+        margin-top: 30px;
+    }
+}
+
 @media (max-width: 768px) {
     .tutorial-container {
         padding: 15px;
